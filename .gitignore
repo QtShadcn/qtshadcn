@@ -35,3 +35,8 @@ logs
 #VSC
 .history
 .wrangler
+
+# CMake / Qt build
+build/
+cmake-build-*/
+*.user

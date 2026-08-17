@@ -1,0 +1,6 @@
+{
+    "cmake.configureSettings": {
+        "CMAKE_PREFIX_PATH": "${env:HOME}/Qt/6.11.1/macos"
+    },
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
+}

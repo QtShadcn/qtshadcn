@@ -1,0 +1,232 @@
+# QtShadcn 技术方案（Technical Design）
+
+> 状态：Draft v0.1 — 待确认
+> 日期：2026-08-17
+
+## 1. 项目定位
+
+**QtShadcn — A modern, composable UI component library for Qt 6 / QML, inspired by shadcn/ui.**
+
+对标 shadcn/ui 的设计哲学：**Design Token → Component → Composition → Theme → Animation**。组件可组合、可复制、无黑盒依赖；开发者在组件上组合出页面，而不是在画布上摆放控件。
+
+明确**不做**：
+
+- ❌ QWidget + QPainter 手绘控件（传统桌面控件库路线）
+- ❌ 重新发明 Qt Quick Controls 的基础行为（键盘导航 / Focus / Accessibility / 输入事件 / Tab 顺序）
+
+## 2. 技术选型
+
+| 层 | 选型 | 理由 |
+|---|---|---|
+| UI / Style | QML | 声明式组合与 shadcn 心智天然契合；Design Token → 组件绑定直接 |
+| 基础行为 | Qt Quick Controls 2 | 免费获得键盘导航、Focus、无障碍、Tab 顺序，不重复造轮子 |
+| 能力层 | C++ (Qt 6) | Theme 引擎、Icon 注册、Model、窗口管理、原生集成 |
+| 构建 | CMake + `qt_add_qml_module` | 官方推荐，QML 模块可被 `import QtShadcn` |
+| 环境 | Qt 6.11.1 @ `~/Qt/6.11.1/macos` (arm64) | 本机已装 |
+
+**核心原则：QML 负责 UI，C++ 负责能力。**
+
+> 反模式警告：全部纯 QML 会让项目退化成"一个 QML 样式库"。Theme 系统、Icon 系统、Model/Table Model、数据绑定、Native API、Window 管理、跨平台能力必须落在 C++。
+
+## 3. 总体架构
+
+```
+                QtShadcn
+                    │
+          ┌─────────┴─────────┐
+          ↓                   ↓
+        QML                  C++
+    UI / Style             Core / Logic
+  (组件、组合、样式)       (Theme 引擎、Icon、
+                           Model、原生能力)
+          │                   │
+          └─────────┬─────────┘
+                    ↓
+                  Qt 6
+```
+
+依赖方向：**QML 组件 → C++ 能力层**（单向）。QML 组件只消费 C++ 暴露的 QObject 属性/方法，C++ 不反向依赖具体 QML 组件。
+
+## 4. 目录结构
+
+```
+qtshadcn/
+├── CMakeLists.txt              # 根构建
+├── src/
+│   ├── qml/                    # QML 组件（qt_add_qml_module, URI: QtShadcn）
+│   │   ├── Theme/
+│   │   │   ├── Theme.qml       # 声明式主题入口（绑定 C++ ThemeManager）
+│   │   │   └── tokens/         # light/dark 两套 token 定义
+│   │   ├── Components/
+│   │   │   ├── ShadcnButton.qml
+│   │   │   ├── ShadcnInput.qml
+│   │   │   ├── ShadcnCard.qml     # Card = CardHeader/CardContent/CardFooter 组合
+│   │   │   ├── ShadcnDialog.qml
+│   │   │   ├── ShadcnTabs.qml
+│   │   │   ├── ShadcnBadge.qml
+│   │   │   └── ShadcnSwitch.qml
+│   │   ├── Icons/
+│   │   │   └── Icon.qml        # 按 name 从 C++ IconRegistry 取 svg
+│   │   ├── Animations/
+│   │   │   └── ...             # 预置过渡/动画封装
+│   │   └── Utils/
+│   ├── core/                   # C++ 能力层
+│   │   ├── thememanager.{h,cpp}   # Theme 引擎（tokens 字典 + mode 切换）
+│   │   ├── iconregistry.{h,cpp}   # SVG 图标注册/加载
+│   │   ├── models/                # QAbstractListModel 等
+│   │   └── windowmanager.{h,cpp}  # 窗口管理（可选，后期）
+│   └── main.cpp                # 注册 context property / singleton
+├── examples/
+│   └── showcase/               # 组件展示应用（每个里程碑的验证载体）
+└── docs/                       # Docus 文档站
+```
+
+**QML 模块约定**：`qt_add_qml_module` 生成 URI `QtShadcn`，用法 `import QtShadcn`。
+
+## 5. Design Token 系统（M1 核心，第一个里程碑）
+
+### 5.1 Token 语义（对齐 shadcn/ui）
+
+| 类别 | Token | 说明 |
+|---|---|---|
+| 颜色 | `background / foreground` | 页面底色 / 正文色 |
+| 颜色 | `primary / primaryForeground` | 主操作色 |
+| 颜色 | `secondary / secondaryForeground` | 次操作 |
+| 颜色 | `muted / mutedForeground` | 弱化区（输入框底、hover） |
+| 颜色 | `accent / accentForeground` | 高亮（选中、菜单 hover） |
+| 颜色 | `destructive / destructiveForeground` | 危险操作 |
+| 颜色 | `border` | 边框 |
+| 颜色 | `ring` | 焦点环 |
+| 形状 | `radius` | 全局圆角（如 8） |
+| 间距 | `spacing.*` | 刻度：xs/sm/md/lg/xl |
+| 字体 | `typography.*` | 字号/字重层级 |
+
+### 5.2 机制（QML 声明 + C++ 引擎）
+
+```qml
+// 声明式用法（QML 侧）
+QtShadcnTheme {
+    id: theme
+    mode: "dark"          // "light" | "dark" | 未来可扩展
+}
+```
+
+- **C++ `ThemeManager`**（QObject，单例注册进 QML）：持有 `light` / `dark` 两套 token 字典（QVariantMap），`mode` 属性切换时整体替换并 emit `tokensChanged`。
+- **QML `QtShadcnTheme`**：薄封装，把 C++ tokens 映射成语义化属性（`primary`、`radius`、`spacingSm`…），组件直接绑定。
+- 组件内用法：
+
+```qml
+Rectangle {
+    color: theme.primary
+    radius: theme.radius
+}
+```
+
+- 切换：`theme.mode = "dark"` → 全局随动（所有绑定自动刷新）。
+
+### 5.3 为什么先做 Theme
+
+Button 只是验证设计系统合理性的**第一个组件**。Token 层没定，组件层就是空中楼阁；Token 层定了，后续每个组件都是"查 token → 套样式"的机械工作。
+
+## 6. 组件设计规范
+
+### 6.1 命名（✅ 已决：`Shadcn*` 前缀）
+
+**决策**：所有组件带 `Shadcn` 前缀（`ShadcnButton` / `ShadcnCard` / `ShadcnInput` …）。
+
+理由：
+1. 组件内部必须 `import QtQuick.Controls` 拿基类——无前缀 `Button` 会与 `QQC.Button` 同名冲突（QML 同名类型后导入者覆盖 + 编译警告），必踩坑；
+2. 使用方混用场景（`ShadcnButton` + `QQC.ComboBox`）零歧义；无前缀则须 `import QtQuick.Controls as QQC` 转嫁负担；
+3. 行业先例：FluentUI（`FButton`）等 QML 组件库均走前缀路线；
+4. 组件内部基类统一别名引用：`import QtQuick.Controls as QQC`。
+
+变体枚举实现：Qt 6 QML `enum` → `ShadcnButton.Variant.Primary`；短写法 `ShadcnButton.Primary` 用 readonly property 补一层（M2 实施时定）。
+
+### 6.2 API 风格（对齐 shadcn/ui 变体）
+
+```qml
+ShadcnButton {
+    text: "Deploy"
+    variant: ShadcnButton.Primary   // Primary / Secondary / Outline / Ghost / Destructive
+    size: ShadcnButton.Medium       // Small / Medium / Large / Icon
+    disabled: false
+    onClicked: { ... }
+}
+```
+
+### 6.3 实现路径（复用 Quick Controls）
+
+```text
+Qt Quick Controls (Control 基类)
+        ↓ 继承/内嵌，保留
+键盘导航 · Focus · Accessibility · Tab 顺序 · 输入事件
+        ↓ 只替换
+contentItem（视觉结构）· background（样式）· 新增 variant/size API
+```
+
+- **ShadcnButton**：基于 `QQC.Button`，重写 `background` / `contentItem`，新增 `variant` / `size`。
+- **ShadcnInput**：基于 `QQC.TextField`，替换背景 + 聚焦环（`ring` token）。
+- **ShadcnDialog**：基于 `QQC.Dialog`（或 `Popup`），套 Card 视觉 + 遮罩（`overlay` 机制定制）。
+- **ShadcnTabs**：基于 `QQC.TabBar`/`TabButton` 样式化。
+- **Card**：纯组合组件，`CardHeader / CardContent / CardFooter` 子组件，对齐 shadcn:
+
+```tsx
+// shadcn/ui 参照
+<Card><CardHeader><CardTitle>…</CardTitle></CardHeader>
+     <CardContent><Input/><Button>Create</Button></CardContent></Card>
+```
+
+### 6.4 组件优先级
+
+| 里程碑 | 组件 |
+|---|---|
+| M2 | ShadcnButton（第一个，验证设计系统） |
+| M3 | Input / Card / Badge / Switch / Tabs / Dialog |
+| M4+ | Select / Checkbox / Tooltip / Table / Toast 等 |
+
+## 7. C++ 能力层
+
+| 模块 | 职责 | 里程碑 |
+|---|---|---|
+| `ThemeManager` | token 字典、mode 切换、主题持久化 | M1 |
+| `IconRegistry` | svg 图标注册 + currentColor 替换渲染（QSvgRenderer → QImage），经 QQuickImageProvider 暴露 `image://icons/name?color=...`，支持动态变色 | M4 |
+| `Models` | QAbstractListModel 基类，供 Table/Select 数据源 | M5 |
+| `WindowManager` | 多窗口/原生窗口能力（可选） | M5 |
+| `Native Integration` | 平台能力桥（按需） | 后期 |
+
+## 8. 里程碑计划
+
+| 阶段 | 内容 | 交付物 / 验证 |
+|---|---|---|
+| **M0** | 仓库骨架：根 CMakeLists + `src/qml` 模块 + `src/core` + showcase 空应用 | `cmake --build` 通过，空窗口能起 |
+| **M1** | Theme 基础层：C++ ThemeManager + light/dark tokens + `QtShadcnTheme` + showcase 色板页 | 运行 showcase，`mode` 切换全局变色 |
+| **M2** | Button 组件（variant/size/disabled/loading） | showcase 展示全部变体；键盘导航、Tab 焦点可用 |
+| **M3** | Input / Card / Badge / Switch / Tabs / Dialog | showcase 组合示例（如"新建项目"卡片） |
+| **M4** | Icon 系统 + Animations | 图标随主题变色、预置过渡 |
+| **M5** | C++ Models / Table、WindowManager | Table 组件接 QAbstractListModel |
+| **M6** | 文档站完善 + README + 发布 | docs 真实内容替换模板 |
+
+每个里程碑独立可构建、可运行验证（showcase 承载）。
+
+## 9. 风险与决策记录
+
+| 风险/决策 | 结论 |
+|---|---|
+| 纯 QML 陷阱（退化成样式库） | 能力层必须 C++：Theme/Icon/Model/原生 |
+| 与 Quick Controls 命名冲突 | ✅ 已决：`Shadcn*` 前缀（理由见 6.1） |
+| Quick Controls 2 样式系统（`qtquickcontrols2.conf`） | ✅ 已决：不用，token 自绘；基类行为照用，遮罩走 `Popup.overlay` |
+| 图标方案 | ✅ 已决：svg + lucide + IconRegistry；currentColor 替换实现动态变色，按需打包进 .qrc |
+| 主题扩展（跟随系统 / 自定义 token 覆盖） | M1 先做 light/dark 两套 + 手切，跟随系统后期加 |
+
+## 10. 构建与验证
+
+```bash
+# 本机环境
+cmake -S . -B build -DCMAKE_PREFIX_PATH="$HOME/Qt/6.11.1/macos"
+cmake --build build
+
+# 运行 showcase
+./build/examples/showcase/showcase
+```
+
+验证标准：每个里程碑结束，showcase 可运行，新增组件全部变体可见、交互可用（键盘导航 + 鼠标）。
