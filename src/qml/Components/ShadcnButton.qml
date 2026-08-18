@@ -70,6 +70,12 @@ Button {
     // 边框宽（outline 等 border variant 才有；组内 spacing:-1 合并）
     readonly property int _borderW: root._showBorder ? 1 : 0
 
+    // hover/pressed 混合底色：选中时用覆盖层色（accent），否则用 variant 底色。
+    // 教训：_bgToken 不随 checked 后，选中按钮的实际背景是 accent 覆盖层，
+    // 若用 primary 等深色 variant 底色混合会叠出深灰（"选中项 hover 变黑"）
+    readonly property color _hoverBase: _checked
+        ? theme.tokens[vt.checkedOverride.bg] : _baseBg
+
     // hover 背景：outline/ghost → accent 色（shadcn: hover:bg-accent）；
     // 其余 → 按钮色与页面背景按 hoverMix 混合（等效 shadcn hover:bg-*/90|80：
     // 深色按钮变浅、浅色变暗，随主题背景色自动适配）。
@@ -77,13 +83,13 @@ Button {
     readonly property color _hoverOverlay: {
         if (variant === ShadcnButton.Variant.Outline || variant === ShadcnButton.Variant.Ghost)
             return theme.accent
-        return _mix(_baseBg, theme.background, _variantMap.hoverMix)
+        return _mix(_hoverBase, theme.background, _variantMap.hoverMix)
     }
     // pressed：混合比例加重（按压反馈更深）；accent 上叠黑 15% 压暗
     readonly property color _pressedOverlay: {
         if (variant === ShadcnButton.Variant.Outline || variant === ShadcnButton.Variant.Ghost)
             return Qt.rgba(0, 0, 0, 0.15)
-        return _mix(_baseBg, theme.background, Math.min(0.25, _variantMap.hoverMix * 2))
+        return _mix(_hoverBase, theme.background, Math.min(0.25, _variantMap.hoverMix * 2))
     }
 
     // a 向 b 按 t 混合（t=0.1 等效 shadcn /90：0.9×a + 0.1×b）
