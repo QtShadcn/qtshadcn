@@ -169,6 +169,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.margins: 24
+        anchors.topMargin: 40
 
         spacing: theme.spacingLg
 
@@ -210,6 +211,7 @@ Item {
         id: scrollView
 
         anchors.top: header.bottom
+        anchors.topMargin: 20
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
@@ -283,7 +285,7 @@ Item {
                         name: "Input",
                         description: "输入框",
                         page: "InputPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Input Group",
@@ -313,7 +315,7 @@ Item {
                         name: "Switch",
                         description: "开关",
                         page: "SwitchPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Slider",
@@ -349,7 +351,7 @@ Item {
                         name: "Card",
                         description: "Header / Content / Footer",
                         page: "CardPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Alert",
@@ -361,7 +363,7 @@ Item {
                         name: "Dialog",
                         description: "对话框",
                         page: "DialogPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Drawer",
@@ -391,7 +393,7 @@ Item {
                         name: "Badge",
                         description: "状态标签",
                         page: "BadgePage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Label",
@@ -427,7 +429,7 @@ Item {
                         name: "Tabs",
                         description: "标签页",
                         page: "TabsPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Breadcrumb",
