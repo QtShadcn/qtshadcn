@@ -1,29 +1,27 @@
 ---
 seo:
-  title: Write beautiful docs with Markdown
-  description: Ship fast, flexible, and SEO-optimized documentation with beautiful
-    design out of the box. Docus brings together the best of the Nuxt ecosystem.
-    Powered by Nuxt UI.
+  title: QtShadcn — Qt 6 / QML 可组合 UI 组件库
+  description: A modern, composable UI component library for Qt 6 / QML, inspired by shadcn/ui. Design Token 驱动的 QML 组件库，复用 Qt Quick Controls 基础行为。
 ---
 
 ::u-page-hero
 #title
-Write beautiful docs with Markdown
+QtShadcn
 
 #description
-Ship fast, flexible, and SEO-optimized documentation with beautiful design out of the box.
+A modern, composable UI component library for **Qt 6 / QML**, inspired by [shadcn/ui](https://ui.shadcn.com).
 
-Docus brings the best of the Nuxt ecosystem into one CLI.
+Design Token → Component → Composition → Theme。QML 管 UI，C++ 管能力，复用 Qt Quick Controls 的键盘导航与无障碍。
 
 #links
   :::u-button
   ---
   color: neutral
   size: xl
-  to: /getting-started/installation
+  to: /getting-started/introduction
   trailing-icon: i-lucide-arrow-right
   ---
-  Get started
+  快速开始
   :::
 
   :::u-button
@@ -31,93 +29,98 @@ Docus brings the best of the Nuxt ecosystem into one CLI.
   color: neutral
   icon: simple-icons-github
   size: xl
-  to: https://github.com/nuxt-content/docus
+  to: https://github.com/QtShadcn/qtshadcn
   variant: outline
   ---
-  Star on GitHub
+  GitHub
   :::
 ::
 
 ::u-page-section
 #title
-Shipped with many features
+设计哲学
 
 #features
   :::u-page-feature
   ---
-  icon: i-simple-icons-nuxt
-  target: _blank
-  to: https://nuxt.com
+  icon: i-lucide-palette
   ---
   #title
-  Built with [Nuxt 4]{.text-primary}
+  Design Token 驱动
   
   #description
-  Optimized by the most famous Vue framework. Docus gives you everything you need to build fast, performant, and SEO-friendly websites.
+  语义化颜色 / 圆角 / 间距 token，`theme.mode = "dark"` 全局随动，所有组件绑定自动刷新。
   :::
 
   :::u-page-feature
   ---
-  icon: i-simple-icons-nuxt
-  target: _blank
-  to: https://ui.nuxt.com/
+  icon: i-lucide-blocks
   ---
   #title
-  Powered by [Nuxt UI]{.text-primary}
+  可组合组件
   
   #description
-  Beautiful out of the box, minimal by design but highly customizable. Docus leverages Nuxt UI to give you the best docs writing experience with zero boilerplate, just focus on your content.
+  组件像积木一样组合：Card = CardHeader / CardContent / CardFooter，对齐 shadcn/ui 的组合方式。
   :::
 
   :::u-page-feature
   ---
-  icon: i-simple-icons-nuxt
-  target: _blank
-  to: https://content.nuxt.com
+  icon: i-lucide-keyboard
   ---
   #title
-  Enhanced Markdown syntax by [Nuxt Content]{.text-primary}
+  复用 Quick Controls
   
   #description
-  The only thing you need to take care about is writing your content. Write your pages in Markdown and extend with MDC syntax to embed Nuxt UI or custom Vue components. Structure, routing, and rendering are handled for you.
+  键盘导航、Focus、无障碍开箱即得。只替换视觉与组件 API，不重新发明基础行为。
   :::
 
   :::u-page-feature
   ---
-  icon: i-simple-icons-nuxt
-  target: _blank
-  to: https://nuxt.com/docs/guide/directory-structure/app-config
+  icon: i-lucide-cpu
   ---
   #title
-  Customize with [Nuxt App Config]{.text-primary}
+  C++ 能力层
   
   #description
-  Update colors, social links, header logos and component styles globally using the `app.config.ts`, no direct code modifications required.
+  Theme 引擎、Icon 注册、Model 等能力层落在 C++，不退化成一个「QML 样式库」。
+  :::
+::
+
+::u-page-section
+#title
+组件状态
+
+#features
+  :::u-page-feature
+  ---
+  icon: i-lucide-check-circle-2
+  ---
+  #title
+  Theme（M1 ✅）
+  
+  #description
+  Design Token 系统：light/dark 两套 token，声明式 `QtShadcnTheme` 入口。
   :::
 
   :::u-page-feature
   ---
-  icon: i-simple-icons-nuxt
-  target: _blank
-  to: https://content.nuxt.com/studio
+  icon: i-lucide-check-circle-2
   ---
   #title
-  Edit in production with [Nuxt Studio]{.text-primary}
+  Button 系列（M2 ✅）
   
   #description
-  Edit your content in production with zero Markdown knowledge required. Let your non technical colleagues collaborate on the documentation and integrate Vue components without code skills.
+  ShadcnButton（6 variant × 5 size）+ ButtonGroup / Toggle / ToggleGroup / Spinner。
   :::
 
   :::u-page-feature
   ---
-  icon: i-simple-icons-nuxt
-  target: _blank
-  to: https://ui.nuxt.com/components/content-search
+  icon: i-lucide-circle-dashed
   ---
   #title
-  Built-in navigation and [full-text search]{.text-primary}
+  M3+（计划中）
   
   #description
-  Only focus on ordering your content, Docus handles the search modal and auto-generates the side navigation for you.
+  Input / Card / Badge / Switch / Tabs / Dialog；Icon 系统、Models / Table、WindowManager。
   :::
 ::
