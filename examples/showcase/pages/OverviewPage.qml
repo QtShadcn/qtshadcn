@@ -1,64 +1,686 @@
 import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 import QtShadcn
 
-// 总览页：项目简介 + 组件状态
-Column {
+Item {
     id: root
-    width: parent.width
-    padding: 24
-    spacing: theme.spacingLg
 
-    QtShadcnTheme { id: theme }
+    signal navigateTo(string page)
 
-    Text {
-        text: qsTr("QtShadcn — Showcase")
-        color: theme.foreground
-        font.pixelSize: 22
-        font.bold: true
+    // ============================================================
+    // Theme
+    // ============================================================
+
+    QtShadcnTheme {
+        id: theme
     }
 
-    Text {
+    // ============================================================
+    // Component Group
+    // ============================================================
+
+    component ComponentGroup: Column {
+        id: group
+
+        property string title: ""
+        property var items: []
+
         width: parent.width
-        wrapMode: Text.WordWrap
-        text: qsTr("Qt 6 / QML 可组合 UI 组件库，对齐 shadcn/ui 设计哲学：Design Token → Component → Composition → Theme。左侧菜单按组件浏览，右上角可切换主题色与明暗模式（全局生效）。")
-        color: theme.mutedForeground
-        font.pixelSize: 13
-    }
 
-    Text {
-        text: qsTr("组件状态")
-        color: theme.foreground
-        font.pixelSize: 15
-        font.bold: true
-    }
+        spacing: 10
 
-    // 状态列表：名称 + 状态标签
-    Repeater {
-        model: [
-            { name: "Theme（Design Token 系统）", status: "✅ M1 完成" },
-            { name: "ShadcnButton", status: "✅ M2 完成" },
-            { name: "ShadcnButtonGroup", status: "✅ M2 完成" },
-            { name: "ShadcnToggle / ShadcnToggleGroup", status: "✅ M2 完成" },
-            { name: "ShadcnSpinner", status: "✅ M2 完成" },
-            { name: "Input / Card / Badge / Switch / Tabs / Dialog", status: "⏳ M3 计划" },
-            { name: "Icon 系统 / Animations", status: "⏳ M4 计划" },
-            { name: "Models / Table / WindowManager", status: "⏳ M5 计划" },
-        ]
+        // --------------------------------------------------------
+        // Group title
+        // --------------------------------------------------------
 
-        delegate: Row {
-            required property var modelData
-            spacing: theme.spacingSm
+        Text {
+            text: group.title
 
-            Text {
-                width: 320
-                text: modelData.name
-                color: theme.foreground
-                font.pixelSize: 13
+            color: theme.foreground
+            font.pixelSize: 14
+            font.bold: true
+        }
+
+        // --------------------------------------------------------
+        // Component cards
+        // --------------------------------------------------------
+
+        GridLayout {
+            width: parent.width
+
+            columns: width >= 1100 ? 4 :
+                     width >= 800  ? 3 :
+                     width >= 550  ? 2 : 1
+
+            columnSpacing: 8
+            rowSpacing: 8
+
+            Repeater {
+                model: group.items
+
+                delegate: Rectangle {
+                    id: card
+
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 68
+
+                    radius: 8
+
+                    color: modelData.available
+                           ? (
+                               mouseArea.containsMouse
+                               ? theme.accent
+                               : theme.background
+                             )
+                           : theme.background
+
+                    border.width: 1
+                    border.color: theme.border
+
+                    opacity: modelData.available ? 1.0 : 0.55
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 100
+                        }
+                    }
+
+                    // ------------------------------------------------
+                    // Content
+                    // ------------------------------------------------
+
+                    Column {
+                        anchors.left: parent.left
+                        anchors.right: arrow.left
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 8
+
+                        spacing: 3
+
+                        Text {
+                            width: parent.width
+
+                            text: modelData.name
+
+                            color: theme.foreground
+                            font.pixelSize: 13
+                            font.bold: true
+
+                            elide: Text.ElideRight
+                        }
+
+                        Text {
+                            width: parent.width
+
+                            text: modelData.description
+
+                            color: theme.mutedForeground
+                            font.pixelSize: 11
+
+                            elide: Text.ElideRight
+                        }
+                    }
+
+                    // ------------------------------------------------
+                    // Arrow
+                    // ------------------------------------------------
+
+                    Text {
+                        id: arrow
+
+                        anchors.right: parent.right
+                        anchors.rightMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+
+                        text: modelData.available ? "›" : ""
+
+                        color: theme.mutedForeground
+                        font.pixelSize: 18
+                    }
+
+                    // ------------------------------------------------
+                    // Click
+                    // ------------------------------------------------
+
+                    MouseArea {
+                        id: mouseArea
+
+                        anchors.fill: parent
+
+                        enabled: modelData.available
+
+                        hoverEnabled: enabled
+
+                        cursorShape: enabled
+                                      ? Qt.PointingHandCursor
+                                      : Qt.ArrowCursor
+
+                        onClicked: {
+                            root.navigateTo(modelData.page)
+                        }
+                    }
+                }
             }
-            Text {
-                text: modelData.status
-                color: theme.mutedForeground
-                font.pixelSize: 13
+        }
+    }
+
+    // ============================================================
+    // Main Content
+    // ============================================================
+
+    Column {
+        anchors.fill: parent
+        anchors.margins: 24
+
+        spacing: theme.spacingLg
+
+        // ========================================================
+        // Header
+        // ========================================================
+
+        Text {
+            text: qsTr("QtShadcn — Showcase")
+
+            color: theme.foreground
+
+            font.pixelSize: 22
+            font.bold: true
+        }
+
+        // --------------------------------------------------------
+        // Description
+        // --------------------------------------------------------
+
+        Text {
+            width: parent.width
+
+            wrapMode: Text.WordWrap
+
+            text: qsTr(
+                "Qt 6 / QML 可组合 UI 组件库，对齐 shadcn/ui 设计哲学：Design Token → Component → Composition → Theme。左侧菜单按组件浏览，右上角可切换主题色与明暗模式（全局生效）。"
+            )
+
+            color: theme.mutedForeground
+
+            font.pixelSize: 13
+        }
+
+        // ========================================================
+        // Component List
+        // ========================================================
+
+        ScrollView {
+            id: scrollView
+
+            width: parent.width
+            height: parent.height - y
+
+            clip: true
+
+            ScrollBar.vertical.policy: ScrollBar.AsNeeded
+
+            Column {
+                id: content
+
+                width: scrollView.availableWidth
+
+                spacing: 24
+
+                // ==================================================
+                // M2
+                // General
+                // ==================================================
+
+                ComponentGroup {
+                    title: qsTr("M2 · General")
+
+                    items: [
+                        {
+                            name: "Button",
+                            description: "按钮",
+                            page: "ButtonPage.qml",
+                            available: true
+                        },
+                        {
+                            name: "Button Group",
+                            description: "按钮组",
+                            page: "ButtonGroupPage.qml",
+                            available: true
+                        },
+                        {
+                            name: "Toggle",
+                            description: "切换按钮",
+                            page: "TogglePage.qml",
+                            available: true
+                        },
+                        {
+                            name: "Toggle Group",
+                            description: "切换按钮组",
+                            page: "TogglePage.qml",   // ToggleGroup 展示在 TogglePage 内（无独立页）
+                            available: true
+                        },
+                        {
+                            name: "Spinner",
+                            description: "加载指示器",
+                            page: "SpinnerPage.qml",
+                            available: true
+                        }
+                    ]
+                }
+
+                // ==================================================
+                // M3 #2
+                // Form
+                // ==================================================
+
+                ComponentGroup {
+                    title: qsTr("M3 · Form")
+
+                    items: [
+                        {
+                            name: "Input",
+                            description: "输入框",
+                            page: "InputPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Input Group",
+                            description: "输入框前后缀组合",
+                            page: "InputGroupPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Textarea",
+                            description: "多行文本输入",
+                            page: "TextareaPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Checkbox",
+                            description: "复选框",
+                            page: "CheckboxPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Radio Group",
+                            description: "单选按钮组",
+                            page: "RadioGroupPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Switch",
+                            description: "开关",
+                            page: "SwitchPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Slider",
+                            description: "滑块",
+                            page: "SliderPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Progress",
+                            description: "进度条",
+                            page: "ProgressPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Select",
+                            description: "选择器",
+                            page: "SelectPage.qml",
+                            available: false
+                        }
+                    ]
+                }
+
+                // ==================================================
+                // M3 #3
+                // Layout & Feedback
+                // ==================================================
+
+                ComponentGroup {
+                    title: qsTr("M3 · Layout & Feedback")
+
+                    items: [
+                        {
+                            name: "Card",
+                            description: "Header / Content / Footer",
+                            page: "CardPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Alert",
+                            description: "四色提示框",
+                            page: "AlertPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Dialog",
+                            description: "对话框",
+                            page: "DialogPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Drawer",
+                            description: "抽屉",
+                            page: "DrawerPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Sheet",
+                            description: "侧边面板",
+                            page: "SheetPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Toast",
+                            description: "消息提示",
+                            page: "ToastPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Skeleton",
+                            description: "骨架屏",
+                            page: "SkeletonPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Badge",
+                            description: "状态标签",
+                            page: "BadgePage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Label",
+                            description: "文本标签",
+                            page: "LabelPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Separator",
+                            description: "分隔线",
+                            page: "SeparatorPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Typography",
+                            description: "排版系统",
+                            page: "TypographyPage.qml",
+                            available: false
+                        }
+                    ]
+                }
+
+                // ==================================================
+                // M3 #4
+                // Navigation & Menu
+                // ==================================================
+
+                ComponentGroup {
+                    title: qsTr("M3 · Navigation & Menu")
+
+                    items: [
+                        {
+                            name: "Tabs",
+                            description: "标签页",
+                            page: "TabsPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Breadcrumb",
+                            description: "面包屑导航",
+                            page: "BreadcrumbPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Pagination",
+                            description: "分页",
+                            page: "PaginationPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Context Menu",
+                            description: "上下文菜单",
+                            page: "ContextMenuPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Dropdown Menu",
+                            description: "下拉菜单",
+                            page: "DropdownMenuPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Menubar",
+                            description: "菜单栏",
+                            page: "MenubarPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Sidebar",
+                            description: "可折叠侧边栏",
+                            page: "SidebarPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Scroll Area",
+                            description: "滚动区域",
+                            page: "ScrollAreaPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Resizable",
+                            description: "可调整大小 / SplitView",
+                            page: "ResizablePage.qml",
+                            available: false
+                        }
+                    ]
+                }
+
+                // ==================================================
+                // M4 #5
+                // Composition
+                // ==================================================
+
+                ComponentGroup {
+                    title: qsTr("M4 · Composition")
+
+                    items: [
+                        {
+                            name: "Accordion",
+                            description: "手风琴",
+                            page: "AccordionPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Collapsible",
+                            description: "可折叠内容",
+                            page: "CollapsiblePage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Popover",
+                            description: "弹出层",
+                            page: "PopoverPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Hover Card",
+                            description: "悬浮卡片",
+                            page: "HoverCardPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Command",
+                            description: "⌘K 命令面板",
+                            page: "CommandPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Input OTP",
+                            description: "验证码输入",
+                            page: "InputOTPPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Field",
+                            description: "表单字段",
+                            page: "FieldPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Empty",
+                            description: "空状态",
+                            page: "EmptyPage.qml",
+                            available: false
+                        }
+                    ]
+                }
+
+                // ==================================================
+                // M4 #6
+                // Icon + Animations
+                // ==================================================
+
+                ComponentGroup {
+                    title: qsTr("M4 · Icon + Animations")
+
+                    items: [
+                        {
+                            name: "Icon",
+                            description: "IconRegistry / SVG",
+                            page: "IconPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Animations",
+                            description: "动画封装",
+                            page: "AnimationsPage.qml",
+                            available: false
+                        }
+                    ]
+                }
+
+                // ==================================================
+                // M4 #7
+                // Content
+                // ==================================================
+
+                ComponentGroup {
+                    title: qsTr("M4 · Content")
+
+                    items: [
+                        {
+                            name: "Avatar",
+                            description: "头像",
+                            page: "AvatarPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Carousel",
+                            description: "轮播",
+                            page: "CarouselPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Kbd",
+                            description: "键盘快捷键",
+                            page: "KbdPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Tooltip",
+                            description: "提示信息",
+                            page: "TooltipPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Message",
+                            description: "消息",
+                            page: "MessagePage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Bubble",
+                            description: "气泡消息",
+                            page: "BubblePage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Attachment",
+                            description: "附件",
+                            page: "AttachmentPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Item",
+                            description: "通用列表项",
+                            page: "ItemPage.qml",
+                            available: false
+                        }
+                    ]
+                }
+
+                // ==================================================
+                // M5 #8
+                // C++ Capability / Data
+                // ==================================================
+
+                ComponentGroup {
+                    title: qsTr("M5 · C++ Capability & Data")
+
+                    items: [
+                        {
+                            name: "Calendar",
+                            description: "日历",
+                            page: "CalendarPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Date Picker",
+                            description: "日期选择器",
+                            page: "DatePickerPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Table",
+                            description: "数据表格",
+                            page: "TablePage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Data Table",
+                            description: "排序 / 筛选 / 分页",
+                            page: "DataTablePage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Chart",
+                            description: "QtCharts 图表",
+                            page: "ChartPage.qml",
+                            available: false
+                        },
+                        {
+                            name: "Models",
+                            description: "C++ Models 基类",
+                            page: "ModelsPage.qml",
+                            available: false
+                        }
+                    ]
+                }
+
+                // ==================================================
+                // Bottom spacing
+                // ==================================================
+
+                Item {
+                    width: 1
+                    height: 24
+                }
             }
         }
     }

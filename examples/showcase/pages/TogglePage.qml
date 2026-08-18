@@ -57,7 +57,7 @@ Column {
     Text {
         width: parent.width
         wrapMode: Text.WordWrap
-        font.family: "monospace"
+        font.family: Qt.platform.os === "osx" ? "Menlo" : "monospace"
         font.pixelSize: 12
         color: theme.mutedForeground
         text: "ShadcnToggle { text: \"粗体\" }\n\nShadcnToggleGroup {\n    exclusive: true     // 单选\n    ShadcnToggle { text: \"单选 1\"; checked: true }\n}"

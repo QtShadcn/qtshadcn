@@ -27,7 +27,24 @@ Window {
     // 当前选中菜单项（0 = 总览）
     property int currentIndex: 0
     // 菜单项：新增组件 = 加一个页面 + 此处加一项 + StackLayout 加一页
-    property var menuItems: ["总览", "Theme", "Button", "ButtonGroup", "Toggle", "Spinner"]
+    // page 为对应页面文件名（总览页 navigateTo 信号按此映射跳转）
+    property var menuItems: [
+        { title: "总览", page: "" },
+        { title: "Theme", page: "ThemePage.qml" },
+        { title: "Button", page: "ButtonPage.qml" },
+        { title: "ButtonGroup", page: "ButtonGroupPage.qml" },
+        { title: "Toggle", page: "TogglePage.qml" },
+        { title: "Spinner", page: "SpinnerPage.qml" },
+    ]
+
+    // 文件名 → 菜单/StackLayout index（总览页卡片跳转用；未匹配回退总览）
+    function findPageIndex(page) {
+        for (var i = 0; i < root.menuItems.length; ++i) {
+            if (root.menuItems[i].page === page)
+                return i
+        }
+        return 0
+    }
 
     // ── 左侧菜单 ──
     Rectangle {
@@ -74,7 +91,7 @@ Window {
                 model: root.menuItems
 
                 delegate: Rectangle {
-                    required property string modelData
+                    required property var modelData
                     required property int index
 
                     width: menuArea.width - 24
@@ -87,7 +104,7 @@ Window {
                         anchors.left: parent.left
                         anchors.leftMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
-                        text: modelData
+                        text: modelData.title
                         color: root.currentIndex === index ? theme.accentForeground : theme.foreground
                         font.pixelSize: 13
                         font.bold: root.currentIndex === index
@@ -124,7 +141,10 @@ Window {
             height: parent.height
             currentIndex: root.currentIndex
 
-            OverviewPage {}
+            OverviewPage {
+                // 总览页卡片跳转：文件名 → 菜单 index（显式参数，隐式注入已废弃）
+                onNavigateTo: (page) => root.currentIndex = root.findPageIndex(page)
+            }
             ThemePage {}
             ButtonPage {}
             ButtonGroupPage {}

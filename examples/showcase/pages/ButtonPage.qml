@@ -84,7 +84,7 @@ Column {
     Text {
         width: parent.width
         wrapMode: Text.WordWrap
-        font.family: "monospace"
+        font.family: Qt.platform.os === "osx" ? "Menlo" : "monospace"
         font.pixelSize: 12
         color: theme.mutedForeground
         text: "ShadcnButton {\n    text: \"Deploy\"\n    variant: ShadcnButton.Variant.Primary\n    size: ShadcnButton.Size.Medium\n    loading: false\n    onClicked: { ... }\n}"

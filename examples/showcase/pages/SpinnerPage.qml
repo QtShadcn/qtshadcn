@@ -53,7 +53,7 @@ Column {
     Text {
         width: parent.width
         wrapMode: Text.WordWrap
-        font.family: "monospace"
+        font.family: Qt.platform.os === "osx" ? "Menlo" : "monospace"
         font.pixelSize: 12
         color: theme.mutedForeground
         text: "ShadcnSpinner { width: 16; height: 16; color: theme.primary }\n// 或按钮加载态：ShadcnButton { loading: true }"
