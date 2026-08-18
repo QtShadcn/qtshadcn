@@ -51,7 +51,10 @@ Button {
     //    只需枚举 + 映射表各加一项；token 名经 theme.tokens[] 查询保持绑定）──
     readonly property bool _checked: checkable && checked
     readonly property var _variantMap: vt.button[root.variant] ?? vt.button[0]
-    readonly property string _bgToken: _checked ? vt.checkedOverride.bg : _variantMap.bg
+    // 背景 token 不随 checked 切换（选中态视觉由 background 内的覆盖层负责——
+    // 教训：bg 在 accent↔transparent 间 color 动画会 RGBA 插值出中间灰，点击时闪烁）
+    readonly property string _bgToken: _variantMap.bg
+    // 前景色随选中切换（文字色，无动画，瞬间切换不闪）
     readonly property string _fgToken: _checked ? vt.checkedOverride.fg : _variantMap.fg
     readonly property color _baseBg: _bgToken === "" ? "transparent" : theme.tokens[_bgToken]
     // hover 文字色：outline/ghost hover 时用 accentForeground（shadcn: hover:text-accent-foreground）
@@ -113,6 +116,23 @@ Button {
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             color: Qt.rgba(root._baseFg.r, root._baseFg.g, root._baseFg.b, 0.15)
+        }
+
+        // 选中态覆盖层（checkable 用）：accent 背景 + opacity 动画。
+        // 教训：background.color 在 accent↔transparent 间 ColorAnimation 会 RGBA 插值
+        // 出中间灰（半透明灰叠白底，点击切换时闪烁）；opacity 动画 RGB 恒定不闪灰。
+        // 内缩边框宽：outline 选中时保留 1px 边框
+        Rectangle {
+            anchors.fill: parent
+            anchors.margins: root._borderW
+            topLeftRadius: Math.max(0, parent.topLeftRadius - root._borderW)
+            topRightRadius: Math.max(0, parent.topRightRadius - root._borderW)
+            bottomLeftRadius: Math.max(0, parent.bottomLeftRadius - root._borderW)
+            bottomRightRadius: Math.max(0, parent.bottomRightRadius - root._borderW)
+            visible: root.checkable
+            color: theme.tokens[vt.checkedOverride.bg]
+            opacity: root._checked ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 120 } }
         }
 
         // hover / pressed：背景色叠加（outline/ghost → accent；其余按亮度黑/白；link 无）
