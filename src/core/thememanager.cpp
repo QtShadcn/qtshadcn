@@ -1,5 +1,7 @@
 #include "thememanager.h"
 
+#include <QColor>
+
 ThemeManager::ThemeManager(QObject *parent)
     : QObject(parent)
 {
@@ -29,6 +31,20 @@ void ThemeManager::setMode(const QString &mode)
     emit modeChanged();
 }
 
+QString ThemeManager::primary() const
+{
+    return m_primary;
+}
+
+void ThemeManager::setPrimary(const QString &color)
+{
+    if (m_primary == color)
+        return;
+    m_primary = color;
+    rebuildTokens();
+    emit primaryChanged();
+}
+
 QVariantMap ThemeManager::tokens() const
 {
     return m_tokens;
@@ -44,13 +60,23 @@ QVariant ThemeManager::token(const QString &name) const
 // dark   同源 dark 默认值
 void ThemeManager::rebuildTokens()
 {
+    // 主色覆盖：空 = 内置默认（light 深色 / dark 浅色）；设置后统一用该色
+    const QString primaryColor = m_primary.isEmpty()
+        ? (m_mode == QStringLiteral("dark") ? QStringLiteral("#fafafa")
+                                            : QStringLiteral("#18181b"))
+        : m_primary;
+    // 前景自动对比色：感知亮度 > 0.5 → 深色文字，否则白字（shadcn: text-primary-foreground）
+    const QColor pc(primaryColor);
+    const double lum = 0.299 * pc.redF() + 0.587 * pc.greenF() + 0.114 * pc.blueF();
+    const QString primaryFg = lum > 0.5 ? QStringLiteral("#18181b") : QStringLiteral("#fafafa");
+
     if (m_mode == QStringLiteral("dark")) {
         m_tokens = {
             // 颜色语义
             { QStringLiteral("background"),            QStringLiteral("#09090b") },
             { QStringLiteral("foreground"),            QStringLiteral("#fafafa") },
-            { QStringLiteral("primary"),               QStringLiteral("#fafafa") },
-            { QStringLiteral("primaryForeground"),     QStringLiteral("#18181b") },
+            { QStringLiteral("primary"),               primaryColor },
+            { QStringLiteral("primaryForeground"),     primaryFg },
             { QStringLiteral("secondary"),             QStringLiteral("#27272a") },
             { QStringLiteral("secondaryForeground"),   QStringLiteral("#fafafa") },
             { QStringLiteral("muted"),                 QStringLiteral("#27272a") },
@@ -74,8 +100,8 @@ void ThemeManager::rebuildTokens()
             // 颜色语义
             { QStringLiteral("background"),            QStringLiteral("#ffffff") },
             { QStringLiteral("foreground"),            QStringLiteral("#09090b") },
-            { QStringLiteral("primary"),               QStringLiteral("#18181b") },
-            { QStringLiteral("primaryForeground"),     QStringLiteral("#fafafa") },
+            { QStringLiteral("primary"),               primaryColor },
+            { QStringLiteral("primaryForeground"),     primaryFg },
             { QStringLiteral("secondary"),             QStringLiteral("#f4f4f5") },
             { QStringLiteral("secondaryForeground"),   QStringLiteral("#18181b") },
             { QStringLiteral("muted"),                 QStringLiteral("#f4f4f5") },

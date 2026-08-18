@@ -8,6 +8,12 @@ qt_add_qml_module(QtShadcn
         core/thememanager.cpp
     QML_FILES
         qml/Theme/QtShadcnTheme.qml
+        qml/Theme/VariantTokens.qml
+        qml/Components/ShadcnButton.qml
+        qml/Components/ShadcnButtonGroup.qml
+        qml/Components/ShadcnToggle.qml
+        qml/Components/ShadcnToggleGroup.qml
+        qml/Components/ShadcnSpinner.qml
 )
 
 # 类型注册文件通过 <thememanager.h> 引用头文件，需暴露 core 目录

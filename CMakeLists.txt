@@ -4,7 +4,7 @@ project(QtShadcn VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml QuickControls2)
 
 qt_standard_project_setup(REQUIRES 6.5)
 # ↑ 已自动开启 AUTOMOC/AUTORCC/AUTOUIC，无需手动 set
