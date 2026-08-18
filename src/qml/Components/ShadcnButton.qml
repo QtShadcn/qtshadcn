@@ -19,6 +19,11 @@ import QtShadcn
 Button {
     id: root
 
+    // 选中时 z 提升：组内 spacing:-1 相邻按钮重叠 1px（后声明者盖前者右缘），
+    // 选中按钮盖住相邻按钮左缘，保证自身右缘描边完整（否则右缘 1px 被盖，
+    // 曾表现为"选中项右侧边框不存在"）
+    z: root._checked ? 1 : 0
+
     enum Variant { Primary, Secondary, Outline, Ghost, Destructive, Link }
     enum Size { ExtraSmall, Small, Medium, Large, Icon }
 
@@ -101,7 +106,10 @@ Button {
         bottomRightRadius: root._br
         color: root._baseBg
         border.width: root._borderW
-        border.color: root.activeFocus ? theme.ring : theme.border
+        // 选中态描边用 accentForeground（light 下深色描边圈住选中项，弥补 accent 背景对比度弱；
+        // dark 下自动变白色描边。保持 border token 语义不变）
+        border.color: root.activeFocus ? theme.ring
+            : root._checked ? theme.accentForeground : theme.border
 
         Behavior on color { ColorAnimation { duration: 120 } }
 
