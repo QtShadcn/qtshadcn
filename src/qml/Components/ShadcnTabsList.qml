@@ -49,6 +49,9 @@ Item {
         anchors.fill: parent
         anchors.margins: root._isLine ? 0 : 3
 
+        // shadcn v4: line variant 有 gap-1（4px 容器间距）；default 按钮紧贴靠自身 px-3 padding
+        spacing: root._isLine ? 4 : 0
+
         // currentIndex 双向同步用事件驱动（坑：属性绑定 root.currentIndex ↔ tabBar.currentIndex
         // 会构成绑定循环，QML 打破后 currentIndex 变静态，点击无法切换）
         onCurrentIndexChanged: {

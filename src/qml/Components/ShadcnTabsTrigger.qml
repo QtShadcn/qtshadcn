@@ -22,6 +22,10 @@ TabButton {
     // h-[calc(100%-1px)]：TabBar 内容高 26 → 25；宽度 TabBar 自动均分（flex-1）
     implicitHeight: 25
 
+    // shadcn v4: px-3（水平 12px 内边距）——按钮之间靠此 padding 提供视觉间距
+    leftPadding: 12
+    rightPadding: 12
+
     // 内容：text-sm(14px) Medium；未选中 foreground 60%，选中/hover 100%
     contentItem: Text {
         text: root.text
