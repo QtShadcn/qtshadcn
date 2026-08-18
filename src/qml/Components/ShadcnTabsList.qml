@@ -2,13 +2,15 @@ import QtQuick
 import QtQuick.Controls.Basic
 import QtShadcn
 
-// shadcn/ui 风格 Tabs 容器（基于 QQC.TabBar）
-// variant: "default"（胶囊底容器）/ "line"（下划线指示器，透明底）
+// shadcn/ui v4 TabsList（对齐官方源码）：
+//   <div role="tablist" class="... inline-flex w-fit items-center justify-center rounded-lg
+//        p-[3px] ... h-8 ... bg-muted">
+// - default：bg-muted 胶囊容器，rounded-lg(8px) + p-[3px] + h-8(32px)
+// - line：透明底（容器无背景），trigger 用下划线指示
 // 用法（与外部 StackLayout 联动）:
 //   ShadcnTabsList {
 //       id: tabs
 //       ShadcnTabsTrigger { text: "A" }
-//       ShadcnTabsTrigger { text: "B" }
 //   }
 //   StackLayout { currentIndex: tabs.currentIndex; ... }
 Item {
@@ -23,22 +25,26 @@ Item {
     QtShadcnTheme { id: theme }
     readonly property bool _isLine: variant === "line"
 
-    implicitWidth: tabBar.implicitWidth + (_isLine ? 0 : 8)
-    implicitHeight: tabBar.implicitHeight + (_isLine ? 0 : 8)
+    // 对齐官方：h-8 = 32px（含 p-[3px] 上下 → trigger 区 26px）
+    implicitWidth: tabBar.implicitWidth + (_isLine ? 0 : 6)
+    implicitHeight: 32
+    // 坑：Item 的 height 不会自动采用 implicitHeight（默认 0）——组件自包含显式高度，
+    // 否则容器/TabBar 高度塌缩、标签文字全部重叠
+    height: 32
 
-    // default variant 容器背景：bg-muted 圆角（line variant 透明）
+    // 胶囊容器（default variant）：bg-muted + rounded-lg；line 透明
     Rectangle {
         anchors.fill: parent
         visible: !root._isLine
         color: theme.muted
-        radius: theme.radius
+        radius: 8
     }
 
     TabBar {
         id: tabBar
 
         anchors.fill: parent
-        anchors.margins: root._isLine ? 0 : 4
+        anchors.margins: root._isLine ? 0 : 3
 
         // currentIndex 双向同步用事件驱动（坑：属性绑定 root.currentIndex ↔ tabBar.currentIndex
         // 会构成绑定循环，QML 打破后 currentIndex 变静态，点击无法切换）

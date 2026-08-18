@@ -19,6 +19,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.margins: 24
+        anchors.topMargin: 40
 
         spacing: theme.spacingLg
 
@@ -44,6 +45,7 @@ Item {
         id: sv
 
         anchors.top: header.bottom
+        anchors.topMargin: 20
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
@@ -55,6 +57,7 @@ Item {
         ScrollBar.vertical.policy: ScrollBar.AsNeeded
 
         Column {
+            id: outerCol
             width: sv.availableWidth
             spacing: theme.spacingLg
 
@@ -81,6 +84,7 @@ Item {
                 }
 
                 StackLayout {
+                    id: contentStack1
                     currentIndex: tabs1.currentIndex
                     width: parent.width
                     height: 80

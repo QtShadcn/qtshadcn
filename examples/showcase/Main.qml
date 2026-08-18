@@ -80,8 +80,8 @@ Window {
 
     // 启动居中：避免 macOS 窗口位置记忆导致窗口漂移出屏幕
     Component.onCompleted: {
-        x = (Screen.width - width) / 2;
-        y = (Screen.height - height) / 2;
+        x = (Screen.width - width) / 2
+        y = (Screen.height - height) / 2
     }
 
     QtShadcnTheme {
