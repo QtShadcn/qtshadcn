@@ -107,7 +107,9 @@ void ThemeManager::rebuildTokens()
             { QStringLiteral("muted"),                 QStringLiteral("#f4f4f5") },
             { QStringLiteral("mutedForeground"),       QStringLiteral("#71717a") },
             { QStringLiteral("accent"),                QStringLiteral("#f4f4f5") },
-            { QStringLiteral("accentForeground"),      QStringLiteral("#18181b") },
+            // accentForeground 需与 foreground(#09090b) 有可见差异（outline/ghost hover 文字切换反馈）；
+            // #3f3f46 在 accent 背景上对比度 ~9:1 可读（zinc-700）
+            { QStringLiteral("accentForeground"),      QStringLiteral("#3f3f46") },
             { QStringLiteral("destructive"),           QStringLiteral("#ef4444") },
             { QStringLiteral("destructiveForeground"), QStringLiteral("#fafafa") },
             { QStringLiteral("border"),                QStringLiteral("#e4e4e7") },
