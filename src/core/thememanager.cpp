@@ -108,11 +108,11 @@ void ThemeManager::rebuildTokens()
             { QStringLiteral("foreground"),            QStringLiteral("#09090b") },
             { QStringLiteral("primary"),               primaryColor },
             { QStringLiteral("primaryForeground"),     primaryFg },
-            { QStringLiteral("secondary"),             QStringLiteral("#f4f4f5") },
+            { QStringLiteral("secondary"),             QStringLiteral("#f5f5f5") },
             { QStringLiteral("secondaryForeground"),   QStringLiteral("#18181b") },
-            { QStringLiteral("muted"),                 QStringLiteral("#f4f4f5") },
+            { QStringLiteral("muted"),                 QStringLiteral("#f5f5f5") },
             { QStringLiteral("mutedForeground"),       QStringLiteral("#71717a") },
-            { QStringLiteral("accent"),                QStringLiteral("#f4f4f5") },
+            { QStringLiteral("accent"),                QStringLiteral("#f5f5f5") },
             // accentForeground 需与 foreground(#09090b) 有可见差异（outline/ghost hover 文字切换反馈）；
             // #3f3f46 在 accent 背景上对比度 ~9:1 可读（zinc-700）
             { QStringLiteral("accentForeground"),      QStringLiteral("#3f3f46") },
