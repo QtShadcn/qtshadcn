@@ -165,12 +165,10 @@ Window {
         }
     }
 
-    // ── 右侧内容区（StackLayout 静态实例化 + ScrollView 纵向滚动）──
-    // 滚动要点（之前 polish 循环的根因）：
-    // - ScrollView.contentWidth 锁定为可视宽度 availableWidth → 只纵向滚动，且
-    //   避免「内容宽度绑定 ↔ Flickable 尺寸」互相依赖的循环
-    // - StackLayout height 用 currentItem.implicitHeight（而非 implicitHeight=所有页最大），
-    //   滚动区高度 = 当前页实际高度，不产生多余空白
+    // ── 右侧内容区 ──
+    // 滚动由页面内部各自管理（参考 OverviewPage：标题固定 + 内容区 ScrollView
+    // AsNeeded，放不下才滚）—— 外层 ScrollView 曾导致 contentHeight 恒定最大页高，
+    // 内容放得下的页面也出现滚动条
     Rectangle {
         id: contentArea
 
@@ -181,50 +179,30 @@ Window {
         clip: true
         color: theme.background
 
-        QQC.ScrollView {
-            id: contentScroll
+        // 注：StackLayout 属 QQuickLayout 系列，anchors 定位不可靠；
+        // 位置用属性绑定（x/y 默认 0 = 内容区原点），宽高显式绑定
+        StackLayout {
+            id: contentStack
 
-            anchors.fill: parent
-            clip: true
-            contentWidth: availableWidth
-            contentHeight: contentStack.height
+            currentIndex: root.currentIndex
+            width: parent.width
+            height: parent.height
 
-            // 注：StackLayout 属 QQuickLayout 系列，anchors 定位不可靠；
-            // 位置用属性绑定（x/y 默认 0 = 内容区原点），宽高显式绑定
-            StackLayout {
-                id: contentStack
-
-                currentIndex: root.currentIndex
-                height: contentStack.currentItem ? contentStack.currentItem.implicitHeight : implicitHeight
-                width: contentScroll.availableWidth
-
-                OverviewPage {
-                    // 总览页卡片跳转：文件名 → 菜单 index（显式参数，隐式注入已废弃）
-                    onNavigateTo: page => root.currentIndex = root.findPageIndex(page)
-                }
-                ThemePage {
-                }
-                ButtonPage {
-                }
-                ButtonGroupPage {
-                }
-                TogglePage {
-                }
-                SpinnerPage {
-                }
-                CardPage {
+            OverviewPage {
+                // 总览页卡片跳转：文件名 → 菜单 index（显式参数，隐式注入已废弃）
+                onNavigateTo: page => root.currentIndex = root.findPageIndex(page)
             }
-            InputPage {
-            }
-            BadgePage {
-            }
-            SwitchPage {
-            }
-            TabsPage {
-            }
-            DialogPage {
-            }
-            }
+            ThemePage {}
+            ButtonPage {}
+            ButtonGroupPage {}
+            TogglePage {}
+            SpinnerPage {}
+            CardPage {}
+            InputPage {}
+            BadgePage {}
+            SwitchPage {}
+            TabsPage {}
+            DialogPage {}
         }
     }
 
