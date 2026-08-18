@@ -1,4 +1,5 @@
-<img src="./public/logo.png" width="200"/>
+# QtShadcn
+<img src="./public/logo.png" width="400"/>
 
 > A modern, composable UI component library for Qt 6 / QML, inspired by [shadcn/ui](https://ui.shadcn.com).
 
