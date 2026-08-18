@@ -1,134 +1,191 @@
 import QtQuick
+import QtQuick.Controls as QQC
+import QtQuick.Layouts
 import QtQuick.Window
 import QtShadcn
 
-// M1 验证载体：Design Token 色板页
-// - 展示全部颜色语义 token
-// - mode 切换按钮 → theme.mode = "dark"/"light" → 全局随动
+// QtShadcn 组件展示（菜单化：左侧导航 + 右侧内容区，每个组件一个页面便于维护）
 Window {
     id: root
-    width: 520
+    width: 980
     height: 720
     visible: true
-    title: "QtShadcn Showcase — Theme (M1)"
+    title: qsTr("QtShadcn Showcase")
 
     QtShadcnTheme {
         id: theme
     }
 
+    // 启动居中：避免 macOS 窗口位置记忆导致窗口漂移出屏幕
+    Component.onCompleted: {
+        x = (Screen.width - width) / 2
+        y = (Screen.height - height) / 2
+    }
+
     color: theme.background
 
-    Column {
-        anchors.centerIn: parent
-        spacing: theme.spacingLg
+    // 当前选中菜单项（0 = 总览）
+    property int currentIndex: 0
+    // 菜单项：新增组件 = 加一个页面 + 此处加一项 + StackLayout 加一页
+    property var menuItems: ["总览", "Theme", "Button", "ButtonGroup", "Toggle", "Spinner"]
 
-        // 标题
-        Text {
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: "QtShadcn — Design Tokens"
-            color: theme.foreground
-            font.pixelSize: 22
-            font.bold: true
-        }
+    // ── 左侧菜单 ──
+    Rectangle {
+        id: menuArea
+        width: 190
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        color: theme.background
 
-        // 色板：每个语义 token 一块
-        Repeater {
-            model: ["background", "foreground", "primary", "primaryForeground",
-                    "secondary", "secondaryForeground", "muted", "mutedForeground",
-                    "accent", "accentForeground", "destructive", "destructiveForeground",
-                    "border", "ring"]
-
-            delegate: Row {
-                spacing: theme.spacingMd
-
-                Rectangle {
-                    width: 48
-                    height: 24
-                    radius: theme.radius / 2
-                    border.width: 1
-                    border.color: theme.tokens["border"]
-                    color: theme.tokens[modelData]
-                }
-
-                Text {
-                    width: 180
-                    verticalAlignment: Text.AlignVCenter
-                    text: modelData
-                    color: theme.foreground
-                    font.pixelSize: 13
-                }
-
-                Text {
-                    width: 90
-                    verticalAlignment: Text.AlignVCenter
-                    text: theme.tokens[modelData]
-                    color: theme.mutedForeground
-                    font.pixelSize: 13
-                }
-            }
-        }
-
-        // 形状与间距示例
-        Row {
-            spacing: theme.spacingLg
-
-            // radius 演示：4 种圆角
-            Row {
-                spacing: theme.spacingSm
-                Repeater {
-                    model: [4, 8, 12, 16]
-                    delegate: Rectangle {
-                        width: 40
-                        height: 40
-                        radius: modelData
-                        color: theme.secondary
-                        border.width: 1
-                        border.color: theme.border
-                        Text {
-                            anchors.centerIn: parent
-                            text: modelData
-                            color: theme.secondaryForeground
-                            font.pixelSize: 11
-                        }
-                    }
-                }
-            }
-
-            // spacing 演示：间距刻度
-            Row {
-                spacing: 2
-                anchors.verticalCenter: parent.verticalCenter
-                Repeater {
-                    model: [4, 8, 12, 16, 24]
-                    delegate: Rectangle {
-                        width: modelData + 6
-                        height: 40
-                        color: theme.accent
-                        radius: 2
-                    }
-                }
-            }
-        }
-
-        // mode 切换按钮（token 自绘，M2 之前暂用原生交互）
+        // 右侧分隔线
         Rectangle {
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: 140
-            height: 36
-            radius: theme.radius
-            color: theme.primary
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            width: 1
+            color: theme.border
+        }
 
+        Column {
+            anchors.fill: parent
+            anchors.margins: 12
+            spacing: 4
+
+            // 标题区
             Text {
-                anchors.centerIn: parent
-                text: theme.mode === "dark" ? "切换到 Light" : "切换到 Dark"
-                color: theme.primaryForeground
-                font.pixelSize: 13
+                text: "QtShadcn"
+                color: theme.foreground
+                font.pixelSize: 16
+                font.bold: true
+                leftPadding: 8
+                topPadding: 8
             }
+            Text {
+                text: "Showcase"
+                color: theme.mutedForeground
+                font.pixelSize: 12
+                leftPadding: 8
+            }
+            Item { height: 12 }
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: theme.mode = theme.mode === "dark" ? "light" : "dark"
+            // 菜单项：选中 accent 背景 + accentForeground 文字；hover muted
+            Repeater {
+                model: root.menuItems
+
+                delegate: Rectangle {
+                    required property string modelData
+                    required property int index
+
+                    width: menuArea.width - 24
+                    height: 34
+                    radius: 6
+                    color: root.currentIndex === index ? theme.accent
+                        : mouseArea.containsMouse ? theme.muted : "transparent"
+
+                    Text {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 12
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: modelData
+                        color: root.currentIndex === index ? theme.accentForeground : theme.foreground
+                        font.pixelSize: 13
+                        font.bold: root.currentIndex === index
+                    }
+
+                    MouseArea {
+                        id: mouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: root.currentIndex = index
+                    }
+                }
             }
+        }
+    }
+
+    // ── 右侧内容区（StackLayout 静态实例化，切换瞬时）──
+    // 注：不用 ScrollView —— 内容宽度绑定与 Flickable 尺寸互相依赖会触发 polish 循环；
+    // 当前各页内容高度均 < 窗口高，直接铺满即可，后续页面超长再加滚动
+    Rectangle {
+        id: contentArea
+        anchors.left: menuArea.right
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        color: theme.background
+        clip: true
+
+        // 注：StackLayout 属 QQuickLayout 系列，anchors 定位不可靠（anchors.fill 只生效尺寸），
+        // 位置用属性绑定（x/y 默认 0 = contentArea 原点）
+        StackLayout {
+            id: contentStack
+            width: parent.width
+            height: parent.height
+            currentIndex: root.currentIndex
+
+            OverviewPage {}
+            ThemePage {}
+            ButtonPage {}
+            ButtonGroupPage {}
+            TogglePage {}
+            SpinnerPage {}
+        }
+    }
+
+    // ── 右上角工具条：主题色切换 + 明暗切换（全局生效，跨页面共享）──
+    Row {
+        id: themeBar
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.margins: 12
+        spacing: theme.spacingSm
+
+        // 预设主色色块（第一个「默认」= 内置色，随模式 light 深/dark 浅）
+        Repeater {
+            model: [
+                { name: "默认", color: "" },
+                { name: "蓝", color: "#2563eb" },
+                { name: "绿", color: "#16a34a" },
+                { name: "紫", color: "#7c3aed" },
+                { name: "红", color: "#dc2626" },
+                { name: "橙", color: "#ea580c" },
+            ]
+
+            delegate: Rectangle {
+                required property var modelData
+                width: 24
+                height: 24
+                radius: 6
+                // 默认色块画成左深右浅（表示内置色随模式）
+                property Gradient autoGradient: Gradient {
+                    GradientStop { position: 0.0; color: "#18181b" }
+                    GradientStop { position: 0.5; color: "#18181b" }
+                    GradientStop { position: 0.5; color: "#fafafa" }
+                    GradientStop { position: 1.0; color: "#fafafa" }
+                }
+                // 选中：ring 描边
+                border.width: ThemeManager.primary === modelData.color ? 2 : 1
+                border.color: ThemeManager.primary === modelData.color ? theme.ring : theme.border
+                gradient: modelData.color === "" ? autoGradient : null
+                color: modelData.color === "" ? "transparent" : modelData.color
+                opacity: hoverArea.hovered ? 0.75 : 1.0
+
+                MouseArea {
+                    id: hoverArea
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: ThemeManager.primary = modelData.color
+                }
+            }
+        }
+
+        // 明暗切换
+        ShadcnButton {
+            text: theme.mode === "dark" ? qsTr("☀ 浅色") : qsTr("☾ 深色")
+            variant: ShadcnButton.Variant.Outline
+            size: ShadcnButton.Size.Small
+            onClicked: theme.mode = theme.mode === "dark" ? "light" : "dark"
         }
     }
 }
