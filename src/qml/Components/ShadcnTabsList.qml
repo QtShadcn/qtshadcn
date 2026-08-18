@@ -75,5 +75,8 @@ Item {
         }
     }
     onVariantChanged: _syncVariant()
-    Component.onCompleted: _syncVariant()
+    Component.onCompleted: {
+        tabBar.currentIndex = root.currentIndex   // 强制同步，确保初始选中 TabButton.checked=true
+        _syncVariant()
+    }
 }

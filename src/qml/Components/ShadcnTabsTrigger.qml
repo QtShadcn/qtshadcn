@@ -42,23 +42,28 @@ TabButton {
 
     // 背景：对齐 shadcn v4
     // - default 选中态：light bg-background（白底）/ dark bg-input/30 + border-input
-    //   （dark 模式 background=#09090b 近黑，在 muted 灰容器上无对比度，官方用 input/30 + 边框区分）
     // - line：透明底
+    // 选中态用独立 Rectangle + opacity 动画（教训：background.color 在
+    //   transparent↔实色间 ColorAnimation 会 RGBA 插值出中间灰，点击闪烁）
     background: Rectangle {
+        id: bg
         radius: root._isLine ? 0 : 6
-        color: {
-            if (root._isLine || !root.checked)
-                return "transparent"
-            // default variant 选中态
-            if (theme.mode === "dark")
-                return Qt.rgba(theme.input.r, theme.input.g, theme.input.b, 0.3)   // dark: bg-input/30
-            return theme.background   // light: bg-background（白底）
-        }
+        color: "transparent"
         // dark 模式选中态加 border-input（官方 dark:data-active:border-input）
         border.width: root.checked && !root._isLine && theme.mode === "dark" ? 1 : 0
         border.color: theme.input
 
-        Behavior on color { ColorAnimation { duration: 120 } }
+        // 选中态背景层（opacity 动画，RGB 恒定不闪灰）
+        Rectangle {
+            anchors.fill: parent
+            radius: bg.radius
+            visible: !root._isLine
+            color: theme.mode === "dark"
+                ? Qt.rgba(theme.input.r, theme.input.g, theme.input.b, 0.3)   // dark: bg-input/30
+                : theme.background                                            // light: bg-background（白底）
+            opacity: root.checked ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 120 } }
+        }
 
         // 焦点环（focus-visible:ring）
         Rectangle {
