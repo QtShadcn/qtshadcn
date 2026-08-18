@@ -40,10 +40,25 @@ TabButton {
         Behavior on color { ColorAnimation { duration: 120 } }
     }
 
-    // 背景：default 选中态 bg-background 白底（rounded-md=6px）；line 透明
+    // 背景：对齐 shadcn v4
+    // - default 选中态：light bg-background（白底）/ dark bg-input/30 + border-input
+    //   （dark 模式 background=#09090b 近黑，在 muted 灰容器上无对比度，官方用 input/30 + 边框区分）
+    // - line：透明底
     background: Rectangle {
         radius: root._isLine ? 0 : 6
-        color: (root.checked && !root._isLine) ? theme.background : "transparent"
+        color: {
+            if (root._isLine || !root.checked)
+                return "transparent"
+            // default variant 选中态
+            if (theme.mode === "dark")
+                return Qt.rgba(theme.input.r, theme.input.g, theme.input.b, 0.3)   // dark: bg-input/30
+            return theme.background   // light: bg-background（白底）
+        }
+        // dark 模式选中态加 border-input（官方 dark:data-active:border-input）
+        border.width: root.checked && !root._isLine && theme.mode === "dark" ? 1 : 0
+        border.color: theme.input
+
+        Behavior on color { ColorAnimation { duration: 120 } }
 
         // 焦点环（focus-visible:ring）
         Rectangle {
