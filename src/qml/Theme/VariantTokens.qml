@@ -54,6 +54,45 @@ QtObject {
     // 枚举值索引数组（0 Primary / 1 Secondary / 2 Outline / 3 Ghost / 4 Destructive / 5 Link）
     readonly property var button: [primary, secondary, outline, ghost, destructive, link]
 
+    // ── ShadcnBadge 各 variant 定义 ──
+    // 与 Button 区别：destructive 用 v4 新风格「bg-destructive/10 透明底 + 红字」；
+    // outline 需指定边框色 token
+    readonly property QtObject badgeDefault: QtObject {
+        property string bg: "primary"
+        property string fg: "primaryForeground"
+        property bool border: false
+    }
+    readonly property QtObject badgeSecondary: QtObject {
+        property string bg: "secondary"
+        property string fg: "secondaryForeground"
+        property bool border: false
+    }
+    readonly property QtObject badgeDestructive: QtObject {
+        property string bg: "destructive"
+        property string fg: "destructive"
+        property bool border: false
+        property real bgAlpha: 0.10   // v4: bg-destructive/10
+    }
+    readonly property QtObject badgeOutline: QtObject {
+        property string bg: ""
+        property string fg: "foreground"
+        property bool border: true
+        property string borderToken: "border"
+    }
+    readonly property QtObject badgeGhost: QtObject {
+        property string bg: ""
+        property string fg: "foreground"
+        property bool border: false
+    }
+    readonly property QtObject badgeLink: QtObject {
+        property string bg: ""
+        property string fg: "primary"
+        property bool border: false
+    }
+
+    // 枚举值索引数组（0 Default / 1 Secondary / 2 Destructive / 3 Outline / 4 Ghost / 5 Link）
+    readonly property var badge: [badgeDefault, badgeSecondary, badgeDestructive, badgeOutline, badgeGhost, badgeLink]
+
     // checkable && checked 时的覆盖（Toggle 选中态）
     readonly property QtObject checkedOverride: QtObject {
         property string bg: "accent"

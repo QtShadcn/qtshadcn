@@ -87,6 +87,12 @@ void ThemeManager::rebuildTokens()
             { QStringLiteral("destructiveForeground"), QStringLiteral("#fafafa") },
             { QStringLiteral("border"),                QStringLiteral("#27272a") },
             { QStringLiteral("ring"),                  QStringLiteral("#fafafa") },
+            // M3: card / input / popover 系列（值对齐 shadcn 默认，= 背景/边框体系）
+            { QStringLiteral("card"),                  QStringLiteral("#09090b") },
+            { QStringLiteral("cardForeground"),        QStringLiteral("#fafafa") },
+            { QStringLiteral("input"),                 QStringLiteral("#27272a") },
+            { QStringLiteral("popover"),               QStringLiteral("#09090b") },
+            { QStringLiteral("popoverForeground"),     QStringLiteral("#fafafa") },
             // 形状与间距
             { QStringLiteral("radius"),                8 },
             { QStringLiteral("spacingXs"),             4 },
@@ -114,6 +120,12 @@ void ThemeManager::rebuildTokens()
             { QStringLiteral("destructiveForeground"), QStringLiteral("#fafafa") },
             { QStringLiteral("border"),                QStringLiteral("#e4e4e7") },
             { QStringLiteral("ring"),                  QStringLiteral("#18181b") },
+            // M3: card / input / popover 系列（值对齐 shadcn 默认，= 背景/边框体系）
+            { QStringLiteral("card"),                  QStringLiteral("#ffffff") },
+            { QStringLiteral("cardForeground"),        QStringLiteral("#09090b") },
+            { QStringLiteral("input"),                 QStringLiteral("#e4e4e7") },
+            { QStringLiteral("popover"),               QStringLiteral("#ffffff") },
+            { QStringLiteral("popoverForeground"),     QStringLiteral("#09090b") },
             // 形状与间距
             { QStringLiteral("radius"),                8 },
             { QStringLiteral("spacingXs"),             4 },

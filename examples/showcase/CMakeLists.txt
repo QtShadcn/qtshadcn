@@ -13,6 +13,12 @@ qt_add_qml_module(showcase
         pages/ButtonGroupPage.qml
         pages/TogglePage.qml
         pages/SpinnerPage.qml
+        pages/CardPage.qml
+        pages/InputPage.qml
+        pages/BadgePage.qml
+        pages/SwitchPage.qml
+        pages/TabsPage.qml
+        pages/DialogPage.qml
 )
 
 target_link_libraries(showcase PRIVATE QtShadcn Qt6::Gui Qt6::Quick Qt6::Qml Qt6::QuickControls2)

@@ -39,11 +39,17 @@ QML_IMPORT_PATH="build/src:build/examples/showcase" ./build/bin/showcase
 | 组件 | 状态 |
 |---|---|
 | Theme（Design Token 系统） | ✅ M1 完成 |
-| ShadcnButton（variant / size / disabled） | ⏳ M2 计划 |
-| Input / Card / Badge / Switch / Tabs / Dialog | ⏳ M3 计划 |
+| ShadcnButton（variant / size / disabled / loading） | ✅ M2 完成 |
+| ShadcnButtonGroup / ShadcnToggle / ShadcnToggleGroup / ShadcnSpinner | ✅ M2 完成 |
+| ShadcnCard（纯组合组件） | ✅ M3 完成 |
+| ShadcnInput（文本输入） | ✅ M3 完成 |
+| ShadcnBadge（6 variant 徽标） | ✅ M3 完成 |
+| ShadcnSwitch（开关） | ✅ M3 完成 |
+| ShadcnTabs（default / line variant） | ✅ M3 完成 |
+| ShadcnDialog（模态对话框） | ✅ M3 完成 |
 | Icon 系统（svg + IconRegistry）/ Animations | ⏳ M4 计划 |
 | Models / Table / WindowManager | ⏳ M5 计划 |
-| 文档站完善 / 发布 | ⏳ M6 计划 |
+| 文档站完善 / 发布 | 🔄 M6 进行中 |
 
 ## 🎨 用法示例
 
@@ -63,8 +69,9 @@ Rectangle {
 
 ## 📄 文档
 
-- 技术方案：[docs/technical-design.md](docs/technical-design.md)
-- 文档站（Docus）：`docs/`（模板内容，M6 替换）
+- 技术方案：[docs/content/2.design/1.technical-design.md](docs/content/2.design/1.technical-design.md)
+- 组件开发流程：[docs/content/3.development/1.component-workflow.md](docs/content/3.development/1.component-workflow.md)
+- 文档站（Docus / Nuxt Content）：`docs/`，本地预览 `cd docs && pnpm install && pnpm dev`
 
 ## License
 

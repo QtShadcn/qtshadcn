@@ -37,6 +37,30 @@ Window {
             title: "Spinner",
             page: "SpinnerPage.qml"
         },
+        {
+            title: "Card",
+            page: "CardPage.qml"
+        },
+        {
+            title: "Input",
+            page: "InputPage.qml"
+        },
+        {
+            title: "Badge",
+            page: "BadgePage.qml"
+        },
+        {
+            title: "Switch",
+            page: "SwitchPage.qml"
+        },
+        {
+            title: "Tabs",
+            page: "TabsPage.qml"
+        },
+        {
+            title: "Dialog",
+            page: "DialogPage.qml"
+        },
     ]
 
     // 文件名 → 菜单/StackLayout index（总览页卡片跳转用；未匹配回退总览）
@@ -176,6 +200,18 @@ Window {
             TogglePage {
             }
             SpinnerPage {
+            }
+            CardPage {
+            }
+            InputPage {
+            }
+            BadgePage {
+            }
+            SwitchPage {
+            }
+            TabsPage {
+            }
+            DialogPage {
             }
         }
     }

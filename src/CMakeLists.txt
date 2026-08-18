@@ -14,6 +14,24 @@ qt_add_qml_module(QtShadcn
         qml/Components/ShadcnToggle.qml
         qml/Components/ShadcnToggleGroup.qml
         qml/Components/ShadcnSpinner.qml
+        qml/Components/ShadcnCard.qml
+        qml/Components/ShadcnCardHeader.qml
+        qml/Components/ShadcnCardTitle.qml
+        qml/Components/ShadcnCardDescription.qml
+        qml/Components/ShadcnCardContent.qml
+        qml/Components/ShadcnCardFooter.qml
+        qml/Components/ShadcnInput.qml
+        qml/Components/ShadcnBadge.qml
+        qml/Components/ShadcnSwitch.qml
+        qml/Components/ShadcnTabsList.qml
+        qml/Components/ShadcnTabsTrigger.qml
+        qml/Components/ShadcnTabsContent.qml
+        qml/Components/ShadcnDialog.qml
+        qml/Components/ShadcnDialogContent.qml
+        qml/Components/ShadcnDialogHeader.qml
+        qml/Components/ShadcnDialogTitle.qml
+        qml/Components/ShadcnDialogDescription.qml
+        qml/Components/ShadcnDialogFooter.qml
 )
 
 # 类型注册文件通过 <thememanager.h> 引用头文件，需暴露 core 目录

@@ -34,6 +34,12 @@ QtObject {
     readonly property color destructiveForeground: ThemeManager.tokens["destructiveForeground"]
     readonly property color border:                ThemeManager.tokens["border"]
     readonly property color ring:                  ThemeManager.tokens["ring"]
+    // M3: card / input / popover 系列
+    readonly property color card:                  ThemeManager.tokens["card"]
+    readonly property color cardForeground:        ThemeManager.tokens["cardForeground"]
+    readonly property color input:                 ThemeManager.tokens["input"]
+    readonly property color popover:               ThemeManager.tokens["popover"]
+    readonly property color popoverForeground:     ThemeManager.tokens["popoverForeground"]
 
     // ── 形状与间距 ─────────────────────────────
     readonly property int radius: ThemeManager.tokens["radius"]
