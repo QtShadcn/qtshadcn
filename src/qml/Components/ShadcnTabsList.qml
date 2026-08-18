@@ -19,8 +19,11 @@ Item {
     property int currentIndex: 0
     property string variant: "default"   // "default" | "line"
 
-    // 子项（ShadcnTabsTrigger）自动进 tabBar
-    default property alias content: tabBar.data
+    // 子项（ShadcnTabsTrigger）自动进 tabBar.contentData
+    // 坑：必须用 contentData（Container 的内容属性），不能用 data（Item 通用属性）——
+    //    data 添加的 TabButton 成为视觉子项但不被 Container 布局识别（count=0），
+    //    全部停在 (0,0) 重叠
+    default property alias content: tabBar.contentData
 
     QtShadcnTheme { id: theme }
     readonly property bool _isLine: variant === "line"
