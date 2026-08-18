@@ -19,6 +19,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.margins: 24
+        anchors.topMargin: 40
 
         spacing: theme.spacingLg
 
@@ -44,6 +45,7 @@ Item {
         id: sv
 
         anchors.top: header.bottom
+        anchors.topMargin: 20
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
@@ -59,59 +61,33 @@ Item {
             spacing: theme.spacingLg
 
             SectionTitle {
-                text: qsTr("Default Size")
+                text: qsTr("Default Size（点击切换）")
             }
             Row {
-                spacing: theme.spacingLg
-                Row {
-                    spacing: theme.spacingSm
-                    ShadcnSwitch {}
-                    Text {
-                        text: qsTr("Off")
-                        color: theme.foreground
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
+                spacing: theme.spacingSm
+                ShadcnSwitch {
+                    id: switchDefault
                 }
-                Row {
-                    spacing: theme.spacingSm
-                    ShadcnSwitch {
-                        checked: true
-                    }
-                    Text {
-                        text: qsTr("On")
-                        color: theme.foreground
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
+                Text {
+                    text: switchDefault.checked ? qsTr("开") : qsTr("关")
+                    color: theme.foreground
+                    anchors.verticalCenter: parent.verticalCenter
                 }
             }
 
             SectionTitle {
-                text: qsTr("Small Size")
+                text: qsTr("Small Size（点击切换）")
             }
             Row {
-                spacing: theme.spacingLg
-                Row {
-                    spacing: theme.spacingSm
-                    ShadcnSwitch {
-                        size: ShadcnSwitch.Size.Small
-                    }
-                    Text {
-                        text: qsTr("Off")
-                        color: theme.foreground
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
+                spacing: theme.spacingSm
+                ShadcnSwitch {
+                    id: switchSmall
+                    size: ShadcnSwitch.Size.Small
                 }
-                Row {
-                    spacing: theme.spacingSm
-                    ShadcnSwitch {
-                        size: ShadcnSwitch.Size.Small
-                        checked: true
-                    }
-                    Text {
-                        text: qsTr("On")
-                        color: theme.foreground
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
+                Text {
+                    text: switchSmall.checked ? qsTr("开") : qsTr("关")
+                    color: theme.foreground
+                    anchors.verticalCenter: parent.verticalCenter
                 }
             }
 

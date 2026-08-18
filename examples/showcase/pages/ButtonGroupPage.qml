@@ -18,6 +18,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.margins: 24
+        anchors.topMargin: 40
 
         spacing: theme.spacingLg
 
@@ -43,6 +44,7 @@ Item {
         id: sv
 
         anchors.top: header.bottom
+        anchors.topMargin: 20
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right

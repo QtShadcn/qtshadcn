@@ -19,9 +19,12 @@ Item {
     VariantTokens { id: vt }
 
     readonly property var _v: vt.badge[root.variant] ?? vt.badge[0]
+    // 中转 color 类型：theme.tokens[..] 返回 QVariant(QString)，直接 .r/.g/.b 取不到
+    // （undefined → Qt.rgba 变黑，曾致 Secondary badge 黑底深字看不见）
+    readonly property color _bgColor: _v.bg === "" ? "transparent" : theme.tokens[_v.bg]
     readonly property color _bg: _v.bg === ""
         ? "transparent"
-        : Qt.rgba(theme.tokens[_v.bg].r, theme.tokens[_v.bg].g, theme.tokens[_v.bg].b,
+        : Qt.rgba(_bgColor.r, _bgColor.g, _bgColor.b,
                   _v.bgAlpha !== undefined ? _v.bgAlpha : 1.0)
     readonly property color _fg: theme.tokens[_v.fg]
     readonly property color _border: theme.tokens[_v.borderToken !== undefined ? _v.borderToken : "border"]
