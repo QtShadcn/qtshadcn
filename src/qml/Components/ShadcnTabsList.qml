@@ -14,7 +14,7 @@ import QtShadcn
 Item {
     id: root
 
-    property int currentIndex: tabBar.currentIndex
+    property int currentIndex: 0
     property string variant: "default"   // "default" | "line"
 
     // 子项（ShadcnTabsTrigger）自动进 tabBar
@@ -39,12 +39,20 @@ Item {
 
         anchors.fill: parent
         anchors.margins: root._isLine ? 0 : 4
-        currentIndex: root.currentIndex
-        onCurrentIndexChanged: root.currentIndex = currentIndex
+
+        // currentIndex 双向同步用事件驱动（坑：属性绑定 root.currentIndex ↔ tabBar.currentIndex
+        // 会构成绑定循环，QML 打破后 currentIndex 变静态，点击无法切换）
+        onCurrentIndexChanged: {
+            if (currentIndex !== root.currentIndex)
+                root.currentIndex = currentIndex
+        }
 
         // TabBar 内部子项同步 variant（Trigger 据此选白底或下划线样式）
         onCountChanged: root._syncVariant()
     }
+
+    // 外部设置 currentIndex（程序化切页）→ 同步给 tabBar（值相同不触发，无死循环）
+    onCurrentIndexChanged: tabBar.currentIndex = root.currentIndex
 
     // 把 root.variant 同步到每个 ShadcnTabsTrigger（Trigger 有 variant 属性）
     function _syncVariant() {
