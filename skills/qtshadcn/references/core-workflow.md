@@ -59,5 +59,22 @@ T.SomeControl {   // 或直接 QQC 基类
 1. `examples/showcase/pages/<Component>Page.qml`（全状态 + QML 用法）
 2. `Main.qml` 菜单 + StackLayout + `showcase/CMakeLists.txt` 三处同步
 3. `OverviewPage.qml` 点亮 `available: true`
-4. docs `content/2.components/<name>.md` 用法文档
+4. docs `content/2.components/<name>.md` 用法文档 + 效果图
 5. 本 skills 的 `SKILL.md` 表格 + 对应 reference 更新
+
+## 生成组件效果图（截图）
+
+```bash
+make build
+bash scripts/screenshot.sh          # 批量给所有组件页出图
+# 更慢更稳（复杂页面）：
+SHOT_DELAY_MS=2000 SLEEP=1 bash scripts/screenshot.sh
+```
+
+- 脚本自动遍历 `examples/showcase/pages/*Page.qml`，调用 showcase 的 `--screenshot` 模式，
+  输出到 `docs/public/images/components/<slug>.png`（kebab-case，与文档 slug 对齐）
+- 截图只截右侧内容区（grab `contentStack.itemAt(currentIndex)`，不含左侧菜单）
+- offscreen 平台下 `grabToImage` 走软件渲染，无需 GUI（沙箱可跑）
+- 文档引用：`![<组件> 效果展示](/images/components/<slug>.png)`
+- 新增组件 Page 后，重跑脚本即可刷新对应图（无需手动处理命名）
+

@@ -39,6 +39,19 @@ QML_IMPORT_PATH="$(pwd)/build/src:$(pwd)/build/examples/showcase" \
 - **直接跑 `build/bin/showcase` 前必须先 `make build`**，否则加载旧 qmlcache（报旧错误）
 - 改 QML 源后必须重新 `make build` 才生效
 
+## 组件截图（生成文档效果图）
+
+```bash
+make build
+bash scripts/screenshot.sh
+```
+
+- showcase 支持 `--screenshot <Page文件名> --output <png>`：切到目标页面 → 等渲染 →
+  `grabToImage` 抓右侧内容区（`contentStack.itemAt(currentIndex)`，不含左侧菜单）→ 保存 → 退出
+- `scripts/screenshot.sh` 遍历所有 `*Page.qml` 批量出图到 `docs/public/images/components/<slug>.png`
+- 可调参数：`SHOT_DELAY_MS`（渲染等待，默认 1200ms）、`SLEEP`（张间间隔，默认 0.6s）
+- offscreen 平台 `grabToImage` 走软件渲染，无需 GUI
+
 ## showcase 结构
 
 - 主界面 `examples/showcase/Main.qml`：左侧菜单（可滚动）+ 右侧 StackLayout 页面
