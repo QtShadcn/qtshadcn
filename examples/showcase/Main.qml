@@ -245,13 +245,14 @@ Window {
         color: theme.background
 
         // 注：StackLayout 属 QQuickLayout 系列，anchors 定位不可靠；
-        // 位置用属性绑定（x/y 默认 0 = 内容区原点），宽高显式绑定
+        // 位置用属性绑定（x/y 默认 0 = 内容区原点），宽高显式绑定。
+        // height 减 16：内容区底部留白（页面滚到底不与窗口底边贴死）
         StackLayout {
             id: contentStack
 
             currentIndex: root.currentIndex
             width: parent.width
-            height: parent.height
+            height: parent.height - 16
 
             OverviewPage {
                 // 总览页卡片跳转：文件名 → 菜单 index（显式参数，隐式注入已废弃）
