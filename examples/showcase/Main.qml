@@ -142,12 +142,16 @@ Window {
             color: theme.border
             width: 1
         }
+        // 标题区（固定，不随菜单滚动）
         Column {
-            anchors.fill: parent
+            id: menuHeader
+
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
             anchors.margins: 12
             spacing: 4
 
-            // 标题区
             Text {
                 color: theme.foreground
                 font.bold: true
@@ -165,36 +169,61 @@ Window {
             Item {
                 height: 12
             }
+        }
 
-            // 菜单项：选中 accent 背景 + accentForeground 文字；hover muted
-            Repeater {
-                model: root.menuItems
+        // 菜单项（可滚动：组件多了窗口放不下时滚）
+        QQC.ScrollView {
+            id: menuScroll
 
-                delegate: Rectangle {
-                    required property int index
-                    required property var modelData
+            anchors.top: menuHeader.bottom
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.leftMargin: 12
+            anchors.rightMargin: 12
+            anchors.bottomMargin: 12
 
-                    color: root.currentIndex === index ? theme.accent : mouseArea.containsMouse ? theme.muted : "transparent"
-                    height: 34
-                    radius: 6
-                    width: menuArea.width - 24
+            clip: true
+            leftPadding: 0
+            rightPadding: 0
+            topPadding: 0
+            bottomPadding: 0
+            QQC.ScrollBar.vertical.policy: QQC.ScrollBar.AsNeeded
 
-                    Text {
-                        anchors.left: parent.left
-                        anchors.leftMargin: 12
-                        anchors.verticalCenter: parent.verticalCenter
-                        color: root.currentIndex === index ? theme.accentForeground : theme.foreground
-                        font.bold: root.currentIndex === index
-                        font.pixelSize: 13
-                        text: modelData.title
-                    }
-                    MouseArea {
-                        id: mouseArea
+            Column {
+                width: menuScroll.availableWidth
+                spacing: 4
 
-                        anchors.fill: parent
-                        hoverEnabled: true
+                // 菜单项：选中 accent 背景 + accentForeground 文字；hover muted
+                Repeater {
+                    model: root.menuItems
 
-                        onClicked: root.currentIndex = index
+                    delegate: Rectangle {
+                        required property int index
+                        required property var modelData
+
+                        color: root.currentIndex === index ? theme.accent : mouseArea.containsMouse ? theme.muted : "transparent"
+                        height: 34
+                        radius: 6
+                        width: parent.width
+
+                        Text {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 12
+                            anchors.verticalCenter: parent.verticalCenter
+                            color: root.currentIndex === index ? theme.accentForeground : theme.foreground
+                            font.bold: root.currentIndex === index
+                            font.pixelSize: 13
+                            text: modelData.title
+                        }
+                        MouseArea {
+                            id: mouseArea
+
+                            anchors.fill: parent
+                            hoverEnabled: true
+
+                            onClicked: root.currentIndex = index
+                        }
                     }
                 }
             }
