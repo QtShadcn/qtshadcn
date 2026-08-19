@@ -109,6 +109,23 @@ Window {
         return 0;
     }
 
+    // 截图当前页面（只截右侧内容区，不含左侧菜单）→ 保存 PNG → 退出
+    // 由 main.cpp 的 --screenshot 模式调用（offscreen 下 grabToImage 离屏渲染）
+    function capturePage(outputPath) {
+        // StackLayout 没有 currentItem 属性，用 itemAt(currentIndex) 取当前页面
+        var item = contentStack.itemAt(contentStack.currentIndex);
+        if (!item) {
+            console.warn("capturePage: no current page");
+            Qt.exit(1);
+            return;
+        }
+        item.grabToImage(function(result) {
+            var ok = result.saveToFile(outputPath);
+            console.log(ok ? ("saved " + outputPath) : ("save failed " + outputPath));
+            Qt.exit(ok ? 0 : 1);
+        });
+    }
+
     color: theme.background
     height: 720
     title: qsTr("QtShadcn Showcase")

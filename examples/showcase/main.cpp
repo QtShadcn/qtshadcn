@@ -37,8 +37,7 @@ int main(int argc, char *argv[])
 
     if (parser.isSet(shotOpt)) {
         QObject *root = engine.rootObjects().first();
-        QQuickWindow *win = qobject_cast<QQuickWindow *>(root);
-        if (!win) {
+        if (!qobject_cast<QQuickWindow *>(root)) {
             qWarning() << "root object is not a QQuickWindow";
             return 1;
         }
@@ -57,19 +56,11 @@ int main(int argc, char *argv[])
         }
         root->setProperty("currentIndex", idx.toInt());
 
-        // 等一帧渲染 + 页面切换完成后截图
-        QTimer::singleShot(600, win, [win, out]() {
-            QImage img = win->grabWindow();
-            if (img.isNull()) {
-                qWarning() << "grabWindow returned null image";
-                exit(1);
-            }
-            if (!img.save(out)) {
-                qWarning() << "failed to save" << out;
-                exit(1);
-            }
-            qInfo() << "saved" << out << img.size();
-            exit(0);
+        // 等待足够长（复杂页面如 Icon 网格/表单需多帧布局）后，
+        // 调 Main.qml 的 capturePage（grab 当前页面 item，只截右侧内容区，不含菜单）
+        const int delayMs = qEnvironmentVariableIntValue("SHOT_DELAY_MS");
+        QTimer::singleShot(delayMs > 0 ? delayMs : 1200, root, [root, out]() {
+            QMetaObject::invokeMethod(root, "capturePage", Q_ARG(QVariant, out));
         });
 
         return app.exec();
