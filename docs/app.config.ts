@@ -5,7 +5,9 @@ export default defineAppConfig({
     image: '/logo.png',
     header: {
       title: 'QtShadcn',
-      logo: '/logo.png',
+      // 头部用纯图标 logo8.png，避免与 title 文字重复；
+      // 带产品名横幅 logo.png 保留给 social share（image）
+      logo: '/logo8.png',
       showLinkIcon: true,
       fluid: true,
     },
