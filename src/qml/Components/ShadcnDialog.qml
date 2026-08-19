@@ -5,7 +5,8 @@ import QtShadcn
 
 // shadcn/ui 风格对话框
 // 基于 QQC.Dialog（Basic style），modal=true；替换 background + Overlay
-// 对齐 shadcn v4：max-w-md(448px) + bg-popover + 圆角 + 阴影 + 居中 + fade/zoom 动画
+// 对齐 shadcn Base UI 默认产物：max-w-sm(384px) + bg-popover + 圆角 14 + 阴影 + 居中 + fade/zoom 动画
+// 内置 ghost 关闭钮（showCloseButton 控制，默认 true）
 //
 // 用法:
 //   ShadcnDialog {
@@ -13,7 +14,7 @@ import QtShadcn
 //       ShadcnDialogContent {
 //           ShadcnDialogHeader { ShadcnDialogTitle { ... }; ShadcnDialogDescription { ... } }
 //           Text { ... }
-//           ShadcnDialogFooter { ShadcnButton { ... } }
+//           footer: ShadcnDialogFooter { ShadcnButton { ... } }
 //       }
 //   }
 //   ShadcnButton { text: "Open"; onClicked: dialog.open() }
@@ -23,23 +24,26 @@ Dialog {
     modal: true
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
+    // 是否显示 ghost 关闭钮（对齐 shadcn showCloseButton，默认 true）
+    property bool showCloseButton: true
+
     // 隐藏 QQC 默认 header（让用户用 ShadcnDialogHeader）
     header: Item { visible: false }
     // 不使用 QQC 标准按钮（用 ShadcnDialogFooter + ShadcnButton）
     standardButtons: Dialog.NoButton
 
-    // 居中 + 宽度约束：max-w-md(448px)，小屏取 (parent.width - 32)
+    // 居中 + 宽度约束：max-w-sm(384px)，小屏取 (parent.width - 32)
     // 注意：不能依赖 implicitWidth —— ShadcnDialogContent.width 绑定 parent.width，
     // 会形成「content 等 dialog 宽 / dialog 宽等 content 隐式宽」的循环，导致宽度塌缩成 ~24px
-    width: Math.min((parent && parent.width ? parent.width : 100000) - 32, 448)
+    width: Math.min((parent && parent.width ? parent.width : 100000) - 32, 384)
     // 居中由 Popup 默认处理（anchors.centerIn: Overlay.overlay）
 
     QtShadcnTheme { id: theme }
 
-    // 背景：bg-popover + 圆角 + 1px ring + shadow-xl
+    // 背景：bg-popover + 圆角(14, rounded-xl) + 1px ring + shadow-xl
     background: Rectangle {
         color: theme.popover
-        radius: theme.radius
+        radius: 14
         border.width: 1
         border.color: Qt.rgba(theme.foreground.r, theme.foreground.g, theme.foreground.b,
                               theme.mode === "dark" ? 0.10 : 0.05)
@@ -50,6 +54,19 @@ Dialog {
             shadowBlur: 0.5
             shadowVerticalOffset: 8
             shadowColor: Qt.rgba(0, 0, 0, 0.18)
+        }
+    }
+
+    // 关闭钮（ghost）由 ShadcnDialogContent 渲染（保持 contentItem 单子节点，
+    // 否则 QQC Popup 无法从 content.implicitHeight 推导 dialog 高度）。
+    // 这里把 showCloseButton 透传下去，并把 content.closeClicked 接到 close()。
+    Component.onCompleted: {
+        for (var i = 0; i < contentItem.children.length; ++i) {
+            var child = contentItem.children[i]
+            if (typeof child.closeClicked === "function") {
+                child.closeClicked.connect(root.close)
+                child.showCloseButton = Qt.binding(function() { return root.showCloseButton })
+            }
         }
     }
 

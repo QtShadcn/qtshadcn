@@ -33,7 +33,7 @@ Item {
         Text {
             width: parent.width
             wrapMode: Text.WordWrap
-            text: qsTr("基于 QQC.Dialog，max-w-md(448px) + bg-popover + 阴影 + 居中 + fade/zoom 100ms 动画。")
+            text: qsTr("基于 QQC.Dialog，max-w-sm(384px) + 圆角 14 + bg-popover + 阴影 + 居中 + fade/zoom 100ms 动画；内置关闭钮、可滚动 body、底部 sticky muted footer。")
             color: theme.mutedForeground
             font.pixelSize: 13
         }
@@ -79,7 +79,7 @@ Item {
                             text: qsTr("这是一个基于 shadcn/ui 规范的对话框组件。")
                         }
                     }
-                    ShadcnDialogFooter {
+                    footer: ShadcnDialogFooter {
                         ShadcnButton {
                             text: qsTr("关闭")
                             variant: ShadcnButton.Variant.Outline
@@ -113,7 +113,7 @@ Item {
                             text: qsTr("此操作不可撤销。账户所有数据将被永久删除。")
                         }
                     }
-                    ShadcnDialogFooter {
+                    footer: ShadcnDialogFooter {
                         ShadcnButton {
                             text: qsTr("取消")
                             variant: ShadcnButton.Variant.Outline
@@ -160,7 +160,7 @@ Item {
                             placeholderText: qsTr("my-awesome-project")
                         }
                     }
-                    ShadcnDialogFooter {
+                    footer: ShadcnDialogFooter {
                         ShadcnButton {
                             text: qsTr("取消")
                             variant: ShadcnButton.Variant.Outline
@@ -169,6 +169,48 @@ Item {
                         ShadcnButton {
                             text: qsTr("创建")
                             onClicked: formDialog.close()
+                        }
+                    }
+                }
+            }
+
+            // ── 可滚动对话框（长内容：body 滚动、footer 固定）──
+            SectionTitle {
+                text: qsTr("Scrollable（长内容）")
+            }
+            ShadcnButton {
+                text: qsTr("打开长内容对话框")
+                onClicked: scrollDialog.open()
+            }
+            ShadcnDialog {
+                id: scrollDialog
+                ShadcnDialogContent {
+                    ShadcnDialogHeader {
+                        ShadcnDialogTitle {
+                            text: qsTr("条款与条件")
+                        }
+                        ShadcnDialogDescription {
+                            text: qsTr("内容过长时 body 滚动，底部 footer 固定不动。")
+                        }
+                    }
+                    Column {
+                        width: parent.width
+                        spacing: theme.spacingSm
+                        Repeater {
+                            model: 20
+                            Text {
+                                width: parent.width
+                                wrapMode: Text.WordWrap
+                                text: qsTr("第 %1 条：示例条款文本，用于演示对话框内容过长时 body 滚动、footer 固定的效果。").arg(index + 1)
+                                color: theme.popoverForeground
+                                font.pixelSize: 13
+                            }
+                        }
+                    }
+                    footer: ShadcnDialogFooter {
+                        ShadcnButton {
+                            text: qsTr("同意")
+                            onClicked: scrollDialog.close()
                         }
                     }
                 }
@@ -183,7 +225,7 @@ Item {
                 font.family: Qt.platform.os === "osx" ? "Menlo" : "monospace"
                 font.pixelSize: 12
                 color: theme.mutedForeground
-                text: "ShadcnDialog {\n    id: dialog\n    ShadcnDialogContent {\n        ShadcnDialogHeader {\n            ShadcnDialogTitle { text: \"...\" }\n            ShadcnDialogDescription { text: \"...\" }\n        }\n        ShadcnDialogFooter { ShadcnButton { ... } }\n    }\n}\n// open: dialog.open()"
+                text: "ShadcnDialog {\n    id: dialog\n    ShadcnDialogContent {\n        ShadcnDialogHeader {\n            ShadcnDialogTitle { text: \"...\" }\n            ShadcnDialogDescription { text: \"...\" }\n        }\n        footer: ShadcnDialogFooter { ShadcnButton { ... } }\n    }\n}\n// open: dialog.open()"
             }
         }
     }
