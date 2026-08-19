@@ -32,11 +32,18 @@ Dialog {
     // 不使用 QQC 标准按钮（用 ShadcnDialogFooter + ShadcnButton）
     standardButtons: Dialog.NoButton
 
+    // 关键：T.Dialog 默认 padding=12 会把 contentItem 向内缩 12px，
+    // 导致 footer muted 条四周出现 12px 空隙（看起来像「外面有 padding、很丑」）。
+    // 设 0 让内容铺满背景，footer/body 的留白由组件自己用 _pad 控制。
+    padding: 0
+
     // 居中 + 宽度约束：max-w-sm(384px)，小屏取 (parent.width - 32)
     // 注意：不能依赖 implicitWidth —— ShadcnDialogContent.width 绑定 parent.width，
     // 会形成「content 等 dialog 宽 / dialog 宽等 content 隐式宽」的循环，导致宽度塌缩成 ~24px
     width: Math.min((parent && parent.width ? parent.width : 100000) - 32, 384)
-    // 居中由 Popup 默认处理（anchors.centerIn: Overlay.overlay）
+    // 相对整个窗口居中（而非声明它的 page）——showcase 有左侧导航栏，
+    // 默认 Popup 居中在 page（右侧内容区）会让对话框相对全窗口偏右
+    anchors.centerIn: Overlay.overlay
 
     QtShadcnTheme { id: theme }
 

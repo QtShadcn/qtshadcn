@@ -20,6 +20,9 @@ Item {
     property bool showCloseButton: true
     // 关闭钮被点击时发出，由 ShadcnDialog 接去 close()
     signal closeClicked()
+    // 内容区高度上限（超过则 body 滚动、footer 固定）；默认 85% 屏高，可自定义。
+    // 例：ShadcnDialogContent { maxHeight: 360 ; ... } 让长文本弹窗固定更矮
+    property int maxHeight: (Screen.height > 0 ? Screen.height : 600) * 0.85
 
     QtShadcnTheme { id: theme }
 
@@ -32,13 +35,11 @@ Item {
     // → 又读回 bodyColumn.implicitWidth，造成 ScrollView 的 implicitWidth binding loop）。
     width: parent ? parent.width : 320
 
-    // 高度上限：超出视口 85% 时 body 滚动、footer 固定（兜底 600 防 offscreen Screen=0）
     // 关键：bodyColumn.height 固定为自身 implicitHeight，使「自然内容高度」独立于滚动视口高度，
     // 避免 ScrollView 把 bodyColumn 压成视口高 → childrenRect 失真 → implicitHeight 塌缩的循环
-    readonly property int _maxH: (Screen.height > 0 ? Screen.height : 600) * 0.85
     readonly property int _footerH: footerSlot.children.length > 0
         ? footerSlot.childrenRect.height + _pad * 2 : 0
-    implicitHeight: Math.min(bodyColumn.implicitHeight + _pad * 2 + _footerH, _maxH)
+    implicitHeight: Math.min(bodyColumn.implicitHeight + _pad * 2 + _footerH, maxHeight)
 
     // ── 可滚动 body ──────────────────────────────
     ScrollView {
@@ -79,9 +80,14 @@ Item {
         visible: _footerH > 0
         clip: true
 
-        // bg-muted/50（半透明 muted 底）
+        // bg-muted/50（半透明 muted 底）——仅底部圆角（与对话框 rounded-b-xl 对齐），
+        // 顶边直角：向上延展 _radius 再靠 footerBar.clip 把顶角裁掉，避免顶部出现难看圆角缺口
         Rectangle {
-            anchors.fill: parent
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.top: parent.top
+            anchors.topMargin: -_radius
             color: theme.muted
             opacity: 0.5
             radius: _radius
