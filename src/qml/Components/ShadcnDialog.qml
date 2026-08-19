@@ -28,8 +28,10 @@ Dialog {
     // 不使用 QQC 标准按钮（用 ShadcnDialogFooter + ShadcnButton）
     standardButtons: Dialog.NoButton
 
-    // 居中 + 宽度约束：max-w-md(448px) / 小屏 (parent.width - 32)
-    width: Math.min(implicitWidth, 448)
+    // 居中 + 宽度约束：max-w-md(448px)，小屏取 (parent.width - 32)
+    // 注意：不能依赖 implicitWidth —— ShadcnDialogContent.width 绑定 parent.width，
+    // 会形成「content 等 dialog 宽 / dialog 宽等 content 隐式宽」的循环，导致宽度塌缩成 ~24px
+    width: Math.min((parent && parent.width ? parent.width : 100000) - 32, 448)
     // 居中由 Popup 默认处理（anchors.centerIn: Overlay.overlay）
 
     QtShadcnTheme { id: theme }

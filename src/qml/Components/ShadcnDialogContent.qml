@@ -9,15 +9,20 @@ Item {
 
     QtShadcnTheme { id: theme }
 
-    // 宽度撑满 Dialog 内部（Dialog 宽 448，内容占 448 - 0 = 448，留给内边距由 column 自身）
+    readonly property int _pad: 24   // shadcn p-6
+    readonly property int _gap: 24   // shadcn gap-6
+
+    // 宽度撑满 Dialog 内部；implicit 尺寸必须显式包含上下 padding，否则 footer 被裁切
     width: parent ? parent.width : implicitWidth
-    implicitHeight: contentColumn.implicitHeight
+    implicitWidth: contentColumn.implicitWidth
+    implicitHeight: contentColumn.implicitHeight + _pad * 2
 
     Column {
         id: contentColumn
 
-        anchors.fill: parent
-        anchors.margins: 24   // shadcn p-6
-        spacing: 24           // shadcn gap-6
+        x: _pad
+        y: _pad
+        width: parent.width - _pad * 2
+        spacing: _gap
     }
 }
