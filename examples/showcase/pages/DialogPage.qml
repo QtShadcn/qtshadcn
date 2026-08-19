@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Window 2.15
 import QtShadcn
 
 // Dialog 页：基础对话框、确认对话框、自定义内容
@@ -82,11 +83,13 @@ Item {
                     footer: ShadcnDialogFooter {
                         ShadcnButton {
                             text: qsTr("关闭")
+                            size: ShadcnButton.Size.Small
                             variant: ShadcnButton.Variant.Outline
                             onClicked: basicDialog.close()
                         }
                         ShadcnButton {
                             text: qsTr("好的")
+                            size: ShadcnButton.Size.Small
                             onClicked: basicDialog.close()
                         }
                     }
@@ -116,11 +119,13 @@ Item {
                     footer: ShadcnDialogFooter {
                         ShadcnButton {
                             text: qsTr("取消")
+                            size: ShadcnButton.Size.Small
                             variant: ShadcnButton.Variant.Outline
                             onClicked: confirmDialog.close()
                         }
                         ShadcnButton {
                             text: qsTr("确认删除")
+                            size: ShadcnButton.Size.Small
                             variant: ShadcnButton.Variant.Destructive
                             onClicked: confirmDialog.close()
                         }
@@ -163,11 +168,13 @@ Item {
                     footer: ShadcnDialogFooter {
                         ShadcnButton {
                             text: qsTr("取消")
+                            size: ShadcnButton.Size.Small
                             variant: ShadcnButton.Variant.Outline
                             onClicked: formDialog.close()
                         }
                         ShadcnButton {
                             text: qsTr("创建")
+                            size: ShadcnButton.Size.Small
                             onClicked: formDialog.close()
                         }
                     }
@@ -185,6 +192,11 @@ Item {
             ShadcnDialog {
                 id: scrollDialog
                 ShadcnDialogContent {
+                    // 固定高度演示滚动：固高 420，且不超过页面(窗口)高 - 边距，避免弹窗超出页面
+                    maxHeight: {
+                        var wh = (Window.window && Window.window.height > 0) ? Window.window.height : 800
+                        return Math.max(160, Math.min(420, wh - 48))
+                    }
                     ShadcnDialogHeader {
                         ShadcnDialogTitle {
                             text: qsTr("条款与条件")
@@ -210,6 +222,7 @@ Item {
                     footer: ShadcnDialogFooter {
                         ShadcnButton {
                             text: qsTr("同意")
+                            size: ShadcnButton.Size.Small
                             onClicked: scrollDialog.close()
                         }
                     }

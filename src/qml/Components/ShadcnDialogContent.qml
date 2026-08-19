@@ -20,9 +20,12 @@ Item {
     property bool showCloseButton: true
     // 关闭钮被点击时发出，由 ShadcnDialog 接去 close()
     signal closeClicked()
-    // 内容区高度上限（超过则 body 滚动、footer 固定）；默认 85% 屏高，可自定义。
+    // 内容区高度上限（超过则 body 滚动、footer 固定）；可自定义。
+    // 以「所在窗口(页面)高度」为基准（0.85×窗口高），而非整块屏幕，
+    // 避免高分屏/多屏下 Screen.height 过大导致弹窗超出页面；窗口未就绪时回退 Screen。
     // 例：ShadcnDialogContent { maxHeight: 360 ; ... } 让长文本弹窗固定更矮
-    property int maxHeight: (Screen.height > 0 ? Screen.height : 600) * 0.85
+    property int maxHeight: ((root.Window.window && root.Window.window.height > 0)
+        ? root.Window.window.height : (Screen.height > 0 ? Screen.height : 600)) * 0.85
 
     QtShadcnTheme { id: theme }
 
