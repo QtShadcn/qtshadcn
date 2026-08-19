@@ -30,6 +30,20 @@ ComboBox {
     implicitHeight: _ctrlH
     implicitWidth: 200
 
+    // 内容边距：左右 px-3(12)；上下 0（contentItem 占满全高 → 文本垂直居中）。
+    // 注意不能四边都设 12（如 padding: 12）——上下也 12 会让 contentItem 高只剩
+    // 36-24=12px，文本被挤压偏上（表现为"没垂直居中"）
+    leftPadding: 12
+    rightPadding: 12
+    topPadding: 0
+    bottomPadding: 0
+
+    // 隐藏 QQC 默认 indicator（double-arrow.png）——右侧图标用自定义 chevron-down，
+    // 否则会同时出现两个箭头；visible:false 也让模板的 left/rightPadding 不再叠加 indicator 宽度
+    indicator: Item {
+        visible: false
+    }
+
     // ── trigger 内容：文本 + chevron-down ──
     contentItem: RowLayout {
         spacing: 6   // gap-1.5
@@ -129,10 +143,14 @@ ComboBox {
             ? (Array.isArray(root.model) ? String(modelData) : String(model[root.textRole]))
             : String(modelData)
 
-        contentItem: RowLayout {
-            spacing: 6
+        // contentItem 用 anchors 而非 RowLayout：RowLayout 高度取决于内容，
+        // 在 QQC contentItem 区里垂直居中不可靠；QQC 会把 contentItem 填满 content 区，
+        // anchors.verticalCenter 保证文本/图标绝对垂直居中
+        contentItem: Item {
             Text {
-                Layout.fillWidth: true
+                anchors.left: parent.left
+                anchors.right: arrow.left
+                anchors.verticalCenter: parent.verticalCenter
                 text: parent.parent._text
                 color: (parent.parent.hovered || parent.parent.highlighted)
                        ? theme.accentForeground : theme.foreground
@@ -141,7 +159,9 @@ ComboBox {
                 elide: Text.ElideRight
             }
             ShadcnIcon {
-                Layout.alignment: Qt.AlignVCenter
+                id: arrow
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
                 visible: parent.parent.highlighted || parent.parent.checked
                 name: "check"
                 size: 14
