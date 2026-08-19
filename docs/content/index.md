@@ -6,9 +6,11 @@ seo:
 
 <!-- 首页用 HTML + Tailwind 布局（docus 5 不渲染 u-page-hero/u-page-section 等旧演示组件） -->
 
-<div class="py-14 text-center">
+<div class="py-16 text-center">
 
-  <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+  <img src="/logo8.png" alt="QtShadcn" class="mx-auto mb-6 h-16 w-16" />
+
+  <h1 class="bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent dark:from-white dark:to-gray-400">
     QtShadcn
   </h1>
 
@@ -24,16 +26,16 @@ seo:
     <a href="/getting-started/introduction"
        class="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-5 py-2.5 text-base font-medium text-white transition-colors hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200">
       快速开始
-      <UIcon name="i-lucide-arrow-right" class="size-5" aria-hidden="true" />
+      <Icon name="i-lucide-arrow-right" class="size-5" aria-hidden="true"></Icon>
     </a>
     <a href="/components/button"
        class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-5 py-2.5 text-base font-medium text-gray-900 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800">
-      <UIcon name="i-lucide-blocks" class="size-5" aria-hidden="true" />
+      <Icon name="i-lucide-blocks" class="size-5" aria-hidden="true"></Icon>
       组件文档
     </a>
     <a href="https://github.com/QtShadcn/qtshadcn" target="_blank"
        class="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-5 py-2.5 text-base font-medium text-gray-900 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-white dark:hover:bg-gray-800">
-      <UIcon name="i-simple-icons-github" class="size-5" aria-hidden="true" />
+      <Icon name="i-simple-icons-github" class="size-5" aria-hidden="true"></Icon>
       GitHub
     </a>
   </div>
@@ -44,74 +46,27 @@ seo:
 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
   <div class="rounded-xl border border-gray-200 bg-gray-50/50 p-6 dark:border-gray-800 dark:bg-gray-900/50">
-    <UIcon name="i-lucide-palette" class="size-6 text-gray-700 dark:text-gray-300" aria-hidden="true" />
+    <Icon name="i-lucide-palette" class="size-6 text-gray-700 dark:text-gray-300" aria-hidden="true"></Icon>
     <h3 class="mt-3 text-base font-semibold text-gray-900 dark:text-white">Design Token 驱动</h3>
     <p class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">语义化颜色 / 圆角 / 间距 token，`theme.mode = "dark"` 全局随动，所有组件绑定自动刷新。</p>
   </div>
 
   <div class="rounded-xl border border-gray-200 bg-gray-50/50 p-6 dark:border-gray-800 dark:bg-gray-900/50">
-    <UIcon name="i-lucide-blocks" class="size-6 text-gray-700 dark:text-gray-300" aria-hidden="true" />
+    <Icon name="i-lucide-blocks" class="size-6 text-gray-700 dark:text-gray-300" aria-hidden="true"></Icon>
     <h3 class="mt-3 text-base font-semibold text-gray-900 dark:text-white">可组合组件</h3>
     <p class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">组件像积木一样组合：Card = CardHeader / CardContent / CardFooter，对齐 shadcn/ui 的组合方式。</p>
   </div>
 
   <div class="rounded-xl border border-gray-200 bg-gray-50/50 p-6 dark:border-gray-800 dark:bg-gray-900/50">
-    <UIcon name="i-lucide-keyboard" class="size-6 text-gray-700 dark:text-gray-300" aria-hidden="true" />
+    <Icon name="i-lucide-keyboard" class="size-6 text-gray-700 dark:text-gray-300" aria-hidden="true"></Icon>
     <h3 class="mt-3 text-base font-semibold text-gray-900 dark:text-white">复用 Quick Controls</h3>
     <p class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">键盘导航、Focus、无障碍开箱即得。只替换视觉与组件 API，不重新发明基础行为。</p>
   </div>
 
   <div class="rounded-xl border border-gray-200 bg-gray-50/50 p-6 dark:border-gray-800 dark:bg-gray-900/50">
-    <UIcon name="i-lucide-cpu" class="size-6 text-gray-700 dark:text-gray-300" aria-hidden="true" />
+    <Icon name="i-lucide-cpu" class="size-6 text-gray-700 dark:text-gray-300" aria-hidden="true"></Icon>
     <h3 class="mt-3 text-base font-semibold text-gray-900 dark:text-white">C++ 能力层</h3>
     <p class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">Theme 引擎、Icon 注册、Model 等能力层落在 C++，不退化成一个「QML 样式库」。</p>
-  </div>
-
-</div>
-
-## 组件总览
-
-<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-
-  <a href="/components/button" class="group rounded-xl border border-gray-200 p-6 transition-colors hover:border-gray-300 hover:bg-gray-50/50 dark:border-gray-800 dark:hover:border-gray-700 dark:hover:bg-gray-900/50">
-    <UIcon name="i-lucide-mouse-pointer-click" class="size-6 text-gray-700 dark:text-gray-300" aria-hidden="true" />
-    <h3 class="mt-3 text-base font-semibold text-gray-900 dark:text-white">Button 系列 <span class="ml-1 align-middle text-xs font-medium text-green-600 dark:text-green-400">M2 ✅</span></h3>
-    <p class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">ShadcnButton（6 variant × 5 size + 图标）+ ButtonGroup / Toggle / ToggleGroup / Spinner。</p>
-    <span class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-gray-700 transition-colors group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">查看文档 <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" /></span>
-  </a>
-
-  <a href="/components/input" class="group rounded-xl border border-gray-200 p-6 transition-colors hover:border-gray-300 hover:bg-gray-50/50 dark:border-gray-800 dark:hover:border-gray-700 dark:hover:bg-gray-900/50">
-    <UIcon name="i-lucide-type" class="size-6 text-gray-700 dark:text-gray-300" aria-hidden="true" />
-    <h3 class="mt-3 text-base font-semibold text-gray-900 dark:text-white">表单控件 <span class="ml-1 align-middle text-xs font-medium text-green-600 dark:text-green-400">M3 ✅</span></h3>
-    <p class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">Input / InputGroup / Textarea / Checkbox / RadioGroup / Switch / Slider / Progress / Select。</p>
-    <span class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-gray-700 transition-colors group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">查看文档 <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" /></span>
-  </a>
-
-  <a href="/components/card" class="group rounded-xl border border-gray-200 p-6 transition-colors hover:border-gray-300 hover:bg-gray-50/50 dark:border-gray-800 dark:hover:border-gray-700 dark:hover:bg-gray-900/50">
-    <UIcon name="i-lucide-credit-card" class="size-6 text-gray-700 dark:text-gray-300" aria-hidden="true" />
-    <h3 class="mt-3 text-base font-semibold text-gray-900 dark:text-white">布局与反馈 <span class="ml-1 align-middle text-xs font-medium text-green-600 dark:text-green-400">M3 ✅</span></h3>
-    <p class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">Card（Header/Content/Footer）、Badge（6 variant 胶囊）、Dialog（Base UI 规格 + 可滚动 body）。</p>
-    <span class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-gray-700 transition-colors group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">查看文档 <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" /></span>
-  </a>
-
-  <a href="/components/tabs" class="group rounded-xl border border-gray-200 p-6 transition-colors hover:border-gray-300 hover:bg-gray-50/50 dark:border-gray-800 dark:hover:border-gray-700 dark:hover:bg-gray-900/50">
-    <UIcon name="i-lucide-layout-grid" class="size-6 text-gray-700 dark:text-gray-300" aria-hidden="true" />
-    <h3 class="mt-3 text-base font-semibold text-gray-900 dark:text-white">导航 <span class="ml-1 align-middle text-xs font-medium text-green-600 dark:text-green-400">M3 ✅</span></h3>
-    <p class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">Tabs（TabsList / TabsTrigger / TabsContent，default / line 双 variant）。</p>
-    <span class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-gray-700 transition-colors group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">查看文档 <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" /></span>
-  </a>
-
-  <a href="/components/icon" class="group rounded-xl border border-gray-200 p-6 transition-colors hover:border-gray-300 hover:bg-gray-50/50 dark:border-gray-800 dark:hover:border-gray-700 dark:hover:bg-gray-900/50">
-    <UIcon name="i-lucide-sparkles" class="size-6 text-gray-700 dark:text-gray-300" aria-hidden="true" />
-    <h3 class="mt-3 text-base font-semibold text-gray-900 dark:text-white">Icon 系统 <span class="ml-1 align-middle text-xs font-medium text-green-600 dark:text-green-400">M4 ✅</span></h3>
-    <p class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">ShadcnIcon + C++ IconRegistry：74 个 lucide 图标本地内置 + 远程兜底，随主题变色。</p>
-    <span class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-gray-700 transition-colors group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white">查看文档 <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" /></span>
-  </a>
-
-  <div class="rounded-xl border border-dashed border-gray-300 p-6 dark:border-gray-700">
-    <UIcon name="i-lucide-circle-dashed" class="size-6 text-gray-400 dark:text-gray-500" aria-hidden="true" />
-    <h3 class="mt-3 text-base font-semibold text-gray-900 dark:text-white">Animations / Models</h3>
-    <p class="mt-2 text-sm leading-6 text-gray-500 dark:text-gray-400">预置动画封装、C++ Models / Table、WindowManager（M4~M5 规划中）。</p>
   </div>
 
 </div>
