@@ -20,6 +20,13 @@ qt_add_qml_module(showcase
         pages/TabsPage.qml
         pages/DialogPage.qml
         pages/IconPage.qml
+        pages/TextareaPage.qml
+        pages/CheckboxPage.qml
+        pages/RadioPage.qml
+        pages/SliderPage.qml
+        pages/ProgressPage.qml
+        pages/SelectPage.qml
+        pages/InputGroupPage.qml
         pages/FormPage.qml
 )
 

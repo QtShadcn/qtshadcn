@@ -66,6 +66,34 @@ Window {
             page: "IconPage.qml"
         },
         {
+            title: "Textarea",
+            page: "TextareaPage.qml"
+        },
+        {
+            title: "Checkbox",
+            page: "CheckboxPage.qml"
+        },
+        {
+            title: "Radio",
+            page: "RadioPage.qml"
+        },
+        {
+            title: "Slider",
+            page: "SliderPage.qml"
+        },
+        {
+            title: "Progress",
+            page: "ProgressPage.qml"
+        },
+        {
+            title: "Select",
+            page: "SelectPage.qml"
+        },
+        {
+            title: "InputGroup",
+            page: "InputGroupPage.qml"
+        },
+        {
             title: "Form",
             page: "FormPage.qml"
         },
@@ -212,6 +240,13 @@ Window {
             TabsPage {}
             DialogPage {}
             IconPage {}
+            TextareaPage {}
+            CheckboxPage {}
+            RadioPage {}
+            SliderPage {}
+            ProgressPage {}
+            SelectPage {}
+            InputGroupPage {}
             FormPage {}
         }
     }
