@@ -27,12 +27,10 @@ Item {
     readonly property int _gap: 16        // gap-4
     readonly property int _radius: 14     // rounded-xl（Base UI 默认；overlay 比 inline 容器略大）
 
-    // 宽度撑满 Dialog；implicit 宽度取 body / footer 中较宽者 + 左右 padding
-    width: parent ? parent.width : implicitWidth
-    implicitWidth: Math.max(
-        bodyColumn.implicitWidth + _pad * 2,
-        footerSlot.childrenRect.width + _pad * 2
-    )
+    // 宽度由 Dialog 固定（384，见 ShadcnDialog），content 直接撑满 parent.width。
+    // 注意：不能在此绑定 implicitWidth（会读 bodyColumn.implicitWidth → ScrollView.implicitWidth
+    // → 又读回 bodyColumn.implicitWidth，造成 ScrollView 的 implicitWidth binding loop）。
+    width: parent ? parent.width : 320
 
     // 高度上限：超出视口 85% 时 body 滚动、footer 固定（兜底 600 防 offscreen Screen=0）
     // 关键：bodyColumn.height 固定为自身 implicitHeight，使「自然内容高度」独立于滚动视口高度，
@@ -50,7 +48,10 @@ Item {
         anchors.top: parent.top
         anchors.bottom: footerBar.top
         anchors.bottomMargin: _footerH > 0 ? 0 : _pad
-        contentWidth: width
+        // 注意：不要写 contentWidth: width —— 那会让内容宽=整个 ScrollView 宽(含 padding 区)，
+        // 比 body 实际可用宽多出一截 → ScrollView 误判需要水平滚动条 → 滚动条又挤占可用宽 →
+        // 反复横跳，产生 implicitWidth binding loop（并表现为「左右乱跳/不支持滑动」）。
+        // 去掉后由 bodyColumn.width(=availableWidth) 决定内容宽，无水平溢出、无水平滚动条。
         contentHeight: bodyColumn.implicitHeight
         clip: true
         topPadding: _pad
