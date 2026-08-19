@@ -31,6 +31,8 @@ Button {
     property int variant: ShadcnButton.Variant.Primary
     property int size: ShadcnButton.Size.Medium
     property bool loading: false
+    // 图标（lucide 名，见 IconRegistry.names）：显示在文本左侧（shadcn 带图标按钮）
+    property string iconName: ""
 
     // ShadcnButtonGroup / ShadcnToggleGroup 内部使用：'only' | 'first' | 'middle' | 'last'
     property string _groupPosition: "only"
@@ -202,6 +204,16 @@ Button {
                 Layout.preferredWidth: 14
                 Layout.preferredHeight: 14
                 visible: root.loading
+                color: root._baseFg
+            }
+
+            // 图标（iconName，shadcn 带图标按钮：svg size-4=16px，随文字色）
+            ShadcnIcon {
+                Layout.preferredWidth: 16
+                Layout.preferredHeight: 16
+                visible: root.iconName.length > 0
+                name: root.iconName
+                size: 16
                 color: root._baseFg
             }
 

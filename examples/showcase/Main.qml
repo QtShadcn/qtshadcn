@@ -387,7 +387,8 @@ Window {
         ShadcnButton {
             anchors.verticalCenter: parent.verticalCenter
             size: ShadcnButton.Size.Small
-            text: theme.mode === "dark" ? qsTr("☀") : qsTr("☾")
+            // 明暗切换用 lucide 图标（dark 模式显示 sun → 点按切回 light）
+            iconName: theme.mode === "dark" ? "sun" : "moon"
             variant: ShadcnButton.Variant.Outline
 
             onClicked: {
