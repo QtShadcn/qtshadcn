@@ -43,15 +43,18 @@ QML_IMPORT_PATH="$(pwd)/build/src:$(pwd)/build/examples/showcase" \
 
 ```bash
 make build
-bash scripts/screenshot.sh                    # 全量
+bash scripts/screenshot.sh                    # 全量（默认裁掉左侧菜单 190px）
 bash scripts/screenshot.sh button select      # 只截指定组件（slug 或 Page 名）
+CROP="" bash scripts/screenshot.sh            # 不裁剪（整窗 980×720）
+CROP="x,y,w,h" bash scripts/screenshot.sh     # 自定义裁剪矩形
 ```
 
-- showcase 支持 `--screenshot <Page文件名> --output <png>`：切到目标页面 → 等渲染 →
-  `grabToImage` 抓右侧内容区（`contentStack.itemAt(currentIndex)`，不含左侧菜单）→ 保存 → 退出
+- showcase 支持 `--screenshot <Page文件名> --output <png> [--crop x,y,w,h]`：
+  切到目标页面 → 等渲染 → `grabWindow()` 整窗截图 → 可选 `QImage::copy` 裁剪 → 保存 → 退出
 - `scripts/screenshot.sh` 遍历所有 `*Page.qml` 批量出图到 `docs/public/images/components/<slug>.png`
+- `CROP` 环境变量默认 `190,0,790,704`（裁掉左侧 190px 菜单）；`CROP=""` 整窗；裁剪坐标可自行指定
 - 可调参数：`SHOT_DELAY_MS`（渲染等待，默认 1200ms）、`SLEEP`（张间间隔，默认 0.6s）
-- offscreen 平台 `grabToImage` 走软件渲染，无需 GUI
+- offscreen 平台 `grabWindow` 走软件渲染，无需 GUI
 
 ## showcase 结构
 

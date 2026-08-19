@@ -7,6 +7,8 @@
 #   ./scripts/screenshot.sh button select textarea     # 只截指定组件（slug 或 Page 名）
 #   SHOWCASE=... ./scripts/screenshot.sh               # 自定义二进制
 #   OUT_DIR=... ./scripts/screenshot.sh                # 自定义输出
+#   CROP="190,0,790,704" ./scripts/screenshot.sh       # 裁剪矩形 x,y,w,h（默认裁左侧菜单）
+#   CROP="" ./scripts/screenshot.sh                    # 不裁剪（整窗 980×720）
 #   SHOT_DELAY_MS=2000 SLEEP=1 ./scripts/screenshot.sh # 更慢更稳（复杂页面）
 #   SKIP_OVERVIEW=1 ./scripts/screenshot.sh            # 跳过表单等非纯组件页
 
@@ -16,6 +18,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SHOWCASE="${SHOWCASE:-$ROOT/build/bin/showcase}"
 OUT_DIR="${OUT_DIR:-$ROOT/docs/public/images/components}"
 QML_IMPORT_PATH="${QML_IMPORT_PATH:-$ROOT/build/src:$ROOT/build/examples/showcase}"
+# 裁剪矩形 "x,y,width,height"：默认裁掉左侧菜单（190px）；设 "" 或 "0,0,980,720" = 整窗
+CROP="${CROP-190,0,790,704}"
 
 # 位置参数 = 只截这些组件（slug 如 button/button-group 或 Page 名如 ButtonPage.qml）；为空 = 全量
 TARGETS=("$@")
@@ -56,7 +60,11 @@ for page_file in "$ROOT/examples/showcase/pages/"*Page.qml; do
     esac
 
     printf "  → %-16s (%s) " "$name" "$page_name"
-    if out_line="$("$SHOWCASE" --screenshot "$page_name" --output "$out" 2>&1)"; then
+    crop_arg=()
+    if [ -n "$CROP" ]; then
+        crop_arg=(--crop "$CROP")
+    fi
+    if out_line="$("$SHOWCASE" --screenshot "$page_name" --output "$out" "${crop_arg[@]}" 2>&1)"; then
         if [[ "$out_line" == *saved* ]]; then
             echo "✓  $out"
             ok=$((ok+1))
