@@ -39,6 +39,10 @@ public:
     // 按名字取单个 token（QML 侧可直接 ThemeManager.tokens["xxx"]）
     Q_INVOKABLE QVariant token(const QString &name) const;
 
+    // 截图模式（offscreen 离屏渲染）：QTSHADCN_SCREENSHOT=1 时为 true。
+    // 供 QML 组件据此关闭 GPU 特效（MultiEffect 阴影等软件渲染不支持，否则内容空白）
+    Q_INVOKABLE bool screenshotMode() const;
+
 signals:
     void modeChanged();
     void primaryChanged();

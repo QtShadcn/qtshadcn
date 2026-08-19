@@ -24,9 +24,11 @@ CROP="${CROP-190,0,790,704}"
 # 位置参数 = 只截这些组件（slug 如 button/button-group 或 Page 名如 ButtonPage.qml）；为空 = 全量
 TARGETS=("$@")
 
-# offscreen 平台：grabToImage 走软件渲染，无需 GUI
+# offscreen 平台：grabWindow 走软件渲染，无需 GUI
 export QT_QPA_PLATFORM=offscreen
 export QML_IMPORT_PATH="$QML_IMPORT_PATH"
+# 截图模式：关闭 GPU 特效（MultiEffect 阴影软件渲染不支持，否则 Card 等内容空白）
+export QTSHADCN_SCREENSHOT=1
 # 渲染等待时长（ms）：复杂页面（Icon 网格/表单）需多帧，默认 1200，可加大保证完整
 export SHOT_DELAY_MS="${SHOT_DELAY_MS:-1200}"
 # 每张之间间隔（s）：确保前一个进程完全退出 + 磁盘写完成

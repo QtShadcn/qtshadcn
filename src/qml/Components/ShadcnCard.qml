@@ -44,8 +44,10 @@ Rectangle {
     border.color: Qt.rgba(theme.foreground.r, theme.foreground.g, theme.foreground.b,
                           theme.mode === "dark" ? 0.10 : 0.05)
 
-    // 阴影：shadow-md（dark 加深，light 浅黑）
-    layer.enabled: true
+    // 阴影：shadow-md（dark 加深，light 浅黑）。
+    // 注意：layer + MultiEffect 是 GPU 特效，offscreen 软件渲染不支持 → 卡片内容空白；
+    // 截图模式（QTSHADCN_SCREENSHOT=1）下关闭 layer，正常 GUI 运行不受影响
+    layer.enabled: !ThemeManager.screenshotMode()
     layer.effect: MultiEffect {
         shadowEnabled: true
         shadowBlur: 0.4

@@ -34,6 +34,10 @@ int main(int argc, char *argv[])
     parser.addOption(cropOpt);
     parser.process(app);
 
+    // 截图模式：通知 QML 关闭 GPU 特效（MultiEffect 阴影等，offscreen 软件渲染不支持）
+    if (parser.isSet(shotOpt))
+        qputenv("QTSHADCN_SCREENSHOT", "1");
+
     QQmlApplicationEngine engine;
     engine.loadFromModule("Showcase", "Main");
     if (engine.rootObjects().isEmpty())

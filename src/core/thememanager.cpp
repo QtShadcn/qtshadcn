@@ -55,6 +55,11 @@ QVariant ThemeManager::token(const QString &name) const
     return m_tokens.value(name);
 }
 
+bool ThemeManager::screenshotMode() const
+{
+    return qEnvironmentVariableIntValue("QTSHADCN_SCREENSHOT") == 1;
+}
+
 // 语义对齐 shadcn/ui 默认主题：
 // light  https://ui.shadcn.com/themes 默认值
 // dark   同源 dark 默认值
