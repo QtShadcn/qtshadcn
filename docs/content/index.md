@@ -27,6 +27,16 @@ Design Token → Component → Composition → Theme。QML 管 UI，C++ 管能�
   :::u-button
   ---
   color: neutral
+  size: xl
+  to: /components/button
+  trailing-icon: i-lucide-blocks
+  ---
+  组件文档
+  :::
+
+  :::u-button
+  ---
+  color: neutral
   icon: simple-icons-github
   size: xl
   to: https://github.com/QtShadcn/qtshadcn
@@ -88,29 +98,67 @@ Design Token → Component → Composition → Theme。QML 管 UI，C++ 管能�
 
 ::u-page-section
 #title
-组件状态
+组件总览
 
 #features
   :::u-page-feature
   ---
-  icon: i-lucide-check-circle-2
-  ---
-  #title
-  Theme（M1 ✅）
-  
-  #description
-  Design Token 系统：light/dark 两套 token，声明式 `QtShadcnTheme` 入口。
-  :::
-
-  :::u-page-feature
-  ---
-  icon: i-lucide-check-circle-2
+  icon: i-lucide-mouse-pointer-click
+  to: /components/button
   ---
   #title
   Button 系列（M2 ✅）
   
   #description
-  ShadcnButton（6 variant × 5 size）+ ButtonGroup / Toggle / ToggleGroup / Spinner。
+  `ShadcnButton`（6 variant × 5 size + 图标）+ ButtonGroup / Toggle / ToggleGroup / Spinner。
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-type
+  to: /components/input
+  ---
+  #title
+  表单控件（M3 ✅）
+  
+  #description
+  Input / InputGroup / Textarea / Checkbox / RadioGroup / Switch / Slider / Progress / Select。
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-credit-card
+  to: /components/card
+  ---
+  #title
+  布局与反馈（M3 ✅）
+  
+  #description
+  Card（Header/Content/Footer）、Badge（6 variant 胶囊）、Dialog（Base UI 规格 + 可滚动 body）。
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-layout-grid
+  to: /components/tabs
+  ---
+  #title
+  导航（M3 ✅）
+  
+  #description
+  Tabs（TabsList / TabsTrigger / TabsContent，default / line 双 variant）。
+  :::
+
+  :::u-page-feature
+  ---
+  icon: i-lucide-sparkles
+  to: /components/icon
+  ---
+  #title
+  Icon 系统（M4 ✅）
+  
+  #description
+  `ShadcnIcon` + C++ `IconRegistry`：74 个 lucide 图标本地内置 + 远程兜底，随主题变色。
   :::
 
   :::u-page-feature
@@ -118,9 +166,9 @@ Design Token → Component → Composition → Theme。QML 管 UI，C++ 管能�
   icon: i-lucide-circle-dashed
   ---
   #title
-  M3+（计划中）
+  Animations / Models（规划中）
   
   #description
-  Input / Card / Badge / Switch / Tabs / Dialog；Icon 系统、Models / Table、WindowManager。
+  预置动画封装、C++ Models / Table、WindowManager（M4~M5）。
   :::
 ::
