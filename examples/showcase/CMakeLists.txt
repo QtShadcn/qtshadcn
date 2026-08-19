@@ -20,6 +20,7 @@ qt_add_qml_module(showcase
         pages/TabsPage.qml
         pages/DialogPage.qml
         pages/IconPage.qml
+        pages/FormPage.qml
 )
 
 target_link_libraries(showcase PRIVATE QtShadcn Qt6::Gui Qt6::Quick Qt6::Qml Qt6::QuickControls2)

@@ -65,6 +65,10 @@ Window {
             title: "Icon",
             page: "IconPage.qml"
         },
+        {
+            title: "Form",
+            page: "FormPage.qml"
+        },
     ]
 
     // 文件名 → 菜单/StackLayout index（总览页卡片跳转用；未匹配回退总览）
@@ -208,6 +212,7 @@ Window {
             TabsPage {}
             DialogPage {}
             IconPage {}
+            FormPage {}
         }
     }
 

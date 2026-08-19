@@ -35,6 +35,14 @@ qt_add_qml_module(QtShadcn
         qml/Components/ShadcnDialogTitle.qml
         qml/Components/ShadcnDialogDescription.qml
         qml/Components/ShadcnDialogFooter.qml
+        qml/Components/ShadcnTextarea.qml
+        qml/Components/ShadcnCheckbox.qml
+        qml/Components/ShadcnRadio.qml
+        qml/Components/ShadcnRadioGroup.qml
+        qml/Components/ShadcnSlider.qml
+        qml/Components/ShadcnProgress.qml
+        qml/Components/ShadcnSelect.qml
+        qml/Components/ShadcnInputGroup.qml
 )
 
 # 图标资源：qt_add_qml_module 的 RESOURCES 会把 qrc 当单个文件嵌套进
