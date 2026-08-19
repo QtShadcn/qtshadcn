@@ -5,9 +5,13 @@ export default defineAppConfig({
     image: '/logo.png',
     header: {
       title: 'QtShadcn',
-      // 头部用纯图标 logo8.png，避免与 title 文字重复；
+      // docus 5 的 header.logo 必须是对象 { light, dark }（string 不生效 → hasLogo=false，
+      // 只显示 title 文字）。用纯图标 logo8.png，避免与 title 文字重复；
       // 带产品名横幅 logo.png 保留给 social share（image）
-      logo: '/logo8.png',
+      logo: {
+        light: '/logo8.png',
+        dark: '/logo8.png',
+      },
       showLinkIcon: true,
       fluid: true,
     },
