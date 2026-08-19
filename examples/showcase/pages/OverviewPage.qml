@@ -291,25 +291,25 @@ Item {
                         name: "Input Group",
                         description: "输入框前后缀组合",
                         page: "InputGroupPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Textarea",
                         description: "多行文本输入",
                         page: "TextareaPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Checkbox",
                         description: "复选框",
                         page: "CheckboxPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Radio Group",
                         description: "单选按钮组",
-                        page: "RadioGroupPage.qml",
-                        available: false
+                        page: "RadioPage.qml",
+                        available: true
                     },
                     {
                         name: "Switch",
@@ -321,19 +321,25 @@ Item {
                         name: "Slider",
                         description: "滑块",
                         page: "SliderPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Progress",
                         description: "进度条",
                         page: "ProgressPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Select",
                         description: "选择器",
                         page: "SelectPage.qml",
-                        available: false
+                        available: true
+                    },
+                    {
+                        name: "Form",
+                        description: "组合表单示例",
+                        page: "FormPage.qml",
+                        available: true
                     }
                 ]
             }
@@ -555,7 +561,7 @@ Item {
                         name: "Icon",
                         description: "IconRegistry / SVG",
                         page: "IconPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Animations",
