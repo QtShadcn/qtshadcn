@@ -75,6 +75,13 @@ Item {
                 }
             }
 
+            SectionTitle { text: qsTr("maxHeight 内部滚动（内容超高钳高）") }
+            ShadcnTextarea {
+                width: 340
+                maxHeight: 120
+                text: qsTr("第一行\n第二行\n第三行\n第四行\n第五行\n第六行\n第七行\n第八行\n第九行\n第十行\n超过 maxHeight 后内部滚动")
+            }
+
             SectionTitle { text: qsTr("QML 用法") }
             Text {
                 width: parent.width
