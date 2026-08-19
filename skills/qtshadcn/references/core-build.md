@@ -43,7 +43,8 @@ QML_IMPORT_PATH="$(pwd)/build/src:$(pwd)/build/examples/showcase" \
 
 ```bash
 make build
-bash scripts/screenshot.sh
+bash scripts/screenshot.sh                    # 全量
+bash scripts/screenshot.sh button select      # 只截指定组件（slug 或 Page 名）
 ```
 
 - showcase 支持 `--screenshot <Page文件名> --output <png>`：切到目标页面 → 等渲染 →

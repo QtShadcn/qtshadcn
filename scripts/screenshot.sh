@@ -3,10 +3,12 @@
 # 依赖：showcase 已 make build（offscreen 平台下 grabWindow 渲染）。
 #
 # 用法：
-#   ./scripts/screenshot.sh                            # 默认路径
+#   ./scripts/screenshot.sh                            # 全量
+#   ./scripts/screenshot.sh button select textarea     # 只截指定组件（slug 或 Page 名）
 #   SHOWCASE=... ./scripts/screenshot.sh               # 自定义二进制
 #   OUT_DIR=... ./scripts/screenshot.sh                # 自定义输出
-#   SKIP_OVERVIEW=1 ./scripts/screenshot.sh           # 跳过总览/表单等非纯组件页
+#   SHOT_DELAY_MS=2000 SLEEP=1 ./scripts/screenshot.sh # 更慢更稳（复杂页面）
+#   SKIP_OVERVIEW=1 ./scripts/screenshot.sh            # 跳过表单等非纯组件页
 
 set -euo pipefail
 
@@ -14,6 +16,9 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SHOWCASE="${SHOWCASE:-$ROOT/build/bin/showcase}"
 OUT_DIR="${OUT_DIR:-$ROOT/docs/public/images/components}"
 QML_IMPORT_PATH="${QML_IMPORT_PATH:-$ROOT/build/src:$ROOT/build/examples/showcase}"
+
+# 位置参数 = 只截这些组件（slug 如 button/button-group 或 Page 名如 ButtonPage.qml）；为空 = 全量
+TARGETS=("$@")
 
 # offscreen 平台：grabToImage 走软件渲染，无需 GUI
 export QT_QPA_PLATFORM=offscreen
@@ -33,6 +38,17 @@ for page_file in "$ROOT/examples/showcase/pages/"*Page.qml; do
     name="$(basename "$page_file" Page.qml | sed -E 's/([a-z0-9])([A-Z])/\1-\2/g' | tr 'A-Z' 'a-z')"
     [ "$name" = "radio" ] && name="radio-group"
     out="$OUT_DIR/$name.png"
+
+    # 指定了目标组件则只截这些（slug 或 Page 名匹配）
+    if [ "${#TARGETS[@]}" -gt 0 ]; then
+        match=0
+        for t in "${TARGETS[@]}"; do
+            if [ "$t" = "$name" ] || [ "$t" = "$page_name" ] || [ "$t" = "${page_name%.qml}" ]; then
+                match=1; break
+            fi
+        done
+        [ "$match" -eq 0 ] && continue
+    fi
 
     # 跳过表单等非纯组件页（默认全截；SKIP_OVERVIEW=1 跳过）
     case "$name" in

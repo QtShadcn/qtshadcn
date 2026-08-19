@@ -66,7 +66,9 @@ T.SomeControl {   // 或直接 QQC 基类
 
 ```bash
 make build
-bash scripts/screenshot.sh          # 批量给所有组件页出图
+bash scripts/screenshot.sh <new-component-slug>   # 只截新增组件（如 bash scripts/screenshot.sh accordion）
+# 或全量刷新：
+bash scripts/screenshot.sh
 # 更慢更稳（复杂页面）：
 SHOT_DELAY_MS=2000 SLEEP=1 bash scripts/screenshot.sh
 ```
