@@ -21,9 +21,9 @@ export default defineAppConfig({
     url: 'https://github.com/QtShadcn/qtshadcn',
     branch: 'main',
   },
-  socials: {
-    github: 'https://github.com/QtShadcn/qtshadcn',
-  },
+  // socials: {
+  //   github: 'https://github.com/QtShadcn/qtshadcn',
+  // },
   docus: {
     locale: 'en',
     colorMode: '',
