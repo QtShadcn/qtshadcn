@@ -20,6 +20,11 @@ CheckBox {
     // ── 方框（16px，rounded 5px）──
     indicator: Rectangle {
         id: box
+        // 关键：override indicator 后必须自带定位（QQC 模板的 x/y 在默认组件内部，
+        // 不自动应用；否则方框停在 (0,0)，与文本错位不对齐）
+        x: root.text ? (root.mirrored ? root.width - width - root.rightPadding : root.leftPadding)
+                     : root.leftPadding + (root.availableWidth - width) / 2
+        y: root.topPadding + (root.availableHeight - height) / 2
         implicitWidth: 16
         implicitHeight: 16
         radius: 5   // shadcn rounded-[5px]
