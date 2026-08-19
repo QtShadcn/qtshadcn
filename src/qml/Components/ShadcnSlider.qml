@@ -1,72 +1,76 @@
 import QtQuick
 import QtQuick.Controls.Basic
-import QtQuick.Effects
 import QtShadcn
 
-// shadcn/ui 风格滑块
-// 基于 QQC.Slider（Basic style），对齐 shadcn slider 规范：
-// - track：h-2(8px) rounded-full bg-input/90；已填充 range：bg-primary
-// - thumb：16×24 白色胶囊 + ring-1 ring-black/10 + shadow；hover/focus ring-4 ring-ring/30
+// shadcn/ui 风格滑块（对齐 Base UI 默认变体，用户贴的 DOM 为权威）：
+// - 容器：mx-auto w-full max-w-xs（宽度由外部决定）
+// - track：h-1(4px) rounded-full bg-muted（非 luma 的 h-2 bg-input）
+// - range：bg-primary，从 0 起宽 = position%
+// - thumb：size-3(12px) 正圆 rounded-full border border-ring bg-white；
+//   hover/focus/active ring-3 ring-ring/50；thumb 中心对齐位置（translate: -50% -50%）
 //
 // 用法:
-//   ShadcnSlider { from: 0; to: 100; value: 40; onValueChanged: ... }
+//   ShadcnSlider { from: 0; to: 100; value: 40 }
 Slider {
     id: root
 
     QtShadcnTheme { id: theme }
 
-    implicitHeight: 16   // 高度容纳 thumb（h-4）
+    // 关键：QQC Basic Slider 默认 padding:6 → track 被缩进 6px、两侧出现空白。
+    // 设 0 让 track 撑满（shadcn w-full），留白由外部容器控制
+    padding: 0
 
-    // ── 轨道（track + range）──
+    // 整体高度 = thumb(12) + hover ring 外扩(3×2) = 18，避免 ring 被裁切；
+    // 外部可直接设置 height 覆盖（track/thumb 基于 availableHeight 自适应居中）
+    implicitHeight: 18
+
+    // 轨道厚度（shadcn h-1 = 4px；可自定义）
+    property int trackThickness: 4
+
+    // ── 轨道（track bg-muted + range bg-primary）──
+    // 注意：override background 后模板的定位绑定不自动应用，必须自带 x/y/width
     background: Rectangle {
-        implicitWidth: 200
-        implicitHeight: 8    // h-2
-        radius: 4            // rounded-full
-        color: Qt.rgba(theme.input.r, theme.input.g, theme.input.b, 0.9)   // bg-input/90
+        x: root.leftPadding
+        y: root.topPadding + (root.availableHeight - height) / 2   // 垂直居中
+        width: root.availableWidth                                 // 撑满（padding=0 → 全宽）
+        height: root.trackThickness
+        radius: root.trackThickness / 2                            // rounded-full
+        color: theme.muted                                         // bg-muted
 
-        // 已填充部分（shadcn cn-slider-range bg-primary）
+        // 已填充部分（range bg-primary，从 0 起）
         Rectangle {
             width: root.visualPosition * parent.width
             height: parent.height
-            radius: 4
+            radius: parent.radius
             color: theme.primary
             visible: root.visualPosition > 0
         }
     }
 
-    // ── 滑块（thumb）：16×24 白色胶囊 ──
+    // ── 滑块（thumb：12px 正圆，中心对齐位置）──
     handle: Rectangle {
         id: thumb
-        // 关键：override handle 后必须自带定位（QQC 默认模板的 x/y 不会自动应用），
-        // 否则 thumb 停在 (0,0) 不动
-        x: root.leftPadding + root.visualPosition * (root.availableWidth - width)
-        y: root.topPadding + root.availableHeight / 2 - height / 2
-        implicitWidth: 24
-        implicitHeight: 16
-        radius: 8   // rounded-full（胶囊）
+        // override handle 必须自带定位（QQC 模板不自动应用）：
+        // 中心对齐（等效 translate: -50% -50%）；padding=0 时 availableWidth = width
+        x: root.visualPosition * root.availableWidth - width / 2
+        y: root.topPadding + (root.availableHeight - height) / 2
+        implicitWidth: 12
+        implicitHeight: 12
+        radius: 6   // rounded-full（正圆）
 
         color: "white"
         border.width: 1
-        border.color: Qt.rgba(0, 0, 0, 0.1)   // ring-black/10
+        border.color: theme.ring   // border border-ring
 
-        // shadow-md：胶囊投影
-        layer.enabled: true
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowBlur: 0.4
-            shadowVerticalOffset: 2
-            shadowColor: Qt.rgba(0, 0, 0, 0.25)
-        }
-
-        // hover / focus：ring-4 ring-ring/30（shadcn hover:ring-4 focus-visible:ring-4）
+        // hover / focus / pressed：ring-3 ring-ring/50（shadcn hover/focus-visible/active:ring-3）
         Rectangle {
             anchors.fill: parent
-            anchors.margins: -4
-            radius: 12
-            visible: root.hovered || root.activeFocus
+            anchors.margins: -3
+            radius: 9
+            visible: root.hovered || root.activeFocus || root.pressed
             color: "transparent"
-            border.width: 4
-            border.color: Qt.rgba(theme.ring.r, theme.ring.g, theme.ring.b, 0.3)
+            border.width: 3
+            border.color: Qt.rgba(theme.ring.r, theme.ring.g, theme.ring.b, 0.5)
         }
     }
 
