@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls as QQC
+import QtQuick.Effects
 import QtQuick.Layouts
 import QtQuick.Window
 import QtShadcn
@@ -384,15 +385,165 @@ Window {
                 }
             }
         }
-        ShadcnButton {
+        // 明暗切换：纯图标 24×24（与上方色块对齐），hover muted
+        Rectangle {
+            id: modeBtn
+            width: 24
+            height: 24
+            radius: 6
             anchors.verticalCenter: parent.verticalCenter
-            size: ShadcnButton.Size.Small
-            // 明暗切换用 lucide 图标（dark 模式显示 sun → 点按切回 light）
-            iconName: theme.mode === "dark" ? "sun" : "moon"
-            variant: ShadcnButton.Variant.Outline
+            color: modeHover.containsMouse ? theme.muted : "transparent"
 
-            onClicked: {
-                theme.mode = theme.mode === "dark" ? "light" : "dark";
+            ShadcnIcon {
+                anchors.centerIn: parent
+                name: theme.mode === "dark" ? "sun" : "moon"
+                size: 16
+                color: theme.foreground
+            }
+            MouseArea {
+                id: modeHover
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: theme.mode = theme.mode === "dark" ? "light" : "dark"
+            }
+        }
+
+        // 颜色选择器：调色板图标 → 弹出面板（扩展色板 + 自定义 hex）
+        Rectangle {
+            id: paletteBtn
+            width: 24
+            height: 24
+            radius: 6
+            anchors.verticalCenter: parent.verticalCenter
+            color: paletteHover.containsMouse || colorPopup.opened ? theme.muted : "transparent"
+
+            ShadcnIcon {
+                anchors.centerIn: parent
+                name: "palette"
+                size: 16
+                color: theme.foreground
+            }
+            MouseArea {
+                id: paletteHover
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: colorPopup.open()
+            }
+        }
+
+        // 自定义 hex 应用（#rrggbb 校验）
+        function applyCustomColor() {
+            var text = hexInput.text.trim()
+            if (/^#[0-9a-fA-F]{6}$/.test(text))
+                ThemeManager.primary = text
+            else
+                hexInput.text = ThemeManager.primary   // 非法输入回显当前主色
+        }
+
+        // ── 颜色选择面板 ──
+        QQC.Popup {
+            id: colorPopup
+            x: paletteBtn.x - width + paletteBtn.width   // 右缘对齐调色板按钮
+            y: paletteBtn.y + paletteBtn.height + 8
+            padding: 12
+            closePolicy: QQC.Popup.CloseOnEscape | QQC.Popup.CloseOnPressOutside
+
+            contentItem: Column {
+                spacing: 10
+
+                Text {
+                    text: qsTr("选择主色")
+                    color: theme.foreground
+                    font.pixelSize: 13
+                    font.bold: true
+                }
+
+                // 预设色板（含默认）
+                Flow {
+                    width: 208   // 8 列 × 24 + 间距 8
+                    spacing: 8
+
+                    Repeater {
+                        model: [
+                            { name: "默认", color: "" },
+                            { name: "黑", color: "#18181b" },
+                            { name: "蓝黑", color: "#0f172a" },
+                            { name: "蓝", color: "#2563eb" },
+                            { name: "天蓝", color: "#0ea5e9" },
+                            { name: "青", color: "#06b6d4" },
+                            { name: "绿", color: "#16a34a" },
+                            { name: "黄绿", color: "#84cc16" },
+                            { name: "黄", color: "#f59e0b" },
+                            { name: "橙", color: "#ea580c" },
+                            { name: "红", color: "#dc2626" },
+                            { name: "粉", color: "#ec4899" },
+                            { name: "紫", color: "#7c3aed" },
+                            { name: "紫蓝", color: "#8b5cf6" },
+                            { name: "灰", color: "#64748b" },
+                            { name: "玫红", color: "#ef4444" }
+                        ]
+
+                        delegate: Rectangle {
+                            required property var modelData
+
+                            property Gradient defaultGradient: Gradient {
+                                GradientStop { color: "#18181b"; position: 0.0 }
+                                GradientStop { color: "#18181b"; position: 0.5 }
+                                GradientStop { color: "#fafafa"; position: 0.5 }
+                                GradientStop { color: "#fafafa"; position: 1.0 }
+                            }
+
+                            width: 24
+                            height: 24
+                            radius: 6
+                            border.width: ThemeManager.primary === modelData.color ? 2 : 1
+                            border.color: ThemeManager.primary === modelData.color ? theme.ring : theme.border
+                            color: modelData.color === "" ? "transparent" : modelData.color
+                            gradient: modelData.color === "" ? defaultGradient : null
+
+                            MouseArea {
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: ThemeManager.primary = modelData.color
+                            }
+                        }
+                    }
+                }
+
+                // 自定义 hex
+                Row {
+                    spacing: 6
+                    ShadcnInput {
+                        id: hexInput
+                        width: 130
+                        placeholderText: "#2563eb"
+                        font.pixelSize: 13
+                        onAccepted: applyCustomColor()
+                    }
+                    ShadcnButton {
+                        text: qsTr("应用")
+                        size: ShadcnButton.Size.Small
+                        onClicked: applyCustomColor()
+                    }
+                }
+            }
+
+            background: Rectangle {
+                radius: 8
+                color: theme.popover
+                border.width: 1
+                border.color: Qt.rgba(theme.foreground.r, theme.foreground.g, theme.foreground.b,
+                                      theme.mode === "dark" ? 0.10 : 0.05)
+                layer.enabled: true
+                layer.effect: MultiEffect {
+                    shadowEnabled: true
+                    shadowBlur: 0.5
+                    shadowVerticalOffset: 4
+                    shadowColor: Qt.rgba(0, 0, 0, 0.18)
+                }
             }
         }
     }
