@@ -293,99 +293,7 @@ Window {
         height: 32
         spacing: theme.spacingSm
 
-        // ------------------------------------------------------------
-        // 预设主色
-        // ------------------------------------------------------------
-
-        Repeater {
-            model: [
-                {
-                    name: "默认",
-                    color: ""
-                },
-                {
-                    name: "蓝",
-                    color: "#2563eb"
-                },
-                {
-                    name: "绿",
-                    color: "#16a34a"
-                },
-                {
-                    name: "紫",
-                    color: "#7c3aed"
-                },
-                {
-                    name: "红",
-                    color: "#dc2626"
-                },
-                {
-                    name: "橙",
-                    color: "#ea580c"
-                }
-            ]
-
-            delegate: Rectangle {
-
-                // ----------------------------------------------------
-                // 默认主题：左右两种颜色
-                // ----------------------------------------------------
-
-                property Gradient autoGradient: Gradient {
-                    GradientStop {
-                        color: "#18181b"
-                        position: 0.0
-                    }
-                    GradientStop {
-                        color: "#18181b"
-                        position: 0.5
-                    }
-                    GradientStop {
-                        color: "#fafafa"
-                        position: 0.5
-                    }
-                    GradientStop {
-                        color: "#fafafa"
-                        position: 1.0
-                    }
-                }
-                required property var modelData
-
-                anchors.verticalCenter: parent.verticalCenter
-                border.color: ThemeManager.primary === modelData.color ? theme.ring : theme.border
-
-                // ----------------------------------------------------
-                // Border
-                // ----------------------------------------------------
-
-                border.width: ThemeManager.primary === modelData.color ? 2 : 1
-                color: modelData.color === "" ? "transparent" : modelData.color
-                gradient: modelData.color === "" ? autoGradient : null
-                height: 24
-                opacity: hoverArea.containsMouse ? 0.75 : 1.0
-                radius: 6
-                width: 24
-
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: 100
-                    }
-                }
-
-                MouseArea {
-                    id: hoverArea
-
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    hoverEnabled: true
-
-                    onClicked: {
-                        ThemeManager.primary = modelData.color;
-                    }
-                }
-            }
-        }
-        // 明暗切换：纯图标 24×24（与上方色块对齐），hover muted
+        // 明暗切换：纯图标 24×24，hover muted
         Rectangle {
             id: modeBtn
             width: 24
@@ -433,13 +341,28 @@ Window {
             }
         }
 
-        // 自定义 hex 应用（#rrggbb 校验）
-        function applyCustomColor() {
-            var text = hexInput.text.trim()
-            if (/^#[0-9a-fA-F]{6}$/.test(text))
-                ThemeManager.primary = text
-            else
-                hexInput.text = ThemeManager.primary   // 非法输入回显当前主色
+        // GitHub 跳转：点击打开仓库
+        Rectangle {
+            id: githubBtn
+            width: 24
+            height: 24
+            radius: 6
+            anchors.verticalCenter: parent.verticalCenter
+            color: githubHover.containsMouse ? theme.muted : "transparent"
+
+            ShadcnIcon {
+                anchors.centerIn: parent
+                name: "github"
+                size: 16
+                color: theme.foreground
+            }
+            MouseArea {
+                id: githubHover
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Qt.openUrlExternally("https://github.com/QtShadcn/qtshadcn")
+            }
         }
 
         // ── 颜色选择面板 ──
@@ -468,8 +391,6 @@ Window {
                     Repeater {
                         model: [
                             { name: "默认", color: "" },
-                            { name: "黑", color: "#18181b" },
-                            { name: "蓝黑", color: "#0f172a" },
                             { name: "蓝", color: "#2563eb" },
                             { name: "天蓝", color: "#0ea5e9" },
                             { name: "青", color: "#06b6d4" },
@@ -521,12 +442,27 @@ Window {
                         width: 130
                         placeholderText: "#2563eb"
                         font.pixelSize: 13
-                        onAccepted: applyCustomColor()
+                        // 内联逻辑（不能用 contentItem 内的 function：QQC Popup 的
+                        // contentItem 属性值组件在 qmlcache 下其 function 不进子对象
+                        // 作用域链 → ReferenceError）
+                        onAccepted: {
+                            var t = hexInput.text.trim()
+                            if (/^#[0-9a-fA-F]{6}$/.test(t))
+                                ThemeManager.primary = t
+                            else
+                                hexInput.text = ThemeManager.primary
+                        }
                     }
                     ShadcnButton {
                         text: qsTr("应用")
                         size: ShadcnButton.Size.Small
-                        onClicked: applyCustomColor()
+                        onClicked: {
+                            var t = hexInput.text.trim()
+                            if (/^#[0-9a-fA-F]{6}$/.test(t))
+                                ThemeManager.primary = t
+                            else
+                                hexInput.text = ThemeManager.primary
+                        }
                     }
                 }
             }
