@@ -141,8 +141,10 @@ Item {
                         Rectangle {
                             anchors.fill: parent
                             radius: 8
+                            // 注意：不能加 Behavior on color + transparent↔muted 插值——
+                            // transparent 是 RGBA(0,0,0,0)，与不透明色逐帧插值会经过半透明灰，
+                            // hover 进出"闪灰"+ 动画期间重绘子项抖动。hover 应即时变色（shadcn 同）。
                             color: hoverArea.containsMouse ? theme.muted : "transparent"
-                            Behavior on color { ColorAnimation { duration: 100 } }
                         }
                         Column {
                             anchors.centerIn: parent
