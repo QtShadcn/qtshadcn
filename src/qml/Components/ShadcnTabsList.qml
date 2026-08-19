@@ -16,67 +16,68 @@ import QtShadcn
 Item {
     id: root
 
-    property int currentIndex: 0
-    property string variant: "default"   // "default" | "line"
+    readonly property bool _isLine: variant === "line"
 
     // 子项（ShadcnTabsTrigger）自动进 tabBar.contentData
     // 坑：必须用 contentData（Container 的内容属性），不能用 data（Item 通用属性）——
     //    data 添加的 TabButton 成为视觉子项但不被 Container 布局识别（count=0），
     //    全部停在 (0,0) 重叠
     default property alias content: tabBar.contentData
+    property int currentIndex: 0
+    property string variant: "default"   // "default" | "line"
 
-    QtShadcnTheme { id: theme }
-    readonly property bool _isLine: variant === "line"
+    // 把 root.variant 同步到每个 ShadcnTabsTrigger（Trigger 有 variant 属性）
+    function _syncVariant() {
+        for (var i = 0; i < tabBar.count; i++) {
+            var item = tabBar.itemAt(i);
+            if (item && item.variant !== undefined)
+                item.variant = root.variant;
+        }
+    }
 
-    // 对齐官方：h-8 = 32px（含 p-[3px] 上下 → trigger 区 26px）
-    implicitWidth: tabBar.implicitWidth + (_isLine ? 0 : 6)
-    implicitHeight: 32
     // 坑：Item 的 height 不会自动采用 implicitHeight（默认 0）——组件自包含显式高度，
     // 否则容器/TabBar 高度塌缩、标签文字全部重叠
     height: 32
+    implicitHeight: 32
+
+    // 对齐官方：h-8 = 32px（含 p-[3px] 上下 → trigger 区 26px）
+    implicitWidth: tabBar.implicitWidth + (_isLine ? 0 : 6)
+
+    Component.onCompleted: {
+        tabBar.currentIndex = root.currentIndex;   // 强制同步，确保初始选中 TabButton.checked=true
+        _syncVariant();
+    }
+
+    // 外部设置 currentIndex（程序化切页）→ 同步给 tabBar（值相同不触发，无死循环）
+    onCurrentIndexChanged: tabBar.currentIndex = root.currentIndex
+    onVariantChanged: _syncVariant()
+
+    QtShadcnTheme {
+        id: theme
+    }
 
     // 胶囊容器（default variant）：bg-muted + rounded-lg；line 透明
     Rectangle {
         anchors.fill: parent
-        visible: !root._isLine
         color: theme.muted
         radius: 8
+        visible: !root._isLine
     }
-
     TabBar {
         id: tabBar
 
         anchors.fill: parent
         anchors.margins: root._isLine ? 0 : 3
-
-        // shadcn v4: line variant 有 gap-1（4px 容器间距）；default 按钮紧贴靠自身 px-3 padding
         spacing: root._isLine ? 4 : 0
 
-        // currentIndex 双向同步用事件驱动（坑：属性绑定 root.currentIndex ↔ tabBar.currentIndex
-        // 会构成绑定循环，QML 打破后 currentIndex 变静态，点击无法切换）
+        // 关闭 Qt Quick Controls 自带背景
+        background: Item {
+        }
+
+        onCountChanged: root._syncVariant()
         onCurrentIndexChanged: {
             if (currentIndex !== root.currentIndex)
-                root.currentIndex = currentIndex
+                root.currentIndex = currentIndex;
         }
-
-        // TabBar 内部子项同步 variant（Trigger 据此选白底或下划线样式）
-        onCountChanged: root._syncVariant()
-    }
-
-    // 外部设置 currentIndex（程序化切页）→ 同步给 tabBar（值相同不触发，无死循环）
-    onCurrentIndexChanged: tabBar.currentIndex = root.currentIndex
-
-    // 把 root.variant 同步到每个 ShadcnTabsTrigger（Trigger 有 variant 属性）
-    function _syncVariant() {
-        for (var i = 0; i < tabBar.count; i++) {
-            var item = tabBar.itemAt(i)
-            if (item && item.variant !== undefined)
-                item.variant = root.variant
-        }
-    }
-    onVariantChanged: _syncVariant()
-    Component.onCompleted: {
-        tabBar.currentIndex = root.currentIndex   // 强制同步，确保初始选中 TabButton.checked=true
-        _syncVariant()
     }
 }
