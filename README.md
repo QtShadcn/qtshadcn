@@ -97,4 +97,4 @@ Window {
 
 ## License
 
-MIT
+MIT © [QtShadcn](https://github.com/QtShadcn)
