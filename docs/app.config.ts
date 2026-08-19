@@ -19,15 +19,6 @@ export default defineAppConfig({
       fluid: true,
       padded: true,
     },
-    footer: {
-      iconLinks: [
-        {
-          icon: 'i-simple-icons-github',
-          href: 'https://github.com/QtShadcn/qtshadcn',
-          ariaLabel: 'GitHub',
-        },
-      ],
-    },
     github: {
       owner: 'QtShadcn',
       repo: 'qtshadcn',
