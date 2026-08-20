@@ -1,6 +1,6 @@
 ---
 name: qtshadcn
-description: QtShadcn — a modern, composable UI component library for Qt 6 / QML inspired by shadcn/ui (Design Token → Component → Composition → Theme). Use when building QML UIs, theming, customizing Qt Quick Controls, or adding new components to this library.
+description: QtShadcn — Qt 6 / QML UI library inspired by shadcn/ui. Use when building or scaffolding Qt 6 / QML apps, theming, customizing Qt Quick Controls, or adding components. For a new consumer app, vendor into third_party/qtshadcn, add CMake + root Makefile (make build/run/clean) if missing, add_subdirectory(third_party/qtshadcn), set QQuickStyle Basic.
 ---
 
 # QtShadcn — Qt 6 / QML 组件库
@@ -9,44 +9,41 @@ description: QtShadcn — a modern, composable UI component library for Qt 6 / Q
 
 ## When to Use
 
-- 开发 Qt 6 / QML 桌面应用界面
-- 需要 Design Token 驱动的明暗主题（`theme.mode = "dark"` 全局随动）
-- 定制 QQC 组件视觉（Checkbox / Slider / ComboBox / Dialog 等）
-- 给 QtShadcn 添加新组件（对齐 shadcn/ui 规范）
-- 使用 lucide 图标（本地 74 精选 + 远程兜底）
+- 开发 / 脚手架 Qt 6 / QML 桌面应用（缺 Makefile 时补 `make build/run`）
+- Design Token 明暗主题（`theme.mode = "dark"` 全局随动）
+- 定制 QQC 视觉，或给本库加新组件（对齐 shadcn/ui）
+- lucide 图标（本地 74 + 远程兜底）
 
 ## 安装 / 接入
 
-### 1. 构建库
+给用户写项目时按 [core-build](references/core-build.md)「消费方脚手架」落地，铁律：
+
+1. 根目录无 `Makefile` → 新增 `build` / `run` / `clean` / `fresh` / `info`；已有只补缺、不覆盖
+2. 最小工程：`CMakeLists.txt` + `main.cpp` + QML + Makefile + `third_party/qtshadcn`
+3. 本仓库放到 `third_party/qtshadcn`（submodule 或 clone），`add_subdirectory(third_party/qtshadcn)`（子项目默认不编 showcase）
+4. `QQuickStyle::setStyle("Basic")` 必做；窗口内先放 `QtShadcnTheme`
+5. `find_package(QtShadcn)` 尚未提供
+
+### 1. 构建本库
 
 ```bash
-make build   # 产出 libQtShadcn.dylib + QML 模块（build/src/QtShadcn），自动探测 Qt 6.11.1 arm64
+make build   # 产出 QML 模块 build/src/QtShadcn + 动态库；Qt 前缀用 QT_PREFIX 覆盖，默认 ~/Qt/6.11.1/macos
 ```
 
-### 2. 接入你的项目
+### 2. 接入（摘要）
 
-**CMake**（链接 QtShadcn 目标）：
+```bash
+mkdir -p third_party
+git submodule add https://github.com/QtShadcn/qtshadcn.git third_party/qtshadcn
+```
 
 ```cmake
-add_subdirectory(path/to/qtshadcn QtShadcn)          # 引入本仓库
-target_link_libraries(MyApp PRIVATE QtShadcn)        # 链接库
-# 注：find_package(QtShadcn) 安装方式在 M6 规划中
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml QuickControls2 Svg Network)
+add_subdirectory(third_party/qtshadcn)
+target_link_libraries(myapp PRIVATE QtShadcn Qt6::Quick Qt6::QuickControls2)
 ```
 
-**QML**（运行时让引擎找到 QtShadcn 模块）：
-
-```bash
-# 启动应用时指定 import 路径
-QML_IMPORT_PATH="path/to/qtshadcn/build/src" ./myapp
-```
-
-或在 `main.cpp` 里：
-
-```cpp
-engine.addImportPath("path/to/qtshadcn/build/src");
-```
-
-然后 QML 里 `import QtShadcn` 即可。
+`make run` 设 `QML_IMPORT_PATH` 为 **QtShadcn 模块目录的父路径**（上述布局为 `build/third_party/qtshadcn/src`）。完整模板见 [core-build](references/core-build.md)。
 
 ### 3. 使用组件
 
@@ -79,7 +76,7 @@ Window {
 | 主题 | 说明 | 参考 |
 |------|------|------|
 | Theme 系统 | `ThemeManager`（C++）/ `QtShadcnTheme` / token 字典 / 明暗切换 / 主色 | [core-theme](references/core-theme.md) |
-| 构建与验证 | `make build/run`、offscreen 静态验证 | [core-build](references/core-build.md) |
+| 构建与验证 | 本库构建；消费方 CMake+Makefile 脚手架；截图；offscreen 验证 | [core-build](references/core-build.md) |
 | 组件开发流程 | 抓 shadcn 规范 → 对照表 → 实现 → showcase 验证 | [core-workflow](references/core-workflow.md) |
 | Icon 系统 | `IconRegistry`（C++ singleton）/ `ShadcnIcon` / 图标打包 | [core-icon](references/core-icon.md) |
 
@@ -121,7 +118,7 @@ Window {
 
 | 组件 | 说明 | 参考 |
 |------|------|------|
-| `ShadcnTabs` | 标签页（List / Trigger / Content，default / line） | [component-navigation](references/component-navigation.md) |
+| `ShadcnTabsList` / `Trigger` / `Content` | 标签页（无独立 `ShadcnTabs`；default / line） | [component-navigation](references/component-navigation.md) |
 
 ### Icon（M4 ✅）
 
@@ -134,8 +131,10 @@ Window {
 
 | 坑 | 说明 |
 |----|------|
-| override QQC 子组件丢定位 | `handle` / `indicator` / `background` 的 x/y/width 在模板默认组件内部，override 后不自动应用 → 必须自带定位 |
+| 未设 Basic style | macOS 默认 native style 拒绝自定义 `contentItem`/`background` → `QQuickStyle::setStyle("Basic")` |
+| 第三方路径不统一 | 放到 `third_party/qtshadcn` 再 `add_subdirectory`；不要散落绝对路径 |
+| override QQC 子组件丢定位 | `handle` / `indicator` / `background` 的几何在默认模板内部，override 后须自带定位 |
 | ScrollView 内取 implicitHeight | 被视口裁剪取不到 → 固定 `height: implicitHeight` |
-| TextArea 内部滚动 | QQC.TextArea 无 Flickable、TextEdit 原生不响应滚轮 → 用 Flickable + TextEdit + ScrollBar |
-| contentHeight 早期 undefined | Math.min/max 遇 NaN 传播拖垮组件 → `> 0` 兜底 |
+| TextArea 内部滚动 | QQC.TextArea 无 Flickable、TextEdit 不响应滚轮 → Flickable + TextEdit + ScrollBar |
+| contentHeight 早期 undefined | Math.min/max 遇 NaN 传播 → `> 0` 兜底 |
 | readonly property 引用子对象 | 创建期立即求值 → null，放惰性绑定里 |

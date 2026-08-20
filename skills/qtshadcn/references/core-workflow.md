@@ -7,7 +7,7 @@ description: 给 QtShadcn 添加新组件的标准流程：先研究 shadcn/ui �
 
 ## 铁律流程
 
-1. **抓 shadcn/ui 官方文档**（curl 走代理 7897）+ 源码：
+1. **抓 shadcn/ui 官方文档** + 源码（需要代理时用环境已有的 `HTTP(S)_PROXY`，不要写死端口）：
    - 文档页：`https://ui.shadcn.com/docs/components/<name>`
    - 源码：`gh api repos/shadcn-ui/ui/contents/apps/v4/registry/bases/base/ui/<name>.tsx`
    - 样式 CSS：`apps/v4/registry/styles/style-luma.css`（拿 cn-* 类的具体像素/颜色值）
@@ -73,10 +73,9 @@ bash scripts/screenshot.sh
 SHOT_DELAY_MS=2000 SLEEP=1 bash scripts/screenshot.sh
 ```
 
-- 脚本自动遍历 `examples/showcase/pages/*Page.qml`，调用 showcase 的 `--screenshot` 模式，
-  输出到 `docs/public/images/components/<slug>.png`（kebab-case，与文档 slug 对齐）
-- 截图只截右侧内容区（grab `contentStack.itemAt(currentIndex)`，不含左侧菜单）
-- offscreen 平台下 `grabToImage` 走软件渲染，无需 GUI（沙箱可跑）
+- 脚本遍历 `examples/showcase/pages/*Page.qml`，调 showcase `--screenshot`：`grabWindow()` 整窗后按 `CROP` 裁剪（默认 `190,0,790,704` 去掉左侧菜单）
+- 输出 `docs/public/images/components/<slug>.png`（kebab-case，与文档 slug 对齐）
+- 自动设 `QT_QPA_PLATFORM=offscreen`、`QTSHADCN_SCREENSHOT=1`（关 MultiEffect，否则 Card 等空白）；沙箱可跑
 - 文档引用：`![<组件> 效果展示](/images/components/<slug>.png)`
-- 新增组件 Page 后，重跑脚本即可刷新对应图（无需手动处理命名）
+- 细节与参数见 [core-build](core-build.md)「组件截图」
 

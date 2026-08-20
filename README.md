@@ -21,20 +21,42 @@ Qt 6 / QML 可组合 UI 组件库，对齐 shadcn/ui 的设计哲学：**Design 
 git clone https://github.com/QtShadcn/qtshadcn.git
 cd qtshadcn
 
-# 构建（自动探测 ~/Qt/6.11.1/macos，可用 QT_PREFIX 覆盖）
+# 构建（默认 QT_PREFIX=$HOME/Qt/6.11.1/macos，可用环境变量覆盖）
 make build
 
-# 运行 showcase（Design Token 色板演示，明暗切换）
+# 运行 showcase（Design Token 色板演示，明暗切换；需真实桌面，不要用沙箱）
 make run
 ```
 
 或手动：
 
 ```bash
-cmake -S . -B build -DCMAKE_PREFIX_PATH="$HOME/Qt/6.11.1/macos" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake -S . -B build -DCMAKE_PREFIX_PATH="${QT_PREFIX:-$HOME/Qt/6.11.1/macos}" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 cmake --build build
 QML_IMPORT_PATH="build/src:build/examples/showcase" ./build/bin/showcase
 ```
+
+Linux 把前缀里的 `macos` 换成 `gcc_64`；Homebrew 用 `QT_PREFIX=$(brew --prefix qt)`。
+
+## 📦 接入你的项目
+
+`find_package(QtShadcn)` 尚未提供。约定把本仓库放到应用的 `third_party/qtshadcn`（submodule 或 clone），再 `add_subdirectory`。作为子项目引入时**默认不编 showcase**。
+
+```bash
+mkdir -p third_party
+git submodule add https://github.com/QtShadcn/qtshadcn.git third_party/qtshadcn
+# 或：git clone https://github.com/QtShadcn/qtshadcn.git third_party/qtshadcn
+```
+
+```cmake
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml QuickControls2 Svg Network)
+add_subdirectory(third_party/qtshadcn)
+target_link_libraries(myapp PRIVATE QtShadcn Qt6::Quick Qt6::QuickControls2)
+```
+
+`main.cpp` 里必须 `QQuickStyle::setStyle("Basic")`（macOS 默认 native style 会拒绝自定义 `contentItem` / `background`）。启动时把 `QML_IMPORT_PATH` 指到 **QtShadcn 模块目录的父路径**（上述布局下为 `build/third_party/qtshadcn/src`）。
+
+建议在应用根目录放 `Makefile`（`make build` / `make run` / `make clean`）。完整工程模板见 [skills/qtshadcn/references/core-build.md](skills/qtshadcn/references/core-build.md)。
 
 ## 📦 组件状态
 
@@ -57,11 +79,11 @@ QML_IMPORT_PATH="build/src:build/examples/showcase" ./build/bin/showcase
 
 ## 🎨 用法示例
 
-QML 侧只需一行 import，组件与主题即可使用：
+QML 侧 `import QtShadcn` 即可使用组件与主题（C++ 侧需 Basic style，见上文）：
 
 ```qml
 import QtQuick
-import QtShadcn          // 唯一需要的 import：组件 + 主题入口
+import QtShadcn          // 组件 + 主题入口
 
 Window {
     width: 640
@@ -92,15 +114,16 @@ Window {
 - 组件文档：[docs/content/2.components/](docs/content/2.components/)（每个组件一页：用法 + 属性）
 - 技术方案：[docs/content/3.design/1.technical-design.md](docs/content/3.design/1.technical-design.md)
 - 组件开发流程：[docs/content/4.development/1.component-workflow.md](docs/content/4.development/1.component-workflow.md)
-- AI 助手参考：[skills/qtshadcn/SKILL.md](skills/qtshadcn/SKILL.md)（组件索引 + 开发坑）
+- AI 助手参考：[skills/qtshadcn/SKILL.md](skills/qtshadcn/SKILL.md)（接入脚手架 + 组件索引 + 开发坑）
 - 文档站（Docus / Nuxt Content）：`docs/`，本地预览 `cd docs && pnpm install && pnpm dev`
 
 ## 🤖 AI 如何使用 QtShadcn（Skills）
 
-仓库内的 [`skills/`](skills/) 目录是**教 AI 助手如何使用本组件库**的指南——从安装接入到每个组件的用法与坑（格式对齐 slidev/skills）：
+仓库内的 [`skills/`](skills/) 目录是**教 AI 助手如何使用本组件库**的指南——从脚手架接入到每个组件的用法与坑（格式对齐 slidev/skills）：
 
-- [SKILL.md](skills/qtshadcn/SKILL.md) —— 入口：**安装/接入**（`make build` + CMake link + `QML_IMPORT_PATH` + `import QtShadcn`）+ 组件总索引 + 关键坑
-- `references/` —— 分类详情：主题 / 构建 / 开发流程 / 图标 + 各组件的 QML 用法、属性、坑
+- [SKILL.md](skills/qtshadcn/SKILL.md) —— 入口：消费方脚手架（CMake + 根 Makefile + `add_subdirectory(.../src)` + Basic style）+ 组件索引 + 关键坑
+- [core-build.md](skills/qtshadcn/references/core-build.md) —— 本库构建、消费方最小工程模板、`QML_IMPORT_PATH`、截图
+- `references/` —— 主题 / 开发流程 / 图标 + 各组件用法、属性、坑
 
 > 安装：帮我安装这个 `https://github.com/QtShadcn/qtshadcn/skills/qtshadcn/SKILL.md` skills
 
