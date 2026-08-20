@@ -95,37 +95,35 @@ Window {
 - AI 助手参考：[skills/qtshadcn/SKILL.md](skills/qtshadcn/SKILL.md)（组件索引 + 开发坑）
 - 文档站（Docus / Nuxt Content）：`docs/`，本地预览 `cd docs && pnpm install && pnpm dev`
 
-## 🤖 如何使用 Skills
+## 📖 组件用法速查（Skills）
 
-仓库内的 [`skills/`](skills/) 目录是给 **AI 编码助手**（Claude Code / Codex / WorkBuddy 等）使用的项目参考，格式对齐 [slidev/skills](https://github.com/slidevjs/slidev/tree/main/skills)：
+仓库内的 [`skills/`](skills/) 目录就是**组件使用指南**——每个组件的 QML 用法、属性、坑都在里面，按「总索引 + 分类详情」组织（格式对齐 [slidev/skills](https://github.com/slidevjs/slidev/tree/main/skills)，AI 助手同样友好）：
 
 ```
-skills/
-├── GENERATION.md               # 生成信息 + 同步约定
-└── qtshadcn/
-    ├── SKILL.md                # 入口：定位 + 组件/能力表格索引 + 关键坑清单
-    └── references/             # 分类详细参考
-        ├── core-theme.md       # Theme 系统（ThemeManager / QtShadcnTheme / tokens）
-        ├── core-build.md       # 构建 / 运行 / 截图 / 验证
-        ├── core-workflow.md    # 组件开发流程（抓 shadcn 规范 → 实现）
-        ├── core-icon.md        # Icon 系统（IconRegistry / ShadcnIcon）
-        ├── component-button.md # Button 族
-        ├── component-form.md   # 表单控件
-        ├── component-display.md# Card / Badge
-        ├── component-overlay.md# Dialog
-        └── component-navigation.md # Tabs
+skills/qtshadcn/
+├── SKILL.md                    # 总索引：所有组件的表格（点组件名查用法）+ 关键坑清单
+└── references/                 # 分类详情：QML 用法示例 + 属性表 + 开发坑
+    ├── core-theme.md           # 主题（ThemeManager / QtShadcnTheme / tokens / 改主色）
+    ├── core-build.md           # 构建 / 运行 / 截图 / 验证
+    ├── core-workflow.md        # 组件开发流程（抓 shadcn 规范 → 实现）
+    ├── core-icon.md            # 图标（IconRegistry / ShadcnIcon）
+    ├── component-button.md     # Button / ButtonGroup / Toggle / ToggleGroup / Spinner
+    ├── component-form.md       # Input / InputGroup / Textarea / Checkbox / RadioGroup / Switch / Slider / Progress / Select
+    ├── component-display.md    # Card / Badge
+    ├── component-overlay.md    # Dialog
+    └── component-navigation.md # Tabs
 ```
 
-**怎么用：**
+**查某个组件怎么用：**
 
-- **人工查阅** — 直接读 [SKILL.md](skills/qtshadcn/SKILL.md) 总览，再进 `references/` 查具体组件的用法、属性与开发坑。
-- **配合 AI 助手** — 让助手「先读 `skills/qtshadcn/SKILL.md`，再按需读 `references/`」，即可获得组件 API、主题、构建流程、开发坑等完整上下文，减少幻觉。例如：
+1. 打开 [SKILL.md](skills/qtshadcn/SKILL.md)，在「Feature Reference」表格里找组件
+2. 点进对应的 `references/` 文件，看 QML 用法示例 + 属性表 + 开发坑
 
-  > 请先阅读 `skills/qtshadcn/SKILL.md`，然后帮我新增一个 `ShadcnAccordion` 组件，遵循 `references/core-workflow.md` 的开发流程。
+**配合 AI 助手**：直接让助手「读 `skills/qtshadcn/SKILL.md`，按需读 `references/`」即可获得完整组件用法上下文，例如：
 
-- **Claude Code / Codex** — 可把 `skills/qtshadcn/` 作为 skill 挂载（Claude Code 复制到 `~/.claude/skills/`；Codex 在 `AGENTS.md` 中引用该目录），或在对话里直接让助手读取。
+> 请先读 `skills/qtshadcn/SKILL.md`，然后帮我用 `ShadcnDialog` 写一个确认弹窗。
 
-**新增组件时记得同步**：按 `references/core-workflow.md` 的「新增组件后必做」清单，更新 `SKILL.md` 表格 + 对应 reference + 截图。
+新增组件时按 `references/core-workflow.md` 的「新增组件后必做」清单同步更新这些文件与截图。
 
 ## License
 
