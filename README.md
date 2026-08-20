@@ -102,7 +102,9 @@ Window {
 - [SKILL.md](skills/qtshadcn/SKILL.md) —— 入口：**安装/接入**（`make build` + CMake link + `QML_IMPORT_PATH` + `import QtShadcn`）+ 组件总索引 + 关键坑
 - `references/` —— 分类详情：主题 / 构建 / 开发流程 / 图标 + 各组件的 QML 用法、属性、坑
 
-**给 AI 助手**：让它「读 `https://github.com/QtShadcn/qtshadcn/skills/qtshadcn/SKILL.md`，按需读 `references/`」，即可学会安装、接入并用组件，例如：
+> 安装：帮我安装这个 `https://github.com/QtShadcn/qtshadcn/skills/qtshadcn/SKILL.md` skills
+
+**使用**
 
 > 请先读 `https://github.com/QtShadcn/qtshadcn/skills/qtshadcn/SKILL.md`，然后用 `ShadcnDialog` 帮我写一个确认弹窗。
 
