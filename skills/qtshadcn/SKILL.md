@@ -15,12 +15,40 @@ description: QtShadcn — a modern, composable UI component library for Qt 6 / Q
 - 给 QtShadcn 添加新组件（对齐 shadcn/ui 规范）
 - 使用 lucide 图标（本地 74 精选 + 远程兜底）
 
-## Quick Start
+## 安装 / 接入
+
+### 1. 构建库
 
 ```bash
-make build   # 构建（自动探测 Qt 路径，Qt 6.11.1 arm64）
-make run     # 运行 showcase（GUI 窗口，需桌面环境）
+make build   # 产出 libQtShadcn.dylib + QML 模块（build/src/QtShadcn），自动探测 Qt 6.11.1 arm64
 ```
+
+### 2. 接入你的项目
+
+**CMake**（链接 QtShadcn 目标）：
+
+```cmake
+add_subdirectory(path/to/qtshadcn QtShadcn)          # 引入本仓库
+target_link_libraries(MyApp PRIVATE QtShadcn)        # 链接库
+# 注：find_package(QtShadcn) 安装方式在 M6 规划中
+```
+
+**QML**（运行时让引擎找到 QtShadcn 模块）：
+
+```bash
+# 启动应用时指定 import 路径
+QML_IMPORT_PATH="path/to/qtshadcn/build/src" ./myapp
+```
+
+或在 `main.cpp` 里：
+
+```cpp
+engine.addImportPath("path/to/qtshadcn/build/src");
+```
+
+然后 QML 里 `import QtShadcn` 即可。
+
+### 3. 使用组件
 
 ```qml
 import QtQuick
@@ -32,16 +60,19 @@ Window {
     height: 480
     visible: true
 
-    QtShadcnTheme { id: theme }   // 主题入口（必做）
+    QtShadcnTheme { id: theme }   // 主题入口（必做，绑定 C++ ThemeManager token）
 
     ShadcnButton {
         anchors.centerIn: parent
         text: qsTr("Deploy")
         iconName: "rocket"
-        onClicked: console.log("clicked")
+        onClicked: theme.mode = theme.mode === "dark" ? "light" : "dark"
     }
 }
 ```
+
+- **主题接入必做**：任何使用组件的窗口先放一个 `QtShadcnTheme`
+- **组件命名**：全部带 `Shadcn` 前缀（与 QQC 基类区分）
 
 ## Core References
 
