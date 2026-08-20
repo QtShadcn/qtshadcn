@@ -95,6 +95,38 @@ Window {
 - AI 助手参考：[skills/qtshadcn/SKILL.md](skills/qtshadcn/SKILL.md)（组件索引 + 开发坑）
 - 文档站（Docus / Nuxt Content）：`docs/`，本地预览 `cd docs && pnpm install && pnpm dev`
 
+## 🤖 如何使用 Skills
+
+仓库内的 [`skills/`](skills/) 目录是给 **AI 编码助手**（Claude Code / Codex / WorkBuddy 等）使用的项目参考，格式对齐 [slidev/skills](https://github.com/slidevjs/slidev/tree/main/skills)：
+
+```
+skills/
+├── GENERATION.md               # 生成信息 + 同步约定
+└── qtshadcn/
+    ├── SKILL.md                # 入口：定位 + 组件/能力表格索引 + 关键坑清单
+    └── references/             # 分类详细参考
+        ├── core-theme.md       # Theme 系统（ThemeManager / QtShadcnTheme / tokens）
+        ├── core-build.md       # 构建 / 运行 / 截图 / 验证
+        ├── core-workflow.md    # 组件开发流程（抓 shadcn 规范 → 实现）
+        ├── core-icon.md        # Icon 系统（IconRegistry / ShadcnIcon）
+        ├── component-button.md # Button 族
+        ├── component-form.md   # 表单控件
+        ├── component-display.md# Card / Badge
+        ├── component-overlay.md# Dialog
+        └── component-navigation.md # Tabs
+```
+
+**怎么用：**
+
+- **人工查阅** — 直接读 [SKILL.md](skills/qtshadcn/SKILL.md) 总览，再进 `references/` 查具体组件的用法、属性与开发坑。
+- **配合 AI 助手** — 让助手「先读 `skills/qtshadcn/SKILL.md`，再按需读 `references/`」，即可获得组件 API、主题、构建流程、开发坑等完整上下文，减少幻觉。例如：
+
+  > 请先阅读 `skills/qtshadcn/SKILL.md`，然后帮我新增一个 `ShadcnAccordion` 组件，遵循 `references/core-workflow.md` 的开发流程。
+
+- **Claude Code / Codex** — 可把 `skills/qtshadcn/` 作为 skill 挂载（Claude Code 复制到 `~/.claude/skills/`；Codex 在 `AGENTS.md` 中引用该目录），或在对话里直接让助手读取。
+
+**新增组件时记得同步**：按 `references/core-workflow.md` 的「新增组件后必做」清单，更新 `SKILL.md` 表格 + 对应 reference + 截图。
+
 ## License
 
 MIT © [QtShadcn](https://github.com/QtShadcn)
