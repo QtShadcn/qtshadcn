@@ -95,16 +95,16 @@ Window {
 - AI 助手参考：[skills/qtshadcn/SKILL.md](skills/qtshadcn/SKILL.md)（组件索引 + 开发坑）
 - 文档站（Docus / Nuxt Content）：`docs/`，本地预览 `cd docs && pnpm install && pnpm dev`
 
-## 🤖 教 AI 使用 QtShadcn（Skills）
+## 🤖 AI 如何使用 QtShadcn（Skills）
 
 仓库内的 [`skills/`](skills/) 目录是**教 AI 助手如何使用本组件库**的指南——从安装接入到每个组件的用法与坑（格式对齐 slidev/skills）：
 
 - [SKILL.md](skills/qtshadcn/SKILL.md) —— 入口：**安装/接入**（`make build` + CMake link + `QML_IMPORT_PATH` + `import QtShadcn`）+ 组件总索引 + 关键坑
 - `references/` —— 分类详情：主题 / 构建 / 开发流程 / 图标 + 各组件的 QML 用法、属性、坑
 
-**给 AI 助手**：让它「读 `skills/qtshadcn/SKILL.md`，按需读 `references/`」，即可学会安装、接入并用组件，例如：
+**给 AI 助手**：让它「读 `https://github.com/QtShadcn/qtshadcn/skills/qtshadcn/SKILL.md`，按需读 `references/`」，即可学会安装、接入并用组件，例如：
 
-> 请先读 `skills/qtshadcn/SKILL.md`，然后用 `ShadcnDialog` 帮我写一个确认弹窗。
+> 请先读 `https://github.com/QtShadcn/qtshadcn/skills/qtshadcn/SKILL.md`，然后用 `ShadcnDialog` 帮我写一个确认弹窗。
 
 新增组件时按 `references/core-workflow.md` 的「新增组件后必做」清单同步更新这些文件与截图。
 
