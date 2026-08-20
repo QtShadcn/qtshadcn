@@ -112,6 +112,8 @@ Window {
 |------|------|------|
 | `ShadcnCard` | 卡片容器（Header / Content / Footer 组合） | [component-display](references/component-display.md) |
 | `ShadcnBadge` | 状态标签（6 variant 胶囊） | [component-display](references/component-display.md) |
+| `ShadcnAvatar` | 圆形头像（图片/图标/首字母 + 5 尺寸 + StatusDot 覆盖） | [component-display](references/component-display.md) |
+| `ShadcnStatusDot` | 语义色状态圆点（Online/Away/Busy/Offline/Success/Warning/Danger） | [component-display](references/component-display.md) |
 | `ShadcnDialog` | 对话框（Base UI 规格 + sticky footer + 可滚动 body） | [component-overlay](references/component-overlay.md) |
 
 ### Navigation（M3 ✅）

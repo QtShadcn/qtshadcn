@@ -583,9 +583,15 @@ Item {
                 items: [
                     {
                         name: "Avatar",
-                        description: "头像",
+                        description: "头像（图片/图标/首字母 + 状态点）",
                         page: "AvatarPage.qml",
-                        available: false
+                        available: true
+                    },
+                    {
+                        name: "Status Dot",
+                        description: "语义色状态圆点",
+                        page: "StatusDotPage.qml",
+                        available: true
                     },
                     {
                         name: "Carousel",
