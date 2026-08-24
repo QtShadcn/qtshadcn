@@ -229,8 +229,25 @@ Item {
                 }
             }
 
-            SectionTitle {
-                text: qsTr("QML 用法")
+            RowLayout {
+                spacing: theme.spacingSm
+                SectionTitle {
+                    text: qsTr("QML 用法")
+                }
+                Item { Layout.fillWidth: true }
+                Text {
+                    text: qsTr("查看文档 ›")
+                    color: theme.primary
+                    font.pixelSize: 12
+                    font.underline: docHover.containsMouse
+                    MouseArea {
+                        id: docHover
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: Qt.openUrlExternally("https://qtshadcn.ryanuo.cc/components/dialog")
+                    }
+                }
             }
             Text {
                 width: parent.width

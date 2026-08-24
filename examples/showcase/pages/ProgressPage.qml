@@ -82,7 +82,26 @@ Item {
                 onTriggered: animProgress.value = (animProgress.value + 0.01) % 1.0
             }
 
-            SectionTitle { text: qsTr("QML 用法") }
+            RowLayout {
+                spacing: theme.spacingSm
+                SectionTitle {
+                    text: qsTr("QML 用法")
+                }
+                Item { Layout.fillWidth: true }
+                Text {
+                    text: qsTr("查看文档 ›")
+                    color: theme.primary
+                    font.pixelSize: 12
+                    font.underline: docHover.containsMouse
+                    MouseArea {
+                        id: docHover
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: Qt.openUrlExternally("https://qtshadcn.ryanuo.cc/components/progress")
+                    }
+                }
+            }
             Text {
                 width: parent.width
                 wrapMode: Text.WordWrap

@@ -35,6 +35,21 @@ Item {
             font.bold: true
         }
 
+        // 文档站跳转链接
+        Text {
+            text: qsTr("查看文档 ›")
+            color: theme.primary
+            font.pixelSize: 12
+            font.underline: iconDocHover.containsMouse
+            MouseArea {
+                id: iconDocHover
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Qt.openUrlExternally("https://qtshadcn.ryanuo.cc/components/icon")
+            }
+        }
+
         Text {
             width: parent.width
             wrapMode: Text.WordWrap

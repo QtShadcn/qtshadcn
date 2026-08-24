@@ -119,19 +119,29 @@ Window {
 
 ## 🤖 AI 如何使用 QtShadcn（Skills）
 
-仓库内的 [`skills/`](skills/) 目录是**教 AI 助手如何使用本组件库**的指南——从脚手架接入到每个组件的用法与坑（格式对齐 slidev/skills）：
+仓库内的 [`skills/`](skills/) 目录是**教 AI 助手使用 / 扩展本组件库**的指南（格式对齐 slidev/skills）。根据角色分两类：
+
+### ① 使用者 —— 把库接入自己的工程、用组件写业务
+
+适用：消费方开发者 + 其 AI 助手，目标是快速接库并用组件搭界面。
 
 - [SKILL.md](skills/qtshadcn/SKILL.md) —— 入口：消费方脚手架（CMake + 根 Makefile + `add_subdirectory(.../src)` + Basic style）+ 组件索引 + 关键坑
 - [core-build.md](skills/qtshadcn/references/core-build.md) —— 本库构建、消费方最小工程模板、`QML_IMPORT_PATH`、截图
-- `references/` —— 主题 / 开发流程 / 图标 + 各组件用法、属性、坑
+- `references/` —— 主题 / 图标 + 各组件用法、属性、坑
 
 > 安装：帮我安装这个 `https://github.com/QtShadcn/qtshadcn/skills/qtshadcn/SKILL.md` skills
 
-**使用**
+> 使用：请先读 `https://github.com/QtShadcn/qtshadcn/skills/qtshadcn/SKILL.md`，然后用 `ShadcnDialog` 帮我写一个确认弹窗。
 
-> 请先读 `https://github.com/QtShadcn/qtshadcn/skills/qtshadcn/SKILL.md`，然后用 `ShadcnDialog` 帮我写一个确认弹窗。
+### ② 开发组件 —— 扩展本库、新增 / 修改组件
 
-新增组件时按 `references/core-workflow.md` 的「新增组件后必做」清单同步更新这些文件与截图。
+适用：需要扩展 QtShadcn 本身的贡献者 + 其 AI 助手，目标是按规范新增组件并同步文档与截图。
+
+- [core-workflow.md](skills/qtshadcn/references/core-workflow.md) —— 组件开发全流程：抓 shadcn 参考 → 列对照表 → 实现 → showcase 验证 → 关 Issue → 「新增组件后必做」清单（同步文件与截图）
+- [technical-design.md](docs/content/3.design/1.technical-design.md) —— 架构与 Token 规范依据
+- [component-workflow.md](docs/content/4.development/1.component-workflow.md) —— 人读版组件开发流程
+
+> 使用：请先读 `core-workflow.md`，按清单新增一个 `ShadcnXxx` 组件，并在 showcase 加演示页、更新组件索引。
 
 ## License
 

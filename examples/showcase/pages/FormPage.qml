@@ -30,6 +30,21 @@ Item {
             font.bold: true
         }
 
+        // 文档站跳转链接（Form 为组合示例，指向表单控件文档首页 /components/input）
+        Text {
+            text: qsTr("查看文档 ›")
+            color: theme.primary
+            font.pixelSize: 12
+            font.underline: formDocHover.containsMouse
+            MouseArea {
+                id: formDocHover
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: Qt.openUrlExternally("https://qtshadcn.ryanuo.cc/components/input")
+            }
+        }
+
         Text {
             width: parent.width
             wrapMode: Text.WordWrap

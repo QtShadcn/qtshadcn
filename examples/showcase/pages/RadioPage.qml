@@ -69,7 +69,26 @@ Item {
                 ShadcnRadio { text: qsTr("选项 C（不可用）"); enabled: false }
             }
 
-            SectionTitle { text: qsTr("QML 用法") }
+            RowLayout {
+                spacing: theme.spacingSm
+                SectionTitle {
+                    text: qsTr("QML 用法")
+                }
+                Item { Layout.fillWidth: true }
+                Text {
+                    text: qsTr("查看文档 ›")
+                    color: theme.primary
+                    font.pixelSize: 12
+                    font.underline: docHover.containsMouse
+                    MouseArea {
+                        id: docHover
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: Qt.openUrlExternally("https://qtshadcn.ryanuo.cc/components/radio-group")
+                    }
+                }
+            }
             Text {
                 width: parent.width
                 wrapMode: Text.WordWrap

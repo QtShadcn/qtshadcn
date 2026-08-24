@@ -82,7 +82,26 @@ Item {
                 text: qsTr("第一行\n第二行\n第三行\n第四行\n第五行\n第六行\n第七行\n第八行\n第九行\n第十行\n超过 maxHeight 后内部滚动")
             }
 
-            SectionTitle { text: qsTr("QML 用法") }
+            RowLayout {
+                spacing: theme.spacingSm
+                SectionTitle {
+                    text: qsTr("QML 用法")
+                }
+                Item { Layout.fillWidth: true }
+                Text {
+                    text: qsTr("查看文档 ›")
+                    color: theme.primary
+                    font.pixelSize: 12
+                    font.underline: docHover.containsMouse
+                    MouseArea {
+                        id: docHover
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: Qt.openUrlExternally("https://qtshadcn.ryanuo.cc/components/textarea")
+                    }
+                }
+            }
             Text {
                 width: parent.width
                 wrapMode: Text.WordWrap
