@@ -77,5 +77,5 @@ SHOT_DELAY_MS=2000 SLEEP=1 bash scripts/screenshot.sh
 - 输出 `docs/public/images/components/<slug>.png`（kebab-case，与文档 slug 对齐）
 - 自动设 `QT_QPA_PLATFORM=offscreen`、`QTSHADCN_SCREENSHOT=1`（关 MultiEffect，否则 Card 等空白）；沙箱可跑
 - 文档引用：`![<组件> 效果展示](/images/components/<slug>.png)`
-- 细节与参数见 [core-build](core-build.md)「组件截图」
+- 细节与参数见 [build](build.md)「组件截图」
 
