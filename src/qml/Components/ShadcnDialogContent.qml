@@ -74,11 +74,16 @@ Item {
     }
 
     // ── footer 固定条（满宽 muted）──────────────────────────
+    // 内缩 1px（= 对话框 background 的 border.width），使灰色条的圆角(radius=_radius)
+    // 与对话框背景「内边缘」圆角对齐，否则 footer 圆角比内边缘大 1px → 底部两角露出方角
     Item {
         id: footerBar
         anchors.left: parent.left
+        anchors.leftMargin: 1
         anchors.right: parent.right
+        anchors.rightMargin: 1
         anchors.bottom: parent.bottom
+        anchors.bottomMargin: 1
         height: _footerH
         visible: _footerH > 0
         clip: true

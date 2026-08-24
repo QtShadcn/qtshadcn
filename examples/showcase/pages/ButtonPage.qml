@@ -15,27 +15,25 @@ Item {
     Column {
         id: header
 
-        anchors.top: parent.top
         anchors.left: parent.left
-        anchors.right: parent.right
         anchors.margins: 24
+        anchors.right: parent.right
+        anchors.top: parent.top
         anchors.topMargin: 40
-
         spacing: theme.spacingLg
 
         Text {
-            text: qsTr("ShadcnButton")
             color: theme.foreground
-            font.pixelSize: 20
             font.bold: true
+            font.pixelSize: 20
+            text: qsTr("ShadcnButton")
         }
-
         Text {
-            width: parent.width
-            wrapMode: Text.WordWrap
-            text: qsTr("基于 QQC Button（Basic style），6 种 variant × 5 种 size，支持 loading / disabled / 键盘焦点环。")
             color: theme.mutedForeground
             font.pixelSize: 13
+            text: qsTr("基于 QQC Button（Basic style），6 种 variant × 5 种 size，支持 loading / disabled / 键盘焦点环。")
+            width: parent.width
+            wrapMode: Text.WordWrap
         }
     }
 
@@ -44,21 +42,19 @@ Item {
     ScrollView {
         id: sv
 
-        anchors.top: header.bottom
-        anchors.topMargin: 20
+        ScrollBar.vertical.policy: ScrollBar.AsNeeded
         anchors.bottom: parent.bottom
         anchors.left: parent.left
-        anchors.right: parent.right
         anchors.leftMargin: 24
+        anchors.right: parent.right
         anchors.rightMargin: 24
-
+        anchors.top: header.bottom
+        anchors.topMargin: 20
         clip: true
 
-        ScrollBar.vertical.policy: ScrollBar.AsNeeded
-
         Column {
-            width: sv.availableWidth
             spacing: theme.spacingLg
+            width: sv.availableWidth
 
             // ── variant ──
             SectionTitle {
@@ -66,6 +62,7 @@ Item {
             }
             Row {
                 spacing: theme.spacingSm
+
                 ShadcnButton {
                     text: qsTr("Primary")
                     variant: ShadcnButton.Variant.Primary
@@ -98,32 +95,33 @@ Item {
             }
             Row {
                 spacing: theme.spacingSm
+
                 ShadcnButton {
-                    text: qsTr("XS")
                     size: ShadcnButton.Size.ExtraSmall
+                    text: qsTr("XS")
                 }
                 ShadcnButton {
-                    text: qsTr("Small")
                     size: ShadcnButton.Size.Small
+                    text: qsTr("Small")
                 }
                 ShadcnButton {
-                    text: qsTr("Medium")
                     size: ShadcnButton.Size.Medium
+                    text: qsTr("Medium")
                 }
                 ShadcnButton {
-                    text: qsTr("Large")
                     size: ShadcnButton.Size.Large
+                    text: qsTr("Large")
                 }
                 ShadcnButton {
-                    text: qsTr("＋")
                     size: ShadcnButton.Size.Icon
+                    text: qsTr("＋")
                 }
             }
 
             // 显式拉宽时文字仍居中（验证 contentItem 居中锚点）
             ShadcnButton {
-                width: 240
                 text: qsTr("拉伸宽度仍居中")
+                width: 240
             }
 
             // ── disabled / loading ──
@@ -132,23 +130,24 @@ Item {
             }
             Row {
                 spacing: theme.spacingSm
+
                 ShadcnButton {
-                    text: qsTr("Disabled")
                     enabled: false
+                    text: qsTr("Disabled")
                 }
                 ShadcnButton {
+                    enabled: false
                     text: qsTr("Disabled Outline")
                     variant: ShadcnButton.Variant.Outline
-                    enabled: false
                 }
                 ShadcnButton {
-                    text: qsTr("Loading")
                     loading: true
+                    text: qsTr("Loading")
                 }
                 ShadcnButton {
+                    loading: true
                     text: qsTr("Loading Ghost")
                     variant: ShadcnButton.Variant.Ghost
-                    loading: true
                 }
             }
 
@@ -158,57 +157,59 @@ Item {
             }
             Row {
                 spacing: theme.spacingSm
+
                 ShadcnButton {
-                    text: qsTr("未选中")
                     checkable: true
+                    checked: true  // 默认选中，不需要时可删除此行
+                    text: checked ? qsTr("已选中") : qsTr("未选中")
                 }
                 ShadcnButton {
-                    text: qsTr("已选中")
                     checkable: true
                     checked: true
-                }
-                ShadcnButton {
                     text: qsTr("选中 Outline")
                     variant: ShadcnButton.Variant.Outline
-                    checkable: true
-                    checked: true
                 }
             }
-
             RowLayout {
                 spacing: theme.spacingSm
+
                 SectionTitle {
                     text: qsTr("QML 用法")
                 }
-                Item { Layout.fillWidth: true }
+                Item {
+                    Layout.fillWidth: true
+                }
                 Text {
-                    text: qsTr("查看文档 ›")
                     color: theme.primary
                     font.pixelSize: 12
                     font.underline: docHover.containsMouse
+                    text: qsTr("查看文档 ›")
+
                     MouseArea {
                         id: docHover
+
                         anchors.fill: parent
-                        hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
+
                         onClicked: Qt.openUrlExternally("https://qtshadcn.ryanuo.cc/components/button")
                     }
                 }
             }
             Text {
-                width: parent.width
-                wrapMode: Text.WordWrap
+                color: theme.mutedForeground
                 font.family: Qt.platform.os === "osx" ? "Menlo" : "monospace"
                 font.pixelSize: 12
-                color: theme.mutedForeground
                 text: "ShadcnButton {\n    text: \"Deploy\"\n    variant: ShadcnButton.Variant.Primary\n    size: ShadcnButton.Size.Medium\n    loading: false\n    onClicked: { ... }\n}"
+                width: parent.width
+                wrapMode: Text.WordWrap
             }
         }
     }
 
     component SectionTitle: Text {
         color: theme.foreground
-        font.pixelSize: 15
         font.bold: true
+        font.pixelSize: 15
     }
 }
