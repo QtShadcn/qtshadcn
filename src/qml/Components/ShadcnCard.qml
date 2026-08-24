@@ -58,6 +58,10 @@ Rectangle {
     Column {
         id: contentColumn
 
+        // 注：Column 自身用 anchors.fill 合法；但放进本 Column 的子项
+        // （Header/Content/Footer 及业务内容）不能用 top/bottom/fill/
+        // verticalCenter/centerIn —— 否则报 "Cannot specify ... anchors
+        // for items inside Column"。子项垂直位置一律由 Column 管理。
         anchors.fill: parent
         anchors.margins: root.padding
         spacing: root.padding

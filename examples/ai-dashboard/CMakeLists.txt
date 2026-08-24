@@ -1,0 +1,23 @@
+qt_add_executable(ai-dashboard
+    main.cpp
+)
+
+qt_add_qml_module(ai-dashboard
+    URI AiDashboard
+    VERSION 1.0
+    QML_FILES
+        Main.qml
+        components/Sidebar.qml
+        components/UserCard.qml
+        components/AIChatCard.qml
+        components/ProjectCard.qml
+        theme/ThemeToggle.qml
+)
+
+target_link_libraries(ai-dashboard PRIVATE QtShadcn Qt6::Gui Qt6::Quick Qt6::Qml Qt6::QuickControls2)
+
+# macOS 大小写不敏感：模块输出目录 AiDashboard/ 与可执行文件 ai-dashboard 撞名(EISDIR)，
+# 可执行文件统一输出到 build/bin/（与 showcase 同款处理）
+set_target_properties(ai-dashboard PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)

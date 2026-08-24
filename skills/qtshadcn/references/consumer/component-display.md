@@ -36,6 +36,15 @@ ShadcnCard {
 
 视觉：`bg-card` + 1px 前景色环（light 5% / dark 10%）+ `shadow-md` + `theme.radius` 圆角。
 
+## 使用注意
+
+- **Card 的直接子项禁用垂直类 anchors**（`anchors.centerIn / fill / top / bottom / verticalCenter`）。
+  Card 内部用 Column 堆叠子项，违规子项会在运行时报
+  `ShadcnCard.qml:58: QML Column: Cannot specify top, bottom, verticalCenter, fill or centerIn anchors for items inside Column`
+  —— 注意行号指向库文件 Column 声明处，容易误判为库的 bug，实际是业务子项写法问题。
+  居中改用 `x: (card.width - width) / 2; y: (card.height - height) / 2`。
+- 子项内部的嵌套元素不受限制（如 Content 里 ListView 用 `anchors.fill: parent` 合法）。
+
 ## ShadcnBadge
 
 ```qml
