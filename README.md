@@ -146,3 +146,9 @@ Window {
 ## License
 
 MIT © [QtShadcn](https://github.com/QtShadcn)
+
+> 本项目与 [shadcn/ui](https://ui.shadcn.com) 官方无隶属关系，仅在组件设计上受其启发。
+
+### 第三方素材
+
+- 图标来自 [Lucide](https://lucide.dev)（ISC License），许可声明见 [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)。
