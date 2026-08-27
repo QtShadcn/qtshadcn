@@ -1,6 +1,6 @@
 // src/qml/Components/ShadcnTable.qml
 import QtQuick
-import QtQuick.Controls as QQC
+import QtQuick.Controls 2.15 as QQC
 import QtShadcn
 
 // shadcn/ui 风格表格（M5）：表头 sticky + 行 hover/选中 + 列对齐
