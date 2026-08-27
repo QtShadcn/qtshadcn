@@ -110,7 +110,35 @@ Window {
             title: "Table",
             page: "TablePage.qml"
         },
-    ]
+        {
+            title: "DropdownMenu",
+            page: "DropdownMenuPage.qml"
+        },
+        {
+            title: "Separator",
+            page: "SeparatorPage.qml"
+        },
+        {
+            title: "Label",
+            page: "LabelPage.qml"
+        },
+        {
+            title: "Tooltip",
+            page: "TooltipPage.qml"
+        },
+        {
+            title: "Alert",
+            page: "AlertPage.qml"
+        },
+        {
+            title: "Skeleton",
+            page: "SkeletonPage.qml"
+        },
+        {
+            title: "Kbd",
+            page: "KbdPage.qml"
+        },
+        ]
 
     // 文件名 → 菜单/StackLayout index（总览页卡片跳转用；未匹配回退总览）
     function findPageIndex(page) {
@@ -294,6 +322,13 @@ Window {
             AvatarPage {}
             StatusDotPage {}
             TablePage {}
+            DropdownMenuPage {}
+            SeparatorPage {}
+            LabelPage {}
+            TooltipPage {}
+            AlertPage {}
+            SkeletonPage {}
+            KbdPage {}
         }
     }
 

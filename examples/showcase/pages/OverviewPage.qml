@@ -363,7 +363,7 @@ Item {
                         name: "Alert",
                         description: "四色提示框",
                         page: "AlertPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Dialog",
@@ -393,7 +393,7 @@ Item {
                         name: "Skeleton",
                         description: "骨架屏",
                         page: "SkeletonPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Badge",
@@ -405,13 +405,13 @@ Item {
                         name: "Label",
                         description: "文本标签",
                         page: "LabelPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Separator",
                         description: "分隔线",
                         page: "SeparatorPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Typography",
@@ -603,13 +603,13 @@ Item {
                         name: "Kbd",
                         description: "键盘快捷键",
                         page: "KbdPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Tooltip",
                         description: "提示信息",
                         page: "TooltipPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Message",
