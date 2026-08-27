@@ -106,6 +106,10 @@ Window {
             title: "StatusDot",
             page: "StatusDotPage.qml"
         },
+        {
+            title: "Table",
+            page: "TablePage.qml"
+        },
     ]
 
     // 文件名 → 菜单/StackLayout index（总览页卡片跳转用；未匹配回退总览）
@@ -289,6 +293,7 @@ Window {
             FormPage {}
             AvatarPage {}
             StatusDotPage {}
+            TablePage {}
         }
     }
 
