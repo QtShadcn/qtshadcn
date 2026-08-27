@@ -24,7 +24,7 @@ Switch {
     // 滑块：正圆 size-4 / size-3 = 16 / 12（v4 官方；旧版 h-4 w-6=16×24 胶囊已弃）
     readonly property int _tw: size === ShadcnSwitch.Size.Small ? 12 : 16
     readonly property int _th: size === ShadcnSwitch.Size.Small ? 12 : 16
-    readonly property int _gap: 2   // checked 右侧留 2px（shadcn: translate-x-[calc(100%-2px)]）
+    readonly property int _gap: 0   // 滑块贴边（无间隙）
 
     implicitWidth: _w
     implicitHeight: _h
