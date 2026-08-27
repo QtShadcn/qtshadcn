@@ -1,7 +1,8 @@
 # QtShadcn 快捷命令
 # 用法:
-#   make build   配置 + 增量构建
+#   make build   配置 + 增量构建（默认 showcase）
 #   make run     构建并运行 showcase（前台，Ctrl+C 退出）
+#   make test    配置(开测试) + 构建测试 + 运行 ctest
 #   make clean   清理构建产物
 #   make fresh   删除构建目录后完整重建（Qt 模块/缓存异常时用）
 #   make info    显示当前配置
@@ -20,7 +21,7 @@ TARGET ?= $(if $(f),$(f),showcase)
 BIN     = $(BUILD_DIR)/bin/$(TARGET)
 QML_IMPORT = $(CURDIR)/$(BUILD_DIR)/src:$(CURDIR)/$(BUILD_DIR)/examples/$(TARGET)
 
-.PHONY: build run clean fresh info list
+.PHONY: build run test clean fresh info list
 
 build:
 	@if [ ! -d "$(EXAMPLES_DIR)/$(TARGET)" ]; then \
@@ -33,6 +34,14 @@ build:
 
 run: build
 	QML_IMPORT_PATH="$(QML_IMPORT)" $(BIN)
+
+# 开 QTSHADCN_BUILD_TESTS，关 examples 以聚焦测试、缩短构建
+test:
+	cmake -S . -B $(BUILD_DIR) -DCMAKE_PREFIX_PATH="$(QT_PREFIX)" \
+		-DQTSHADCN_BUILD_TESTS=ON -DQTSHADCN_BUILD_EXAMPLES=OFF \
+		-DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+	cmake --build $(BUILD_DIR) -j$(JOBS)
+	ctest --test-dir $(BUILD_DIR) --output-on-failure
 
 clean:
 	rm -rf $(BUILD_DIR)

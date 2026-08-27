@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# C++ 逻辑层单测 + 构建验证。
+# CI 用 Qt 6.8.3（aqtinstall 暂无法装 6.11；本地 6.11.1 与 6.8.3 floor 兼容：本仓库
+# find_package(Qt6) 未设最低版本，且未使用 6.9+ 专属 API）。
+jobs:
+  test:
+    runs-on: macos-15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Qt 6.8.3
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: 6.8.3
+          arch: clang_64
+          modules: qtbase qtdeclarative qtquickcontrols2 qtsvg
+          install-deps: false
+
+      - name: Configure (tests on, examples off)
+        run: cmake -S . -B build -DQTSHADCN_BUILD_TESTS=ON -DQTSHADCN_BUILD_EXAMPLES=OFF
+
+      - name: Build
+        run: cmake --build build -j
+
+      - name: Test
+        env:
+          # 纯 C++ 逻辑层单测（ThemeManager / IconRegistry / ShadcnTableModel），
+          # 不需要真实显示服务器，用 offscreen 平台即可
+          QT_QPA_PLATFORM: offscreen
+        run: ctest --test-dir build --output-on-failure
