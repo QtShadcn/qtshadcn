@@ -33,6 +33,38 @@ QML_IMPORT_PATH="$(pwd)/build/src:$(pwd)/build/examples/showcase" \
 
 - offscreen 下 Flickable/TextEdit 不执行完整布局，滚动交互无法验证，需 GUI 目测
 
+## 坑：独立 qml 工具无法加载本库插件（macOS 签名）
+
+`Qt/6.11.1/macos/bin/qml` 是 Qt 官方签名的独立启动器，与本地编译的
+`build/src/QtShadcn/libQtShadcnplugin.dylib` **Team ID 不同**，dlopen 会被
+系统拒绝：`code signature ... not valid for use in process: mapping process and
+mapped file have different Team IDs`。
+
+- ❌ 不要指望用 `qml xxx.qml` + `QML_IMPORT_PATH` 来离线验证本库 QML
+- ✅ 验证本库 QML 模块/组件，直接跑**同签名的 showcase 二进制**（编译时已链接该
+  dylib）：`QT_QPA_PLATFORM=offscreen ./build/bin/showcase`，3 秒无 stderr 即 OK
+- ✅ 纯 QML 语法/类型错误会在 `make build` 的 qmlcache 编译期直接报错，等价于一次
+  离线校验
+
+## 坑：Qt 6 移除 QVariant::operator<
+
+`QVariant a, b; if (a < b)` 在 Qt 6 **编译失败**（运算符已删）。任何 QVariant
+比较（如表格按列排序）改用静态函数：
+
+```cpp
+// ❌ Qt5 写法，Qt6 硬失败
+std::sort(rows.begin(), rows.end(), [&](const QVariant &a, const QVariant &b){
+    return cellOf(a, key) < cellOf(b, key);
+});
+// ✅ Qt6 写法
+std::sort(rows.begin(), rows.end(), [&](const QVariant &a, const QVariant &b){
+    bool less = QVariant::compare(cellOf(a, key), cellOf(b, key)) == QPartialOrdering::Less;
+    return ascending ? less : !less;
+});
+```
+
+注：clang LSP 对 `QVariant::compare` 可能仍误报，以真实编译器为准（信编译器不信 LSP）。
+
 ## 关键：QML 编译进动态库
 
 - QtShadcn 的 QML 经 `qt_add_qml_module` 编进库（qmlcache），**不是从源码目录热加载**
