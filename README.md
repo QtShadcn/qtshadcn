@@ -4,7 +4,7 @@
 
 Qt 6 / QML 可组合 UI 组件库，对齐 shadcn/ui 的设计哲学：**Design Token → Component → Composition → Theme**。
 
-> ⚠️ **开发状态**：本项目仍在活跃开发中，API 可能随迭代调整。下方「组件状态」表中标 ✅ 的组件已可用，标 ⏳ 的组件正在开发/规划中，欢迎 [Issue](https://github.com/QtShadcn/qtshadcn/issues) 与 PR。
+> ⚠️ **开发状态**：本项目仍在活跃开发中，API 可能随迭代调整。已可用组件与里程碑进度见 [文档站里程碑](docs/content/1.getting-started/5.milestones.md) 与 [Skills](skills/qtshadcn/SKILL.md)，欢迎 [Issue](https://github.com/QtShadcn/qtshadcn/issues) 与 PR。
 
 ## ✨ 特性
 
@@ -57,25 +57,6 @@ target_link_libraries(myapp PRIVATE QtShadcn Qt6::Quick Qt6::QuickControls2)
 `main.cpp` 里必须 `QQuickStyle::setStyle("Basic")`（macOS 默认 native style 会拒绝自定义 `contentItem` / `background`）。启动时把 `QML_IMPORT_PATH` 指到 **QtShadcn 模块目录的父路径**（上述布局下为 `build/third_party/qtshadcn/src`）。
 
 建议在应用根目录放 `Makefile`（`make build` / `make run` / `make clean`）。完整工程模板见 [skills/qtshadcn/references/core-build.md](skills/qtshadcn/references/core-build.md)。
-
-## 📦 组件状态
-
-| 组件 | 状态 |
-|---|---|
-| Theme（Design Token 系统） | ✅ M1 完成 |
-| ShadcnButton（6 variant × 5 size + 图标 + loading） | ✅ M2 完成 |
-| ShadcnButtonGroup / ShadcnToggle / ShadcnToggleGroup / ShadcnSpinner | ✅ M2 完成 |
-| ShadcnCard（Header / Content / Footer 组合） | ✅ M3 完成 |
-| ShadcnInput / ShadcnInputGroup / ShadcnTextarea | ✅ M3 完成 |
-| ShadcnCheckbox / ShadcnRadioGroup | ✅ M3 完成 |
-| ShadcnSwitch / ShadcnSlider / ShadcnProgress / ShadcnSelect | ✅ M3 完成 |
-| ShadcnBadge（6 variant 徽标） | ✅ M3 完成 |
-| ShadcnTabs（default / line variant） | ✅ M3 完成 |
-| ShadcnDialog（模态对话框 + 可滚动 body） | ✅ M3 完成 |
-| Icon 系统（ShadcnIcon + IconRegistry，本地 74 + 远程兜底） | ✅ M4 完成 |
-| Animations（预置动画封装） | ⏳ M4 开发中 |
-| Models / Table / WindowManager | ⏳ M5 计划 |
-| 文档站完善 / 发布 | 🔄 M6 进行中 |
 
 ## 🎨 用法示例
 
