@@ -663,7 +663,7 @@ Item {
                         name: "Table",
                         description: "数据表格",
                         page: "TablePage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Data Table",
