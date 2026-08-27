@@ -126,13 +126,10 @@ Item {
                     id: rowHover
                     anchors.fill: parent
                     hoverEnabled: true
-                }
-            }
-            // 整行点击选中
-            TapHandler {
-                onTapped: function(eventPoint) {
-                    var r = body.rowAt(eventPoint.position.x, eventPoint.position.y)
-                    if (r >= 0) { root.currentRow = r; root.rowClicked(r) }
+                    onClicked: {
+                        root.currentRow = row
+                        root.rowClicked(row)
+                    }
                 }
             }
         }
