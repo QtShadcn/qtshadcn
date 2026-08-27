@@ -47,6 +47,7 @@ qt_add_qml_module(QtShadcn
         qml/Components/ShadcnInputGroup.qml
         qml/Components/ShadcnStatusDot.qml
         qml/Components/ShadcnAvatar.qml
+        qml/Components/ShadcnTable.qml
 )
 
 # 图标资源：qt_add_qml_module 的 RESOURCES 会把 qrc 当单个文件嵌套进
