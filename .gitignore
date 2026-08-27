@@ -40,3 +40,6 @@ logs
 build/
 cmake-build-*/
 *.user
+
+# Hermes agent
+.hermes

@@ -26,7 +26,7 @@ Item {
         Text {
             width: parent.width
             wrapMode: Text.WordWrap
-            text: qsTr("悬停提示：鼠标悬停在元素上显示浮层提示。")
+            text: qsTr("悬停提示：鼠标悬停在元素上显示浮层提示。基于 Popup + HoverHandler 实现。")
             color: theme.mutedForeground
             font.pixelSize: 13
         }
@@ -53,17 +53,17 @@ Item {
                 spacing: 16
                 ShadcnButton {
                     text: qsTr("悬停我")
-                    ShadcnTooltip.text: qsTr("这是一个简单的提示")
+                    ShadcnTooltip { text: qsTr("这是一个简单的提示") }
                 }
                 ShadcnButton {
                     text: qsTr("带说明")
                     variant: ShadcnButton.Variant.Outline
-                    ShadcnTooltip.text: qsTr("提示可以包含更长的说明文字，自动换行显示")
+                    ShadcnTooltip { text: qsTr("提示可以包含更长的说明文字，自动换行显示") }
                 }
                 ShadcnButton {
                     text: qsTr("禁用按钮")
                     enabled: false
-                    ShadcnTooltip.text: qsTr("禁用状态下的提示")
+                    ShadcnTooltip { text: qsTr("禁用状态下的提示") }
                 }
             }
 
@@ -74,7 +74,7 @@ Item {
                 font.family: Qt.platform.os === "osx" ? "Menlo" : "monospace"
                 font.pixelSize: 12
                 color: theme.mutedForeground
-                text: "ShadcnButton {\n    text: \"悬停我\"\n    ShadcnTooltip.text: \"这是提示\"\n}"
+                text: "ShadcnButton {\n    text: \"悬停我\"\n    ShadcnTooltip { text: \"这是提示\" }\n}"
             }
         }
     }

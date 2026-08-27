@@ -55,12 +55,17 @@ qt_add_qml_module(QtShadcn
         qml/Components/ShadcnDropdownMenuTrigger.qml
         qml/Components/ShadcnDropdownMenuContent.qml
         qml/Components/ShadcnDropdownMenuItem.qml
+        qml/Components/ShadcnDropdownMenuGroup.qml
+        qml/Components/ShadcnDropdownMenuLabel.qml
+        qml/Components/ShadcnDropdownMenuSeparator.qml
+        qml/Components/ShadcnDropdownMenuShortcut.qml
         qml/Components/ShadcnSeparator.qml
         qml/Components/ShadcnLabel.qml
         qml/Components/ShadcnTooltip.qml
         qml/Components/ShadcnAlert.qml
         qml/Components/ShadcnSkeleton.qml
         qml/Components/ShadcnKbd.qml
+        qml/Components/ShadcnKbdGroup.qml
 )
 
 # 图标资源：qt_add_qml_module 的 RESOURCES 会把 qrc 当单个文件嵌套进

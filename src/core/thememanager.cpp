@@ -98,6 +98,11 @@ void ThemeManager::rebuildTokens()
             { QStringLiteral("input"),                 QStringLiteral("#27272a") },
             { QStringLiteral("popover"),               QStringLiteral("#09090b") },
             { QStringLiteral("popoverForeground"),     QStringLiteral("#fafafa") },
+            // M6: warning / success（Alert 项目扩展，shadcn/ui 无此 token）
+            { QStringLiteral("warning"),               QStringLiteral("#92400e") },
+            { QStringLiteral("warningForeground"),     QStringLiteral("#fef3c7") },
+            { QStringLiteral("success"),               QStringLiteral("#166534") },
+            { QStringLiteral("successForeground"),     QStringLiteral("#f0fdf4") },
             // 形状与间距
             { QStringLiteral("radius"),                8 },
             { QStringLiteral("spacingXs"),             4 },
@@ -131,6 +136,11 @@ void ThemeManager::rebuildTokens()
             { QStringLiteral("input"),                 QStringLiteral("#e4e4e7") },
             { QStringLiteral("popover"),               QStringLiteral("#ffffff") },
             { QStringLiteral("popoverForeground"),     QStringLiteral("#09090b") },
+            // M6: warning / success（Alert 项目扩展，shadcn/ui 无此 token）
+            { QStringLiteral("warning"),               QStringLiteral("#b45309") },
+            { QStringLiteral("warningForeground"),     QStringLiteral("#fffbeb") },
+            { QStringLiteral("success"),               QStringLiteral("#15803d") },
+            { QStringLiteral("successForeground"),     QStringLiteral("#f0fdf4") },
             // 形状与间距
             { QStringLiteral("radius"),                8 },
             { QStringLiteral("spacingXs"),             4 },

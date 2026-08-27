@@ -33,6 +33,43 @@ QML_IMPORT_PATH="$(pwd)/build/src:$(pwd)/build/examples/showcase" \
 
 - offscreen 下 Flickable/TextEdit 不执行完整布局，滚动交互无法验证，需 GUI 目测
 
+> ⚠️ **验证必须让二进制真正跑起来**。本机 `timeout` 命令不存在，
+> `timeout 12 ./build/bin/showcase` 会直接 `command not found` 然后脚本退出，
+> 后续 `grep` 拿到空输出被误判为「无错误」（假阴性）。正确做法二选一：
+> 1. 后台进程 + sleep + kill：`./build/bin/showcase > /tmp/t.log 2>&1 & sleep 8; kill %1`
+>    （Hermes 终端不限 `&`，用 `terminal(background=true)` 起进程，再 sleep 后读日志）
+> 2. 用 `QML_IMPORT_TRACE=1` 跑，grep `not a type|unavailable` 确认类型真的被解析
+>    （`resolveType: "...TableView" => "QQuickTableView" TYPE` 即成功）
+
+## 坑：Qt 6 的 TableView 属于 QtQuick，不在 QtQuick.Controls
+
+`TableView` 在 Qt 6 是 **`QtQuick` 模块的原生类型**（`QQuickTableView`），
+**不是** `QtQuick.Controls` 的成员。`QtQuick.Controls` 里只有 `TableViewDelegate`。
+
+- ❌ `import QtQuick.Controls as QQC` 后写 `QQC.TableView { }` → `QQC.TableView is not a type`
+- ✅ 直接用 `TableView { }`（文件顶部已有 `import QtQuick` 即可，无需 alias）
+- 验证：`QML_IMPORT_TRACE=1` 应出现 `resolveType: "TableView" => "QQuickTableView" TYPE`
+- 注意：`qt_add_qml_module` 的 `DEPENDENCIES` 仍应含 `QtQuick` / `QtQuick.Controls`（控件如
+  `QQC.ComboBox` 在 Controls 里），但 `TableView` 本身来自 QtQuick。
+
+## 坑：qmlcache AOT 下 TableView.onClicked 不可用
+
+qmlcache 预编译（AOT）对原生 `QQuickTableView` 的 `clicked` 信号暴露不全，
+写 `TableView { onClicked: ... }` 会报 `Cannot assign to non-existent property "onClicked"`。
+
+- ❌ `TableView { onClicked: function(pos){...} }`
+- ✅ 用 `TapHandler` 包裹捕获点击（AOT 友好）：
+```qml
+TableView {
+    TapHandler {
+        onTapped: function(p) {
+            var r = view.rowAt(p.position.x, p.position.y)
+            if (r >= 0) { currentRow = r; rowClicked(r) }
+        }
+    }
+}
+```
+
 ## 坑：独立 qml 工具无法加载本库插件（macOS 签名）
 
 `Qt/6.11.1/macos/bin/qml` 是 Qt 官方签名的独立启动器，与本地编译的

@@ -6,6 +6,7 @@ import QtShadcn
 // shadcn/ui 风格下拉菜单（M6）
 // 用 QQC.Popup 承载弹层：Popup 渲染在 Window Overlay 层，天然置顶，
 // 不会被页面其他元素（图标按钮等）遮挡
+// 交互：点击外部 / ESC 关闭（QQC.Popup closePolicy 内置）
 // 用法:
 //   ShadcnDropdownMenu {
 //       ShadcnDropdownMenuTrigger { text: "打开" }
@@ -32,6 +33,10 @@ Item {
         id: popup
         padding: 0
         visible: root.open
+        // 点击外部关闭 + ESC 关闭
+        closePolicy: QQC.Popup.CloseOnPressOutside | QQC.Popup.CloseOnEscape
+        onClosed: { root.open = false }
+
         background: Rectangle { color: "transparent" }
         contentItem: Column { id: popupColumn; spacing: 2 }
 

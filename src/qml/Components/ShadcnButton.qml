@@ -37,6 +37,9 @@ Button {
     // ShadcnButtonGroup / ShadcnToggleGroup 内部使用：'only' | 'first' | 'middle' | 'last'
     property string _groupPosition: "only"
 
+    // 启用 hover 追踪（Qt 6 QAbstractButton 默认 hoverEnabled=false）
+    hoverEnabled: true
+
     QtShadcnTheme { id: theme }
     VariantTokens { id: vt }
 

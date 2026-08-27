@@ -26,7 +26,7 @@ Item {
         Text {
             color: theme.mutedForeground
             font.pixelSize: 13
-            text: qsTr("基于 Popup 的下拉菜单,支持 Trigger + Content + Item 组合,hover accent、Destructive 变体。")
+            text: qsTr("基于 Popup 的下拉菜单，支持 Trigger + Content + Item 组合，hover accent、Destructive 变体。点击外部或按 ESC 关闭。")
             width: parent.width
             wrapMode: Text.WordWrap
         }
@@ -77,6 +77,38 @@ Item {
                     ShadcnDropdownMenuItem { text: qsTr("打开"); iconName: "folder-open" }
                     ShadcnDropdownMenuItem { text: qsTr("保存"); iconName: "save" }
                     ShadcnDropdownMenuItem { text: qsTr("另存为..."); iconName: "file-plus"; enabled: false }
+                }
+            }
+
+            SectionTitle { text: qsTr("分组 + 标签 + 分隔线") }
+            ShadcnDropdownMenu {
+                ShadcnDropdownMenuTrigger { text: qsTr("账户菜单"); variant: ShadcnButton.Variant.Outline }
+                ShadcnDropdownMenuContent {
+                    ShadcnDropdownMenuGroup {
+                        ShadcnDropdownMenuLabel { text: qsTr("我的账号") }
+                        ShadcnDropdownMenuItem { text: qsTr("个人中心"); iconName: "user" }
+                        ShadcnDropdownMenuItem { text: qsTr("设置"); iconName: "settings" }
+                    }
+                    ShadcnDropdownMenuSeparator {}
+                    ShadcnDropdownMenuGroup {
+                        ShadcnDropdownMenuItem { text: qsTr("团队"); iconName: "users" }
+                        ShadcnDropdownMenuItem { text: qsTr("订阅"); iconName: "credit-card" }
+                    }
+                    ShadcnDropdownMenuSeparator {}
+                    ShadcnDropdownMenuItem { text: qsTr("退出登录"); iconName: "log-out"; variant: ShadcnDropdownMenuItem.Variant.Destructive }
+                }
+            }
+
+            SectionTitle { text: qsTr("快捷键提示") }
+            ShadcnDropdownMenu {
+                ShadcnDropdownMenuTrigger { text: qsTr("编辑菜单"); variant: ShadcnButton.Variant.Outline }
+                ShadcnDropdownMenuContent {
+                    ShadcnDropdownMenuItem { text: qsTr("撤销"); shortcut: "⌘Z" }
+                    ShadcnDropdownMenuItem { text: qsTr("重做"); shortcut: "⌘⇧Z" }
+                    ShadcnDropdownMenuSeparator {}
+                    ShadcnDropdownMenuItem { text: qsTr("剪切"); shortcut: "⌘X" }
+                    ShadcnDropdownMenuItem { text: qsTr("复制"); shortcut: "⌘C" }
+                    ShadcnDropdownMenuItem { text: qsTr("粘贴"); shortcut: "⌘V" }
                 }
             }
         }

@@ -26,7 +26,7 @@ Item {
         Text {
             width: parent.width
             wrapMode: Text.WordWrap
-            text: qsTr("提示框：4 variant（Default / Destructive / Warning / Success），图标 + 标题 + 描述。")
+            text: qsTr("提示框：4 variant（Default / Destructive / Warning / Success），图标 + 标题 + 描述 + 操作按钮。配色走 token，dark mode 自适应。")
             color: theme.mutedForeground
             font.pixelSize: 13
         }
@@ -78,6 +78,27 @@ Item {
                 }
             }
 
+            SectionTitle { text: qsTr("带操作按钮（AlertAction）") }
+            ShadcnAlert {
+                width: parent.width
+                title: qsTr("新功能已上线")
+                description: qsTr("暗黑模式已支持，前往设置中开启。")
+                ShadcnButton {
+                    text: qsTr("前往设置")
+                    variant: ShadcnButton.Variant.Outline
+                }
+            }
+            ShadcnAlert {
+                width: parent.width
+                title: qsTr("存储空间不足")
+                description: qsTr("您的存储空间即将用完，请清理或升级。")
+                variant: ShadcnAlert.Variant.Warning
+                ShadcnButton {
+                    text: qsTr("升级")
+                    variant: ShadcnButton.Variant.Primary
+                }
+            }
+
             SectionTitle { text: qsTr("仅标题") }
             ShadcnAlert {
                 width: parent.width
@@ -91,7 +112,7 @@ Item {
                 font.family: Qt.platform.os === "osx" ? "Menlo" : "monospace"
                 font.pixelSize: 12
                 color: theme.mutedForeground
-                text: "ShadcnAlert {\n    title: \"错误\"\n    description: \"发生错误\"\n    variant: ShadcnAlert.Variant.Destructive\n}"
+                text: "ShadcnAlert {\n    title: \"错误\"\n    description: \"发生错误\"\n    variant: ShadcnAlert.Variant.Destructive\n    ShadcnButton { text: \"重试\" }\n}"
             }
         }
     }

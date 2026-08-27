@@ -3,13 +3,16 @@ import QtQuick
 import QtShadcn
 
 // shadcn/ui 风格键盘快捷键标签（M6）
+// 规范：inline-flex items-center justify-center kbd 样式
 // 用法:
 //   ShadcnKbd { text: "⌘K" }
 //   ShadcnKbd { text: "Ctrl" }
+//   ShadcnKbd { text: "Ctrl"; fontFamily: "Cascadia Code" }
 Rectangle {
     id: root
 
     property string text: ""
+    property string fontFamily: ""  // 空 = 系统 monospace fallback
 
     QtShadcnTheme { id: theme }
 
@@ -26,6 +29,8 @@ Rectangle {
         text: root.text
         color: theme.foreground
         font.pixelSize: 11
-        font.family: "SF Mono, Menlo, monospace"
+        font.family: root.fontFamily !== "" ? root.fontFamily
+                   : Qt.platform.os === "osx" ? "Menlo"
+                   : "monospace"
     }
 }

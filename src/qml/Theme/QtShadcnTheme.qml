@@ -40,6 +40,11 @@ QtObject {
     readonly property color input:                 ThemeManager.tokens["input"]
     readonly property color popover:               ThemeManager.tokens["popover"]
     readonly property color popoverForeground:     ThemeManager.tokens["popoverForeground"]
+    // M6: warning / success（Alert 项目扩展）
+    readonly property color warning:               ThemeManager.tokens["warning"]
+    readonly property color warningForeground:     ThemeManager.tokens["warningForeground"]
+    readonly property color success:               ThemeManager.tokens["success"]
+    readonly property color successForeground:     ThemeManager.tokens["successForeground"]
 
     // ── 形状与间距 ─────────────────────────────
     readonly property int radius: ThemeManager.tokens["radius"]

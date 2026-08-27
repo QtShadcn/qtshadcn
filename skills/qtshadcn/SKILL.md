@@ -93,6 +93,7 @@ Window {
 |------|------|------|
 | 本仓库构建与验证 | 构建 / offscreen 静态验证 / qmlcache / 截图 / showcase 结构 | [build](references/developer/build.md) |
 | 组件开发流程 | 抓 shadcn 规范 → 对照表 → 实现 → showcase 验证 → 同步文档截图 | [workflow](references/developer/workflow.md) |
+| M6 shadcn/ui 规范对齐 | DropdownMenu/Alert/Tooltip/Kbd 修复记录与坑 | [m6-compliance-fix](references/developer/m6-compliance-fix.md) |
 
 ## Feature Reference
 
@@ -149,11 +150,16 @@ Window {
 |------|------|------|
 | `ShadcnSeparator` | 分隔线（水平 / 竖直 / 带文字） | [separator](/components/22.separator) |
 | `ShadcnLabel` | 语义化文本标签（3 variant × 3 size） | [label](/components/23.label) |
-| `ShadcnAlert` | 提示框（4 variant + 图标 + 标题 + 描述） | [alert](/components/25.alert) |
+| `ShadcnAlert` | 提示框（4 variant + AlertAction slot + token 配色） | [alert](/components/25.alert) |
 | `ShadcnSkeleton` | 骨架屏（闪烁动画占位块） | [skeleton](/components/26.skeleton) |
-| `ShadcnKbd` | 键盘快捷键标签（等宽字体 + 边框） | [kbd](/components/27.kbd) |
-| `ShadcnTooltip` | 悬停提示（QQC.ToolTip + 主题样式） | [tooltip](/components/24.tooltip) |
-| `ShadcnDropdownMenu` | 下拉菜单（Trigger + Content + Item + Popup 置顶） | [dropdown-menu](/components/28.dropdown-menu) |
+| `ShadcnKbd` | 键盘快捷键标签（Menlo 等宽 + 边框 + `fontFamily` 属性） | [kbd](/components/27.kbd) |
+| `ShadcnKbdGroup` | 快捷键组合容器（Row + spacing） | [kbd](/components/27.kbd) |
+| `ShadcnTooltip` | 悬停提示（Item + HoverHandler + Popup，自动绑定父 hover） | [tooltip](/components/24.tooltip) |
+| `ShadcnDropdownMenu` | 下拉菜单（Trigger + Content + Item + Popup 置顶 + ESC/外部点击关闭） | [dropdown-menu](/components/28.dropdown-menu) |
+| `ShadcnDropdownMenuGroup` | 菜单分组容器（语义分组，Column + spacing） | [dropdown-menu](/components/28.dropdown-menu) |
+| `ShadcnDropdownMenuLabel` | 分组标题（mutedForeground + text-xs + font-medium） | [dropdown-menu](/components/28.dropdown-menu) |
+| `ShadcnDropdownMenuSeparator` | 菜单分隔线（1px border + my-1） | [dropdown-menu](/components/28.dropdown-menu) |
+| `ShadcnDropdownMenuShortcut` | 快捷键提示（右侧 + text-xs + tracking-widest） | [dropdown-menu](/components/28.dropdown-menu) |
 
 ## 关键坑（务必先读）
 
@@ -168,3 +174,9 @@ Window {
 | readonly property 引用子对象 | 创建期立即求值 → null，放惰性绑定里 |
 | layer FBO 尺寸为 0 | `layer.enabled: true` 时 Rectangle 无显式 width/height → 离屏 FBO 0×0 → 内容不可见 |
 | 子组件覆盖内置属性 | `ShadcnDropdownMenuItem` 定义 `property bool enabled` 覆盖 `Item.enabled` → 信号错乱 |
+| QQC.ToolTip 不自动触发 | `QQC.ToolTip` 是手动 API，不会在父组件 hover 时自动显示；须用 `Item` + `HoverHandler` + `QQC.Popup` 实现声明式 tooltip |
+| HoverHandler.target 需动态绑定 | 组件创建时 `parent` 可能为 null → `HoverHandler.target` 绑不上；用 `onParentChanged` + `Component.onCompleted` 动态设置 |
+| Text.implicitHeight 只读 | QML `Text` 的 `implicitHeight` 是只读的，不能赋值；需用 `Item` 包裹再设 `implicitHeight` |
+| ShadcnButton.Variant 无 Default | 枚举是 `Primary/Secondary/Outline/Ghost/Destructive/Link`，没有 `Default` |
+| SF Mono 字体不存在 | macOS 上 `SF Mono` 不在系统字体列表中（会触发 108ms 加载警告）→ 用 `Menlo` |
+| 内联属性语法对 Item 不兼容 | `ShadcnXxx.text: "..."` 简写对 `QQC.ToolTip` 子类有效，对 `Item` 子类报 `Non-existent attached object`；须用 `ShadcnXxx { text: "..." }` 完整语法 |

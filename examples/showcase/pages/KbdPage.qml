@@ -26,7 +26,7 @@ Item {
         Text {
             width: parent.width
             wrapMode: Text.WordWrap
-            text: qsTr("键盘快捷键标签：等宽字体 + 边框 + 圆角。")
+            text: qsTr("键盘快捷键标签：等宽字体 + 边框 + 圆角。支持 KbdGroup 组合多个快捷键。")
             color: theme.mutedForeground
             font.pixelSize: 13
         }
@@ -61,14 +61,39 @@ Item {
                 ShadcnKbd { text: "Enter" }
             }
 
-            SectionTitle { text: qsTr("组合快捷键") }
+            SectionTitle { text: qsTr("KbdGroup 组合快捷键") }
             Row {
                 spacing: 4
+                ShadcnKbdGroup {
+                    ShadcnKbd { text: "⌘" }
+                    ShadcnKbd { text: "Shift" }
+                    ShadcnKbd { text: "P" }
+                }
+            }
+            Row {
+                spacing: 4
+                ShadcnKbdGroup {
+                    ShadcnKbd { text: "Ctrl" }
+                    ShadcnKbd { text: "B" }
+                }
+            }
+            Row {
+                spacing: 4
+                ShadcnKbdGroup {
+                    ShadcnKbd { text: "⌘" }
+                    ShadcnKbd { text: "K" }
+                }
+            }
+
+            SectionTitle { text: qsTr("场景：命令面板提示") }
+            Row {
+                spacing: 8
                 ShadcnKbd { text: "⌘" }
                 Text { text: "+"; color: theme.mutedForeground; anchors.verticalCenter: parent.verticalCenter }
                 ShadcnKbd { text: "Shift" }
                 Text { text: "+"; color: theme.mutedForeground; anchors.verticalCenter: parent.verticalCenter }
                 ShadcnKbd { text: "P" }
+                Text { text: qsTr("打开命令面板"); color: theme.mutedForeground; font.pixelSize: 13; anchors.verticalCenter: parent.verticalCenter }
             }
 
             SectionTitle { text: qsTr("QML 用法") }
@@ -78,7 +103,7 @@ Item {
                 font.family: Qt.platform.os === "osx" ? "Menlo" : "monospace"
                 font.pixelSize: 12
                 color: theme.mutedForeground
-                text: "ShadcnKbd { text: \"⌘K\" }\nShadcnKbd { text: \"Ctrl\" }"
+                text: "ShadcnKbdGroup {\n    ShadcnKbd { text: \"⌘\" }\n    ShadcnKbd { text: \"K\" }\n}"
             }
         }
     }
