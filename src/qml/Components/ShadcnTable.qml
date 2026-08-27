@@ -1,6 +1,6 @@
 // src/qml/Components/ShadcnTable.qml
 import QtQuick
-import QtQuick.Controls 2.15 as QQC
+import QtQuick.Controls as QQC
 import QtShadcn
 
 // shadcn/ui 风格表格（M5）：表头 sticky + 行 hover/选中 + 列对齐
@@ -83,7 +83,7 @@ Item {
         }
 
         // ── 表体 ──
-        QQC.TableView {
+        TableView {
             id: body
             y: header.height
             width: root.totalWidth
@@ -127,10 +127,12 @@ Item {
                     hoverEnabled: true
                 }
             }
-            // 整行点击选中：TableView 没有行级信号，用点击事件反推 row
-            onClicked: function(pos) {
-                var r = body.rowAt(pos.x, pos.y)
-                if (r >= 0) { root.currentRow = r; root.rowClicked(r) }
+            // 整行点击选中：TableView 没有行级信号，用 TapHandler 捕获点击反推 row
+            TapHandler {
+                onTapped: function(eventPoint) {
+                    var r = body.rowAt(eventPoint.position.x, eventPoint.position.y)
+                    if (r >= 0) { root.currentRow = r; root.rowClicked(r) }
+                }
             }
         }
     }

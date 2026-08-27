@@ -3,6 +3,9 @@ qt_add_qml_module(QtShadcn
     URI QtShadcn
     VERSION 0.1.0
     OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/QtShadcn"
+    DEPENDENCIES
+        QtQuick
+        QtQuick.Controls
     SOURCES
         core/thememanager.h
         core/thememanager.cpp
