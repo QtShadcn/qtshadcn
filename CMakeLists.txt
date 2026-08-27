@@ -11,6 +11,7 @@ else()
     set(QTSHADCN_IS_TOPLEVEL OFF)
 endif()
 option(QTSHADCN_BUILD_EXAMPLES "Build showcase" ${QTSHADCN_IS_TOPLEVEL})
+option(QTSHADCN_BUILD_TESTS "Build QtShadcn unit tests" OFF)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml QuickControls2 Svg Network)
 
@@ -25,4 +26,9 @@ qt_policy(SET QTP0004 NEW)
 add_subdirectory(src)
 if(QTSHADCN_BUILD_EXAMPLES)
     add_subdirectory(examples)
+endif()
+
+if(QTSHADCN_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
 endif()
