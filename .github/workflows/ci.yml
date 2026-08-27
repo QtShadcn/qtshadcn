@@ -21,7 +21,8 @@ jobs:
         with:
           version: 6.8.3
           arch: clang_64
-          modules: qtbase qtdeclarative qtquickcontrols2 qtsvg
+          # 不指定 modules：aqt 桌面安装默认含 qtbase/qtdeclarative/qtquickcontrols2/
+          # qtsvg/network，本项目 CMake 需要的组件均在其中（显式列模块名反而会被 aqt 拒）
           install-deps: false
 
       - name: Configure (tests on, examples off)
