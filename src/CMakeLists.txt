@@ -8,6 +8,8 @@ qt_add_qml_module(QtShadcn
         core/thememanager.cpp
         core/iconregistry.h
         core/iconregistry.cpp
+        core/models/shadcntablemodel.h
+        core/models/shadcntablemodel.cpp
     QML_FILES
         qml/Theme/QtShadcnTheme.qml
         qml/Theme/VariantTokens.qml
@@ -62,6 +64,11 @@ qt_add_resources(QtShadcn "icons"
 # BUILD_INTERFACE：仅构建期可见；将来 find_package 导出时自动剔除
 target_include_directories(QtShadcn PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/core>
+)
+
+# 模型子目录：使 models/ 对模型自身 #include "shadcntablemodel.h" 可见
+target_include_directories(QtShadcn PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/core/models>
 )
 
 # 显式声明 Qt 依赖（语义清晰，同时帮助 CMake Tools 生成 IntelliSense 配置；
