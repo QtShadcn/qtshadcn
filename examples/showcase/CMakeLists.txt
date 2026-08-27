@@ -30,6 +30,7 @@ qt_add_qml_module(showcase
         pages/FormPage.qml
         pages/AvatarPage.qml
         pages/StatusDotPage.qml
+        pages/TablePage.qml
 )
 
 target_link_libraries(showcase PRIVATE QtShadcn Qt6::Gui Qt6::Quick Qt6::Qml Qt6::QuickControls2)
