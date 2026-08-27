@@ -6,6 +6,8 @@ Qt 6 / QML 可组合 UI 组件库，对齐 shadcn/ui 的设计哲学：**Design 
 
 > ⚠️ **开发状态**：本项目仍在活跃开发中，API 可能随迭代调整。已可用组件与里程碑进度见 [文档站里程碑](docs/content/1.getting-started/5.milestones.md) 与 [Skills](skills/qtshadcn/SKILL.md)，欢迎 [Issue](https://github.com/QtShadcn/qtshadcn/issues) 与 PR。
 
+> 🐍 **PyQt6 纯 Python 适配**：无需 C++ 编译、可直接 `pip install pyqtshadcn` 加载本库 QML 组件，见独立仓库 [QtShadcn/pyqtshadcn](https://github.com/QtShadcn/pyqtshadcn)（QML 源与图标为同步副本，当前不含依赖 C++ `ShadcnTableModel` 的 `ShadcnTable`）。
+
 ## ✨ 特性
 
 - **Design Token 驱动** — 语义化颜色 / 圆角 / 间距 token，`theme.mode = "dark"` 全局随动
