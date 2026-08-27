@@ -143,6 +143,18 @@ Window {
 | `ShadcnIcon` | 图标（name / size / color，随主题变色） | [core-icon](references/common/core-icon.md) |
 | `IconRegistry` | C++ singleton：本地 74 + 远程兜底 + 磁盘缓存 | [core-icon](references/common/core-icon.md) |
 
+### Layout & Feedback（M6 ✅）
+
+| 组件 | 说明 | 参考 |
+|------|------|------|
+| `ShadcnSeparator` | 分隔线（水平 / 竖直 / 带文字） | [separator](/components/22.separator) |
+| `ShadcnLabel` | 语义化文本标签（3 variant × 3 size） | [label](/components/23.label) |
+| `ShadcnAlert` | 提示框（4 variant + 图标 + 标题 + 描述） | [alert](/components/25.alert) |
+| `ShadcnSkeleton` | 骨架屏（闪烁动画占位块） | [skeleton](/components/26.skeleton) |
+| `ShadcnKbd` | 键盘快捷键标签（等宽字体 + 边框） | [kbd](/components/27.kbd) |
+| `ShadcnTooltip` | 悬停提示（QQC.ToolTip + 主题样式） | [tooltip](/components/24.tooltip) |
+| `ShadcnDropdownMenu` | 下拉菜单（Trigger + Content + Item + Popup 置顶） | [dropdown-menu](/components/28.dropdown-menu) |
+
 ## 关键坑（务必先读）
 
 | 坑 | 说明 |
@@ -154,3 +166,5 @@ Window {
 | TextArea 内部滚动 | QQC.TextArea 无 Flickable、TextEdit 不响应滚轮 → Flickable + TextEdit + ScrollBar |
 | contentHeight 早期 undefined | Math.min/max 遇 NaN 传播 → `> 0` 兜底 |
 | readonly property 引用子对象 | 创建期立即求值 → null，放惰性绑定里 |
+| layer FBO 尺寸为 0 | `layer.enabled: true` 时 Rectangle 无显式 width/height → 离屏 FBO 0×0 → 内容不可见 |
+| 子组件覆盖内置属性 | `ShadcnDropdownMenuItem` 定义 `property bool enabled` 覆盖 `Item.enabled` → 信号错乱 |
