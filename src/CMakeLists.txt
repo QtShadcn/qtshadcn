@@ -1,4 +1,10 @@
 # QML 模块：URI = QtShadcn
+file(GLOB QML_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/qml/Theme/*.qml"
+    "${CMAKE_CURRENT_SOURCE_DIR}/qml/Icons/*.qml"
+    "${CMAKE_CURRENT_SOURCE_DIR}/qml/Components/*.qml"
+)
+
 qt_add_qml_module(QtShadcn
     URI QtShadcn
     VERSION 0.1.0
@@ -14,58 +20,7 @@ qt_add_qml_module(QtShadcn
         core/models/shadcntablemodel.h
         core/models/shadcntablemodel.cpp
     QML_FILES
-        qml/Theme/QtShadcnTheme.qml
-        qml/Theme/VariantTokens.qml
-        qml/Icons/ShadcnIcon.qml
-        qml/Components/ShadcnButton.qml
-        qml/Components/ShadcnButtonGroup.qml
-        qml/Components/ShadcnToggle.qml
-        qml/Components/ShadcnToggleGroup.qml
-        qml/Components/ShadcnSpinner.qml
-        qml/Components/ShadcnCard.qml
-        qml/Components/ShadcnCardHeader.qml
-        qml/Components/ShadcnCardTitle.qml
-        qml/Components/ShadcnCardDescription.qml
-        qml/Components/ShadcnCardContent.qml
-        qml/Components/ShadcnCardFooter.qml
-        qml/Components/ShadcnInput.qml
-        qml/Components/ShadcnBadge.qml
-        qml/Components/ShadcnSwitch.qml
-        qml/Components/ShadcnTabsList.qml
-        qml/Components/ShadcnTabsTrigger.qml
-        qml/Components/ShadcnTabsContent.qml
-        qml/Components/ShadcnDialog.qml
-        qml/Components/ShadcnDialogContent.qml
-        qml/Components/ShadcnDialogHeader.qml
-        qml/Components/ShadcnDialogTitle.qml
-        qml/Components/ShadcnDialogDescription.qml
-        qml/Components/ShadcnDialogFooter.qml
-        qml/Components/ShadcnTextarea.qml
-        qml/Components/ShadcnCheckbox.qml
-        qml/Components/ShadcnRadio.qml
-        qml/Components/ShadcnRadioGroup.qml
-        qml/Components/ShadcnSlider.qml
-        qml/Components/ShadcnProgress.qml
-        qml/Components/ShadcnSelect.qml
-        qml/Components/ShadcnInputGroup.qml
-        qml/Components/ShadcnStatusDot.qml
-        qml/Components/ShadcnAvatar.qml
-        qml/Components/ShadcnTable.qml
-        qml/Components/ShadcnDropdownMenu.qml
-        qml/Components/ShadcnDropdownMenuTrigger.qml
-        qml/Components/ShadcnDropdownMenuContent.qml
-        qml/Components/ShadcnDropdownMenuItem.qml
-        qml/Components/ShadcnDropdownMenuGroup.qml
-        qml/Components/ShadcnDropdownMenuLabel.qml
-        qml/Components/ShadcnDropdownMenuSeparator.qml
-        qml/Components/ShadcnDropdownMenuShortcut.qml
-        qml/Components/ShadcnSeparator.qml
-        qml/Components/ShadcnLabel.qml
-        qml/Components/ShadcnTooltip.qml
-        qml/Components/ShadcnAlert.qml
-        qml/Components/ShadcnSkeleton.qml
-        qml/Components/ShadcnKbd.qml
-        qml/Components/ShadcnKbdGroup.qml
+        ${QML_FILES}
 )
 
 # 图标资源：qt_add_qml_module 的 RESOURCES 会把 qrc 当单个文件嵌套进
