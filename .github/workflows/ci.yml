@@ -3,8 +3,22 @@ name: CI
 on:
   push:
     branches: [main]
+    # 纯文档 / 技能 / Markdown 提交不必跑一轮 Qt 安装 + 完整编译
+    paths-ignore:
+      - 'docs/**'
+      - 'skills/**'
+      - '**.md'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'skills/**'
+      - '**.md'
+
+# 同一分支的新 push 自动取消上一个 run，避免排队占满 macOS runner
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 # C++ 逻辑层单测 + 构建验证。
 # CI 用 Qt 6.8.3（aqtinstall 暂无法装 6.11；本地 6.11.1 与 6.8.3 floor 兼容：本仓库
@@ -29,7 +43,13 @@ jobs:
         run: cmake -S . -B build -DQTSHADCN_BUILD_TESTS=ON -DQTSHADCN_BUILD_EXAMPLES=OFF
 
       - name: Build
-        run: cmake --build build -j
+        # 必须给 -j 一个具体数字：裸 `-j` 是无限并行，make 会在几秒内把上百个编译
+        # 任务（qmlcache 生成文件等）一次性提交，在 3 vCPU / 7 GB 的 macos-15 runner
+        # 上互相抢核抢内存，进度百分比会长时间停住不动。按核数限制。
+        run: |
+          JOBS=$(sysctl -n hw.ncpu)
+          echo "parallel jobs: $JOBS (cpu: $(sysctl -n machdep.cpu.brand_string 2>/dev/null || uname -m))"
+          cmake --build build --parallel "$JOBS"
 
       - name: Test
         env:
