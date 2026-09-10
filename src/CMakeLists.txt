@@ -1,5 +1,9 @@
 # QML 模块：URI = QtShadcn
-file(GLOB QML_FILES
+# 注意：qt_add_qml_module 的 QML_FILES 必须是「相对路径」，否则 Qt 报
+# absolute path / QT_RESOURCE_ALIAS 错误（见 Qt6CoreMacros.cmake:1843）。
+# 用 RELATIVE 让 GLOB 结果保持相对形式，与旧的手写列表一致。
+# 非递归 GLOB：只收当前目录，新增子目录需显式加一行。
+file(GLOB QML_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/qml/Theme/*.qml"
     "${CMAKE_CURRENT_SOURCE_DIR}/qml/Icons/*.qml"
     "${CMAKE_CURRENT_SOURCE_DIR}/qml/Components/*.qml"
