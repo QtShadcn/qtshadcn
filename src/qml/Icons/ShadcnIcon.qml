@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Window
 import QtShadcn
 
 // shadcn/lucide 风格图标组件
@@ -28,7 +29,10 @@ Item {
         anchors.fill: parent
         // 本地图标立即有值；远程图标首次为空，iconReady 后重设
         source: root.name ? IconRegistry.dataUrl(root.name, root.color) : ""
-        sourceSize: Qt.size(root.size, root.size)
+        // sourceSize 决定 SVG 的光栅化分辨率，Qt 不会自动乘 devicePixelRatio：
+        // 不乘的话 Retina(2x) 下按 1x 光栅化、再被场景图放大一倍 → 边缘发虚
+        sourceSize: Qt.size(root.size * Screen.devicePixelRatio,
+                            root.size * Screen.devicePixelRatio)
         fillMode: Image.PreserveAspectFit
         smooth: true
     }
