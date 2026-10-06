@@ -11,7 +11,8 @@ file(GLOB QML_FILES RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
 
 qt_add_qml_module(QtShadcn
     URI QtShadcn
-    VERSION 0.1.0
+    # qmldir 只认 MAJOR.MINOR，从顶层 project() 派生，避免两处版本漂移
+    VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/QtShadcn"
     DEPENDENCIES
         QtQuick

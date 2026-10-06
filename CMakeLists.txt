@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
-project(QtShadcn VERSION 0.1.0 LANGUAGES CXX)
+# 库版本唯一来源。发版纪律：改这里 → commit → git tag v<VERSION>（CI 校验二者一致，
+# FetchContent/CPM 按 tag 拉取）。QML 模块版本由 src/CMakeLists.txt 引用本值派生。
+project(QtShadcn VERSION 0.1.2 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

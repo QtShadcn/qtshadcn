@@ -42,7 +42,22 @@ Linux 把前缀里的 `macos` 换成 `gcc_64`；Homebrew 用 `QT_PREFIX=$(brew -
 
 ## 📦 接入你的项目
 
-`find_package(QtShadcn)` 尚未提供。约定把本仓库放到应用的 `third_party/qtshadcn`（submodule 或 clone），再 `add_subdirectory`。作为子项目引入时**默认不编 showcase**。
+`find_package(QtShadcn)` 尚未提供。两种源码接入方式任选其一，作为子项目引入时**默认不编 showcase**。
+
+**方式一：FetchContent（推荐，锁版本 tag，无需 submodule）**
+
+```cmake
+include(FetchContent)
+FetchContent_Declare(qtshadcn
+    GIT_REPOSITORY https://github.com/QtShadcn/qtshadcn.git
+    GIT_TAG        v0.1.2)   # 锁定 release tag；升级 = 改这一行
+FetchContent_MakeAvailable(qtshadcn)
+target_link_libraries(myapp PRIVATE QtShadcn Qt6::Quick Qt6::QuickControls2)
+```
+
+此布局下 `QML_IMPORT_PATH` 指到 `build/_deps/qtshadcn-build/src`。CPM.cmake 用户等价写法：`CPMAddPackage("gh:QtShadcn/qtshadcn@v0.1.2")`。
+
+**方式二：submodule / clone 到 third_party（便于本地改库源码）**
 
 ```bash
 mkdir -p third_party
@@ -56,7 +71,9 @@ add_subdirectory(third_party/qtshadcn)
 target_link_libraries(myapp PRIVATE QtShadcn Qt6::Quick Qt6::QuickControls2)
 ```
 
-`main.cpp` 里必须 `QQuickStyle::setStyle("Basic")`（macOS 默认 native style 会拒绝自定义 `contentItem` / `background`）。启动时把 `QML_IMPORT_PATH` 指到 **QtShadcn 模块目录的父路径**（上述布局下为 `build/third_party/qtshadcn/src`）。
+此布局下 `QML_IMPORT_PATH` 为 `build/third_party/qtshadcn/src`。submodule 锁版本同样用 tag：`cd third_party/qtshadcn && git fetch --tags && git checkout v0.1.2`。
+
+`main.cpp` 里必须 `QQuickStyle::setStyle("Basic")`（macOS 默认 native style 会拒绝自定义 `contentItem` / `background`）。`QML_IMPORT_PATH` 始终指到 **QtShadcn 模块目录的父路径**（两种布局见上文）。
 
 建议在应用根目录放 `Makefile`（`make build` / `make run` / `make clean`）。完整工程模板见 [skills/qtshadcn/references/consumer/build.md](skills/qtshadcn/references/consumer/build.md)。
 
