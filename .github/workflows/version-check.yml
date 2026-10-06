@@ -1,0 +1,28 @@
+name: version-check
+
+# 发版纪律：tag 必须与 CMakeLists.txt 里 project(VERSION) 一致（版本唯一来源）。
+# 独立 workflow：ci.yml 的 paths-ignore 可能吞掉 tag push 触发的 run，这里不能有 paths 过滤。
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify tag matches project version
+        run: |
+          CMAKE_VER=$(grep -E '^project\(QtShadcn VERSION ' CMakeLists.txt | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+          TAG_VER="${GITHUB_REF_NAME#v}"
+          echo "project(VERSION) = $CMAKE_VER, tag = ${GITHUB_REF_NAME} (-> $TAG_VER)"
+          if [ -z "$CMAKE_VER" ]; then
+            echo "::error::未能从 CMakeLists.txt 解析出 project(VERSION)"
+            exit 1
+          fi
+          if [ "$CMAKE_VER" != "$TAG_VER" ]; then
+            echo "::error::tag v$TAG_VER 与 project(VERSION $CMAKE_VER) 不一致：改 CMakeLists.txt 后重新打 tag"
+            exit 1
+          fi
