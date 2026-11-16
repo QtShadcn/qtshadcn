@@ -60,7 +60,7 @@ Button {
     // ── 配色：variant → token 查表（映射集中在 VariantTokens，新增 variant
     //    只需枚举 + 映射表各加一项；token 名经 theme.tokens[] 查询保持绑定）──
     readonly property bool _checked: checkable && checked
-    readonly property var _variantMap: vt.button[root.variant] ?? vt.button[0]
+    readonly property VariantSpec _variantMap: vt.button[root.variant] ?? vt.button[0]
     // 背景 token 不随 checked 切换（选中态视觉由 background 内的覆盖层负责——
     // 教训：bg 在 accent↔transparent 间 color 动画会 RGBA 插值出中间灰，点击时闪烁）
     readonly property string _bgToken: _variantMap.bg
