@@ -1,4 +1,6 @@
 // src/qml/Components/ShadcnTable.qml
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtShadcn
 
@@ -10,6 +12,10 @@ import QtShadcn
 //       model: myTableModel   // ShadcnTableModel
 //       onRowClicked: row => { ... }
 //   }
+//
+// pragma ComponentBehavior: Bound 是给 qmllint 看的：delegate 内的 root / theme
+// 属于外层作用域，显式声明后静态分析能确认来源，不再逐条报 UnqualifiedAccess。
+// 运行时行为不变（Bound 下 delegate 依旧能访问外层 id）。
 Item {
     id: root
 
@@ -22,13 +28,101 @@ Item {
 
     QtShadcnTheme { id: theme }
 
+    // ── 模型快照 ─────────────────────────────────────────────────
+    //
+    // columnCount() / columnMeta() / cellData() 都是 Q_INVOKABLE，不产生
+    // 属性依赖。若绑定直写 `model ? model.columnCount() : 0`，而 columns 是在
+    // 组件创建之后才赋值的（异步取数、或声明顺序靠后），首次求值拿到 0 之后
+    // 绑定再也不会重算 —— 表头就永久空白。totalWidth 曾因额外依赖 root.width
+    // 而侥幸重算，才让这个缺陷不易察觉。
+    //
+    // 这里把模型状态抽成显式属性，由 model 的信号驱动，绑定才有可靠的通知源。
+    property int columnCount: 0
+    property int rowCount: 0
+    readonly property var columnWidths: _columnWidths
+    readonly property var columnTitles: _columnTitles
+    readonly property var columnAligns: _columnAligns
+    // 模型内容版本号。数据变了但行列没变（sortBy / updateRow 走 dataChanged）
+    // 时靠它让 delegate 的正文重新求值。
+    property int revision: 0
+
+    property var _columnWidths: []
+    property var _columnTitles: []
+    property var _columnAligns: []
+
     // 列总宽（横向滚动用）
     readonly property int totalWidth: {
-        var w = 0
-        if (root.model) for (var c = 0; c < root.model.columnCount(); ++c)
-            w += root.model.columnMeta(c).width || 120
+        let w = 0
+        for (let c = 0; c < root.columnCount; ++c)
+            w += _columnWidths[c] || 120
         return Math.max(w, root.width)
     }
+
+    function _syncColumns() {
+        const n = root.model ? root.model.columnCount() : 0
+        const widths = []
+        const titles = []
+        const aligns = []
+        for (let c = 0; c < n; ++c) {
+            const meta = root.model.columnMeta(c)
+            widths.push(meta.width || 120)
+            titles.push(meta.title || "")
+            aligns.push(meta.align || "left")
+        }
+        root.columnCount = n
+        root._columnWidths = widths
+        root._columnTitles = titles
+        root._columnAligns = aligns
+    }
+
+    function _syncRows() {
+        root.rowCount = root.model ? root.model.rowCount() : 0
+        root.revision++
+    }
+
+    function _syncAll() {
+        _syncColumns()
+        _syncRows()
+    }
+
+    // 单元格正文。revision 在这里被读到，绑定因此与「模型内容变化」挂钩。
+    function cellText(row, column) {
+        if (root.revision < 0)
+            return ""            // 只为建立 revision 依赖，运行时恒不成立
+        return root.model ? String(root.model.cellData(row, column)) : ""
+    }
+
+    // 表头点击：同列再次点击切换升降序，换列则回到升序
+    function _sortBy(column) {
+        if (!root.model)
+            return
+        const ascending = !(root._sortCol === column && root._asc)
+        root._sortCol = column
+        root._asc = ascending
+        root.model.sortBy(column, ascending)
+    }
+
+    function _clickRow(row) {
+        root.currentRow = row
+        root.rowClicked(row)
+    }
+
+    onModelChanged: _syncAll()
+    Component.onCompleted: _syncAll()
+
+    Connections {
+        target: root.model
+        ignoreUnknownSignals: true
+        function onColumnsChanged() { root._syncColumns(); root.revision++ }
+        function onRowsChanged() { root._syncRows() }
+        function onModelReset() { root._syncAll() }
+        function onDataChanged() { root.revision++ }
+        function onLayoutChanged() { root.revision++ }
+    }
+
+    // 排序状态
+    property int _sortCol: -1
+    property bool _asc: true
 
     // ── 容器：rounded-md border（对齐 shadcn data-table 外层容器） ──
     Rectangle {
@@ -41,6 +135,7 @@ Item {
         // ── 表头（顶部固定，水平联动 body.contentX） ──
         Item {
             id: headerClip
+            objectName: "headerClip"
             width: parent.width
             height: root.headerHeight
             clip: true
@@ -49,32 +144,41 @@ Item {
 
             Row {
                 id: header
+                objectName: "headerRow"
                 width: root.totalWidth
                 height: root.headerHeight
                 Repeater {
-                    model: root.model ? root.model.columnCount() : 0
+                    // 依赖 columnCount（有 notify），不再依赖 columnCount()
+                    model: root.columnCount
                     delegate: Rectangle {
+                        id: headerCell
+
                         required property int index
-                        width: root.model.columnMeta(index).width || 120
+                        objectName: "headerCell"
+                        readonly property string textAlign: root.columnAligns[index] || "left"
+                        width: root.columnWidths[index] || 120
                         height: root.headerHeight
                         color: "transparent"
+
                         Text {
+                            objectName: "headerText"
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left
                             anchors.leftMargin: 8
-                            text: root.model.columnMeta(index).title || ""
+                            anchors.right: headerCell.textAlign === "right" ? parent.right : undefined
+                            anchors.rightMargin: headerCell.textAlign === "right" ? 8 : 0
+                            text: root.columnTitles[headerCell.index] || ""
                             color: theme.foreground
                             font.pixelSize: 14
                             font.weight: Font.Medium
-                            horizontalAlignment: root.model.columnMeta(index).align === "center"
-                                ? Text.AlignHCenter : root.model.columnMeta(index).align === "right"
-                                    ? Text.AlignRight : Text.AlignLeft
-                            anchors.right: root.model.columnMeta(index).align === "right" ? parent.right : undefined
-                            anchors.rightMargin: root.model.columnMeta(index).align === "right" ? 8 : 0
+                            horizontalAlignment: headerCell.textAlign === "center" ? Text.AlignHCenter
+                                               : headerCell.textAlign === "right" ? Text.AlignRight
+                                                                                 : Text.AlignLeft
                         }
                         MouseArea {
+                            objectName: "headerClick"
                             anchors.fill: parent
-                            onClicked: root.model.sortBy(index, !(root._sortCol === index && root._asc))
+                            onClicked: root._sortBy(headerCell.index)
                         }
                     }
                 }
@@ -84,20 +188,26 @@ Item {
         // ── 表体（TableView 原生滚动，不再套 Flickable） ──
         TableView {
             id: body
+            objectName: "bodyView"
             y: root.headerHeight
             width: parent.width
             height: parent.height - root.headerHeight
             contentWidth: root.totalWidth
             clip: true
             model: root.model
-            rowHeightProvider: function() { return root.rowHeight }
-            columnWidthProvider: function(c) { return root.model ? (root.model.columnMeta(c).width || 120) : 120 }
+            rowHeightProvider: function(row) { return root.rowHeight }
+            columnWidthProvider: function(column) { return root.columnWidths[column] || 120 }
             delegate: Rectangle {
+                id: bodyCell
+
                 required property int row
                 required property int column
+                objectName: "bodyCell"
+                readonly property string textAlign: root.columnAligns[column] || "left"
                 height: root.rowHeight
                 color: root.currentRow === row ? theme.muted
-                      : rowHover.containsMouse ? Qt.alpha(theme.muted, 0.5) : "transparent"
+                     : rowHover.containsMouse ? Qt.alpha(theme.muted, 0.5) : "transparent"
+
                 // 行底分隔线
                 Rectangle {
                     anchors.bottom: parent.bottom
@@ -108,34 +218,28 @@ Item {
                 }
                 Text {
                     id: cellText
+                    objectName: "cellText"
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                     anchors.leftMargin: 8
-                    text: root.model ? root.model.cellData(row, column) : ""
+                    anchors.right: bodyCell.textAlign === "right" ? parent.right : undefined
+                    anchors.rightMargin: bodyCell.textAlign === "right" ? 8 : 0
+                    text: root.cellText(bodyCell.row, bodyCell.column)
                     color: theme.foreground
                     font.pixelSize: 14
                     elide: Text.ElideRight
-                    horizontalAlignment: root.model && root.model.columnMeta(column).align === "center"
-                        ? Text.AlignHCenter : root.model && root.model.columnMeta(column).align === "right"
-                            ? Text.AlignRight : Text.AlignLeft
-                    anchors.right: root.model && root.model.columnMeta(column).align === "right" ? parent.right : undefined
-                    anchors.rightMargin: root.model && root.model.columnMeta(column).align === "right" ? 8 : 0
+                    horizontalAlignment: bodyCell.textAlign === "center" ? Text.AlignHCenter
+                                     : bodyCell.textAlign === "right" ? Text.AlignRight
+                                                                      : Text.AlignLeft
                 }
                 MouseArea {
                     id: rowHover
+                    objectName: "rowClick"
                     anchors.fill: parent
                     hoverEnabled: true
-                    onClicked: {
-                        root.currentRow = row
-                        root.rowClicked(row)
-                    }
+                    onClicked: root._clickRow(bodyCell.row)
                 }
             }
         }
     }
-
-    // 排序状态
-    property int _sortCol: -1
-    property bool _asc: true
-    onModelChanged: { root._sortCol = -1; root._asc = true }
 }

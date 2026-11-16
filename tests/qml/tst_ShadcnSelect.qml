@@ -52,7 +52,11 @@ Item {
         ShadcnSelect {
             width: 240
             textRole: "label"
+            // qmllint disable unqualified
+            // TestCppModel 由 qmltests_main.cpp 用 setContextProperty 注入，
+            // 它不在任何 QML 作用域里，没有 id 可以限定 —— 唯一合理的例外。
             model: TestCppModel
+            // qmllint enable unqualified
         }
     }
 
