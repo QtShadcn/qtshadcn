@@ -205,6 +205,22 @@ Item {
             body.contentX = 100
             tryCompare(headerClip, "x", -100)
         }
+
+        // 表体接了统一滚动条（此前 TableView 完全没有 ScrollBar，只能滚轮拖）
+        function test_body_has_vertical_scrollbar() {
+            const box = createTemporaryObject(tableComp, root)
+            const table = findChild(box, "table")
+            const body = findChild(table, "bodyView")
+            verify(!!body, "bodyView exists")
+
+            const bar = findChild(body, "verticalBar")
+            verify(!!bar, "vertical scrollbar attached to body")
+            compare(bar.vertical, true, "orientation is vertical")
+
+            // 滚动条是叠加层，不应挤占列宽计算
+            compare(table.totalWidth, table.columnWidths.reduce(function(a, b) { return a + b }, 0),
+                    "scrollbar must not affect totalWidth")
+        }
     }
 
     Component {

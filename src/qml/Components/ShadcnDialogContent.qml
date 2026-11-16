@@ -34,42 +34,58 @@ Item {
     readonly property int _radius: 14     // rounded-xl（Base UI 默认；overlay 比 inline 容器略大）
 
     // 宽度由 Dialog 固定（384，见 ShadcnDialog），content 直接撑满 parent.width。
-    // 注意：不能在此绑定 implicitWidth（会读 bodyColumn.implicitWidth → ScrollView.implicitWidth
-    // → 又读回 bodyColumn.implicitWidth，造成 ScrollView 的 implicitWidth binding loop）。
+    // 注意：不能在此绑定 implicitWidth（会读 bodyColumn.implicitWidth → 滚动视口的
+    // implicitWidth → 又读回 bodyColumn.implicitWidth，造成 implicitWidth binding loop）。
     width: parent ? parent.width : 320
 
     // 关键：bodyColumn.height 固定为自身 implicitHeight，使「自然内容高度」独立于滚动视口高度，
-    // 避免 ScrollView 把 bodyColumn 压成视口高 → childrenRect 失真 → implicitHeight 塌缩的循环
+    // 避免滚动容器把 bodyColumn 压成视口高 → childrenRect / implicitHeight 塌缩的循环
     readonly property int _footerH: footerSlot.children.length > 0
         ? footerSlot.childrenRect.height + _pad * 2 : 0
     implicitHeight: Math.min(bodyColumn.implicitHeight + _pad * 2 + _footerH, maxHeight)
 
     // ── 可滚动 body ──────────────────────────────
-    ScrollView {
+    //
+    // 基座是 Flickable 而不是 ScrollView：ScrollView **不会拉伸它 attached 的
+    // ScrollBar**（实测 bar.height 停在 implicitHeight=10px，于是 thumb 高度
+    // = size×10，内容再长也只有几像素，视觉上是个小圆点）。连 Qt 自带的
+    // Basic ScrollBar 也一样。Flickable 下 bar 随视口高拉伸，thumb 才按比例。
+    //
+    // 代价是 padding 要自己算（ScrollView 有 topPadding/leftPadding），
+    // 下面用内容偏移 + contentHeight 补足，视觉效果与原版一致。
+    Flickable {
         id: bodyScroll
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.bottom: footerBar.top
         anchors.bottomMargin: root._footerH > 0 ? 0 : root._pad
-        // 注意：不要写 contentWidth: width —— 那会让内容宽=整个 ScrollView 宽(含 padding 区)，
-        // 比 body 实际可用宽多出一截 → ScrollView 误判需要水平滚动条 → 滚动条又挤占可用宽 →
-        // 反复横跳，产生 implicitWidth binding loop（并表现为「左右乱跳/不支持滑动」）。
-        // 去掉后由 bodyColumn.width(=availableWidth) 决定内容宽，无水平溢出、无水平滚动条。
-        contentHeight: bodyColumn.implicitHeight
+
+        readonly property int _padTop: root._pad
+        readonly property int _padBottom: root._footerH > 0 ? root._gap : root._pad
+
         clip: true
-        topPadding: root._pad
-        leftPadding: root._pad
-        rightPadding: root._pad
-        bottomPadding: root._footerH > 0 ? root._gap : root._pad
-        ScrollBar.vertical.policy: ScrollBar.AsNeeded
-        background: Item {}
+        boundsBehavior: Flickable.StopAtBounds
+
+        // 内容宽 = 视口宽（bodyColumn 自己再内缩 padding），不会产生横向溢出。
+        // 注意这里不能像 ScrollView 那样用 availableWidth：Flickable 没有这个属性，
+        // 而滚动条是 overlay、不挤占宽度，所以 contentWidth: width 是安全的
+        // （这正是原来那段「不要写 contentWidth: width」警告的适用前提不同之处）。
+        contentWidth: width
+        contentHeight: _padTop + bodyColumn.implicitHeight + _padBottom
+
+        ScrollBar.vertical: ShadcnScrollBar {
+            policy: ScrollBar.AsNeeded
+            parent: bodyScroll
+        }
 
         Column {
             id: bodyColumn
+            x: root._pad
+            y: bodyScroll._padTop
+            width: bodyScroll.width - root._pad * 2
             spacing: root._gap
-            width: bodyScroll.availableWidth
-            height: implicitHeight   // 固定为自然高度，供 ScrollView 滚动 + 供外层 implicitHeight 计算
+            height: implicitHeight   // 固定为自然高度，供滚动 + 供外层 implicitHeight 计算
         }
     }
 

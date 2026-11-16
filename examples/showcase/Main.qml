@@ -138,6 +138,10 @@ Window {
             title: "Kbd",
             page: "KbdPage.qml"
         },
+        {
+            title: "ScrollArea",
+            page: "ScrollAreaPage.qml"
+        },
         ]
 
     // 文件名 → 菜单/StackLayout index（总览页卡片跳转用；未匹配回退总览）
@@ -329,6 +333,7 @@ Window {
             AlertPage {}
             SkeletonPage {}
             KbdPage {}
+            ScrollAreaPage {}
         }
     }
 

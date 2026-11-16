@@ -95,7 +95,8 @@ Item {
         contentWidth: edit.width
         contentHeight: edit.implicitHeight
 
-        ScrollBar.vertical: ScrollBar {
+        // 滚动条样式统一走 ShadcnScrollBar，不再用 Basic style 的默认细条
+        ScrollBar.vertical: ShadcnScrollBar {
             policy: ScrollBar.AsNeeded
             parent: flick
         }

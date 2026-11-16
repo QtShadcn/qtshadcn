@@ -2,6 +2,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Controls.Basic   // ScrollBar attached property
 import QtShadcn
 
 // shadcn/ui 风格表格（M5）：原生 TableView 滚动 + 表头水平联动
@@ -194,6 +195,10 @@ Item {
             height: parent.height - root.headerHeight
             contentWidth: root.totalWidth
             clip: true
+            // 竖向滚动条走统一样式。attach 到 Flickable 的 ScrollBar 是叠加层，
+            // 不挤占可用宽 → 不影响 columnWidths / totalWidth 的计算，
+            // 也不影响表头联动用的 body.contentX（那是水平方向）
+            ScrollBar.vertical: ShadcnScrollBar { objectName: "verticalBar" }
             model: root.model
             rowHeightProvider: function(row) { return root.rowHeight }
             columnWidthProvider: function(column) { return root.columnWidths[column] || 120 }
