@@ -4,6 +4,7 @@
 #   make run     构建并运行 showcase（前台，Ctrl+C 退出）
 #   make test    配置 + 构建 + 运行 ctest（与 build 共用一组配置参数，不翻转状态）
 #   make lint    QML lint 门禁（需先 build，配置见 .qmllint.ini）
+#   make consumer-smoke  安装到本地前缀 + 用独立工程验证 find_package(QtShadcn)
 #   make clean   清理构建产物
 #   make fresh   删除构建目录后完整重建（Qt 模块/缓存异常时用）
 #   make info    显示当前配置
@@ -38,7 +39,7 @@ TARGET ?= $(if $(f),$(f),showcase)
 BIN     = $(BUILD_DIR)/bin/$(TARGET)
 QML_IMPORT = $(CURDIR)/$(BUILD_DIR)/src:$(CURDIR)/$(BUILD_DIR)/examples/$(TARGET)
 
-.PHONY: build run test lint clean fresh info list
+.PHONY: build run test lint consumer-smoke clean fresh info list
 
 build:
 	@if [ ! -d "$(EXAMPLES_DIR)/$(TARGET)" ]; then \
@@ -70,8 +71,21 @@ lint:
 	@echo "linting $$(find src/qml tests/qml -name '*.qml' 2>/dev/null | wc -l | tr -d ' ') QML files"
 	@find src/qml tests/qml -name '*.qml' -print0 | xargs -0 "$(QML_LINT)" -I "$(BUILD_DIR)/src" && echo "✅ lint 通过"
 
+# 安装 + 消费方冒烟：验证 find_package(QtShadcn) 这条路真的能用
+# （装到本地前缀 → 用 tests/consumer 这个独立工程构建 → 离屏跑一次）
+# CI 会跑同一套流程，这里方便本地改完打包规则后立刻验证
+consumer-smoke: build
+	rm -rf "$(BUILD_DIR)-install" "$(BUILD_DIR)-consumer"
+	cmake --install $(BUILD_DIR) --prefix "$(CURDIR)/$(BUILD_DIR)-install"
+	cmake -S tests/consumer -B "$(BUILD_DIR)-consumer" \
+		-DCMAKE_PREFIX_PATH="$(CURDIR)/$(BUILD_DIR)-install;$(QT_PREFIX)"
+	cmake --build "$(BUILD_DIR)-consumer" -j$(JOBS)
+	QT_QPA_PLATFORM=offscreen QTSHADCN_SCREENSHOT=1 \
+		ctest --test-dir "$(BUILD_DIR)-consumer" --output-on-failure
+	@echo "✅ find_package(QtShadcn) 可用"
+
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR) "$(BUILD_DIR)-install" "$(BUILD_DIR)-consumer"
 
 fresh: clean build
 

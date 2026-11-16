@@ -71,3 +71,16 @@ jobs:
         # 用例自身的 ENVIRONMENT 已固定 QT_QPA_PLATFORM=offscreen 与
         # QTSHADCN_SCREENSHOT=1（关掉 Card 的 GPU 阴影层，软件渲染下会空白）
         run: ctest --test-dir build --output-on-failure
+
+      - name: Packaging smoke (find_package)
+        # 安装导出是「别人能不能用这个库」的唯一入口，必须在 CI 里真跑一遍：
+        # 装到本地前缀 → 用独立的消费方工程 find_package(QtShadcn) → 离屏实例化组件。
+        # 只跑构建不跑安装的话，导出规则坏掉没人会发现。
+        run: |
+          PREFIX="$PWD/_install"
+          cmake --install build --prefix "$PREFIX"
+          cmake -S tests/consumer -B _consumer \
+            -DCMAKE_PREFIX_PATH="$PREFIX;$QT_ROOT_DIR"
+          cmake --build _consumer --parallel "$(sysctl -n hw.ncpu)"
+          QT_QPA_PLATFORM=offscreen QTSHADCN_SCREENSHOT=1 \
+            ctest --test-dir _consumer --output-on-failure

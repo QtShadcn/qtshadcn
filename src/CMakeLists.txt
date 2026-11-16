@@ -40,9 +40,10 @@ qt_add_resources(QtShadcn "icons"
 )
 
 # 类型注册文件通过 <thememanager.h> 引用头文件，需暴露 core 目录
-# BUILD_INTERFACE：仅构建期可见；将来 find_package 导出时自动剔除
+# BUILD_INTERFACE：仅构建期可见；INSTALL_INTERFACE：find_package 后可见（头文件装到 include/QtShadcn）
 target_include_directories(QtShadcn PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/core>
+    $<INSTALL_INTERFACE:include/QtShadcn>
 )
 
 # 模型子目录：使 models/ 对模型自身 #include "shadcntablemodel.h" 可见
@@ -62,10 +63,77 @@ target_link_libraries(QtShadcn
         Qt6::Network
 )
 
-# ── M6 TODO: find_package(QtShadcn) 支持 ──────────────────────────
-# 1. install(TARGETS QtShadcn EXPORT QtShadcnTargets ...) + NAMESPACE QtShadcn::
-# 2. QML 模块文件 install(DIRECTORY ...) → <prefix>/lib/QtShadcn
-#    （Qt 6.11 qt_add_qml_module 不处理安装，qt6_target_install_qml_module 不存在，
-#     需手动装 qmldir/*.qml/*.qmltypes/plugin）
-# 3. QtShadcnConfig.cmake.in + write_basic_package_version_file + configure_package_config_file
-#    模板见 src/cmake/QtShadcnConfig.cmake.in（M6 时恢复）
+# ── 安装 / find_package(QtShadcn) ─────────────────────────────────
+#
+# 只在作为顶层项目构建时安装：被 FetchContent / add_subdirectory 引入时
+# 是别人的子项目，不该往对方 prefix 里装东西。
+#
+# 关键前提（决定了这里为什么不需要摆弄 QML 导入路径）：qmldir 里有
+# `prefer :/qt/qml/QtShadcn/`，qmlcache 产物与全部 .qml 都编译进了
+# libQtShadcn 的资源。消费方只要链接 QtShadcn::QtShadcn，`import QtShadcn`
+# 就能解析，运行时无需 QML_IMPORT_PATH —— 磁盘副本只服务工具链
+# （qmllint / qmlls / Qt Designer）。
+if(QTSHADCN_IS_TOPLEVEL)
+    include(CMakePackageConfigHelpers)
+    include(GNUInstallDirs)
+
+    # 库本体
+    install(TARGETS QtShadcn
+        EXPORT QtShadcnTargets
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+
+    # C++ 侧公开类型（ThemeManager / IconRegistry / ShadcnTableModel）
+    # 头文件之间是平级 #include，装到同一目录
+    install(FILES
+        core/thememanager.h
+        core/iconregistry.h
+        core/models/shadcntablemodel.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/QtShadcn
+    )
+
+    # QML 模块的磁盘副本 + 插件：qmldir 里 `optional plugin QtShadcnplugin`，
+    # 插件要和 qmldir 同目录，否则按 qmldir 找插件时解析不到
+    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/QtShadcn/"
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/qml/QtShadcn
+        FILES_MATCHING
+            PATTERN "qmldir"
+            PATTERN "*.qmltypes"
+            PATTERN "*.qml"
+    )
+    install(TARGETS QtShadcnplugin
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}/qml/QtShadcn
+        RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}/qml/QtShadcn
+    )
+
+    # Config / Version / 导出目标
+    set(QTSHADCN_CMAKE_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/QtShadcn")
+
+    configure_package_config_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/QtShadcnConfig.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/QtShadcnConfig.cmake"
+        INSTALL_DESTINATION "${QTSHADCN_CMAKE_INSTALL_DIR}"
+        # 配置里要用绝对路径指向磁盘版 QML 目录（工具链用）
+        PATH_VARS CMAKE_INSTALL_LIBDIR
+    )
+
+    write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/QtShadcnConfigVersion.cmake"
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY SameMajorVersion
+    )
+
+    install(EXPORT QtShadcnTargets
+        FILE QtShadcnTargets.cmake
+        NAMESPACE QtShadcn::
+        DESTINATION "${QTSHADCN_CMAKE_INSTALL_DIR}"
+    )
+    install(FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/QtShadcnConfig.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/QtShadcnConfigVersion.cmake"
+        DESTINATION "${QTSHADCN_CMAKE_INSTALL_DIR}"
+    )
+endif()
+

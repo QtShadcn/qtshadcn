@@ -38,6 +38,8 @@ logs
 
 # CMake / Qt build
 build/
+# make consumer-smoke 的安装前缀 (build-install) 与消费方构建目录 (build-consumer)
+build-*/
 cmake-build-*/
 *.user
 

@@ -1,0 +1,22 @@
+@PACKAGE_INIT@
+
+# QtShadcn 消费端配置
+#
+# 用法：
+#   find_package(QtShadcn 0.2 REQUIRED)
+#   target_link_libraries(app PRIVATE QtShadcn::QtShadcn)
+#
+# 链接到 QtShadcn::QtShadcn 就足够 `import QtShadcn`：QML 模块（qmldir、
+# 类型信息、全部 .qml）已编译进库的资源（qmldir 里 prefer :/qt/qml/QtShadcn/），
+# 运行时不需要给 QML_IMPORT_PATH。磁盘上的副本只给工具链（qmllint / qmlls /
+# Qt Designer）用，路径见下面的 QtShadcn_QML_IMPORT_PATH。
+
+include(CMakeFindDependencyMacro)
+find_dependency(Qt6 6.5 COMPONENTS Core Gui Quick Qml QuickControls2 Svg Network)
+
+include("${CMAKE_CURRENT_LIST_DIR}/QtShadcnTargets.cmake")
+
+set_and_check(QtShadcn_QML_IMPORT_PATH "@PACKAGE_CMAKE_INSTALL_LIBDIR@/qml")
+set(QtShadcn_VERSION "@PROJECT_VERSION@")
+
+check_required_components(QtShadcn)
