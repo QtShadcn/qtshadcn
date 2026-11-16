@@ -15,7 +15,25 @@ endif()
 option(QTSHADCN_BUILD_EXAMPLES "Build showcase" ${QTSHADCN_IS_TOPLEVEL})
 option(QTSHADCN_BUILD_TESTS "Build QtShadcn unit tests" OFF)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml QuickControls2 Svg Network)
+# Qt 版本下限 6.5。这里不用 REQUIRED，是为了在版本不够时给出可读的原因，
+# 而不是让 CMake 抛一行 "Could not find a configuration file ... compatible
+# with requested version 6.5"。版本下限的来源：
+#   required property（6.0）、pragma ComponentBehavior: Bound（6.5）、
+#   MultiEffect（6.5）、Qt 6 重写后的 TableView（6.0，与 Qt5 那套 API 不兼容）。
+# 不支持 Qt 5，评估过程见 https://github.com/QtShadcn/qtshadcn/issues/12
+find_package(Qt6 6.5 QUIET COMPONENTS Core Gui Quick Qml QuickControls2 Svg Network)
+if(NOT Qt6_FOUND)
+    set(_qtshadcn_found_version "<未找到 Qt6>")
+    if(Qt6_VERSION)
+        set(_qtshadcn_found_version "${Qt6_VERSION}")
+    endif()
+    message(FATAL_ERROR
+        "\nQtShadcn 需要 Qt 6.5 或更高版本，当前找到的是 ${_qtshadcn_found_version}。\n\n"
+        "  不支持 Qt 5：required property / ComponentBehavior Bound / MultiEffect /\n"
+        "  重写后的 TableView 在 Qt 5.15 上都没有等价物，不是条件编译能绕开的。\n"
+        "  背景见 https://github.com/QtShadcn/qtshadcn/issues/12\n\n"
+        "  若本机装了多个 Qt 版本，用 -DCMAKE_PREFIX_PATH=<Qt 6.5+ 安装路径> 指定。\n")
+endif()
 
 if(QTSHADCN_IS_TOPLEVEL)
     qt_standard_project_setup(REQUIRES 6.5)

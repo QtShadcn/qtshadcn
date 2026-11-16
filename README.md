@@ -19,6 +19,11 @@ Qt 6 / QML 可组合 UI 组件库，对齐 shadcn/ui 的设计哲学：**Design 
 
 要求：Qt 6.5+、CMake 3.24+
 
+> **不支持 Qt 5。** 本库用到 `required property`（Qt 6.0+）、`pragma ComponentBehavior: Bound`
+> 与 `MultiEffect`（6.5+），并依赖 Qt 6 重写后的 `TableView` —— 这些在 Qt 5.15 上都没有
+> 等价物，不是加条件编译能绕开的。评估过程与替代方案见
+> [issue #12](https://github.com/QtShadcn/qtshadcn/issues/12)。
+
 ```bash
 git clone https://github.com/QtShadcn/qtshadcn.git
 cd qtshadcn
