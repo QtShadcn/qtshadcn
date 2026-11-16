@@ -53,7 +53,11 @@ Item {
                 spacing: 16
                 ShadcnButton {
                     text: qsTr("悬停我")
-                    ShadcnTooltip { text: qsTr("这是一个简单的提示") }
+                    // 截图模式下强制显示气泡，否则文档效果图只有一个按钮
+                    ShadcnTooltip {
+                        text: qsTr("这是一个简单的提示")
+                        open: ThemeManager.screenshotMode()
+                    }
                 }
                 ShadcnButton {
                     text: qsTr("带说明")

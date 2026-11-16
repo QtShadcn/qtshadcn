@@ -52,6 +52,8 @@ Item {
             Row {
                 spacing: 16
                 ShadcnDropdownMenu {
+                    // 截图模式下自动展开首个示例，否则文档效果图只有触发按钮
+                    open: ThemeManager.screenshotMode()
                     ShadcnDropdownMenuTrigger { text: qsTr("打开菜单") }
                     ShadcnDropdownMenuContent {
                         ShadcnDropdownMenuItem { text: qsTr("个人中心"); iconName: "user" }
