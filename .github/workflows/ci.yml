@@ -51,6 +51,17 @@ jobs:
           echo "parallel jobs: $JOBS (cpu: $(sysctl -n machdep.cpu.brand_string 2>/dev/null || uname -m))"
           cmake --build build --parallel "$JOBS"
 
+      - name: Lint (QML gate)
+        # .qmllint.ini 做分级：类型解析失败 / 覆盖基类属性 / 只读赋值 /
+        # Layout-anchors 冲突等「真错误类」设为 error 直接失败；
+        # 风格类（UnqualifiedAccess）降为 info 只记录，不阻塞。
+        # 另有 MaxWarnings 基线：警告数只许减不许增。
+        # -I build/src 指向构建产物，qmllint 才能解析 QtShadcn 模块。
+        run: |
+          COUNT=$(find src/qml -name '*.qml' | wc -l | tr -d ' ')
+          echo "linting $COUNT QML files"
+          find src/qml -name '*.qml' -print0 | xargs -0 qmllint -I build/src
+
       - name: Test
         env:
           # 纯 C++ 逻辑层单测（ThemeManager / IconRegistry / ShadcnTableModel），
