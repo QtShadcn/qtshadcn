@@ -58,13 +58,16 @@ jobs:
         # 另有 MaxWarnings 基线：警告数只许减不许增。
         # -I build/src 指向构建产物，qmllint 才能解析 QtShadcn 模块。
         run: |
-          COUNT=$(find src/qml -name '*.qml' | wc -l | tr -d ' ')
+          COUNT=$(find src/qml tests/qml -name '*.qml' | wc -l | tr -d ' ')
           echo "linting $COUNT QML files"
-          find src/qml -name '*.qml' -print0 | xargs -0 qmllint -I build/src
+          find src/qml tests/qml -name '*.qml' -print0 | xargs -0 qmllint -I build/src
 
       - name: Test
         env:
           # 纯 C++ 逻辑层单测（ThemeManager / IconRegistry / ShadcnTableModel），
           # 不需要真实显示服务器，用 offscreen 平台即可
           QT_QPA_PLATFORM: offscreen
+        # 含 QML 组件测试（tests/qml/tst_*.qml，由 qmltests runner 驱动）：
+        # 用例自身的 ENVIRONMENT 已固定 QT_QPA_PLATFORM=offscreen 与
+        # QTSHADCN_SCREENSHOT=1（关掉 Card 的 GPU 阴影层，软件渲染下会空白）
         run: ctest --test-dir build --output-on-failure

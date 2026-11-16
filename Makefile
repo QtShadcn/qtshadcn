@@ -61,13 +61,14 @@ test:
 
 # QML lint 门禁（.qmllint.ini 分级：真错误类阻塞，风格类只记录）
 # 需要先 build 一次：-I 指向 $(BUILD_DIR)/src，qmllint 靠它解析 QtShadcn 模块
+# 覆盖范围：组件库 src/qml + 测试用例 tests/qml
 lint:
 	@if [ ! -d "$(BUILD_DIR)/src/QtShadcn" ]; then \
 		echo "❌ 需要先 make build（qmllint 要用 $(BUILD_DIR)/src 解析 QtShadcn 模块）"; \
 		exit 1; \
 	fi
-	@echo "linting $$(find src/qml -name '*.qml' | wc -l | tr -d ' ') QML files"
-	@find src/qml -name '*.qml' -print0 | xargs -0 "$(QML_LINT)" -I "$(BUILD_DIR)/src" && echo "✅ lint 通过"
+	@echo "linting $$(find src/qml tests/qml -name '*.qml' 2>/dev/null | wc -l | tr -d ' ') QML files"
+	@find src/qml tests/qml -name '*.qml' -print0 | xargs -0 "$(QML_LINT)" -I "$(BUILD_DIR)/src" && echo "✅ lint 通过"
 
 clean:
 	rm -rf $(BUILD_DIR)
