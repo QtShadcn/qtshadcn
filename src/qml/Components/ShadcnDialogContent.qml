@@ -31,7 +31,9 @@ Item {
 
     readonly property int _pad: 16        // p-4
     readonly property int _gap: 16        // gap-4
-    readonly property int _radius: 12     // rounded-xl（Tailwind v4 = 0.75rem），与 ShadcnDialog 背景一致
+    // rounded-xl：从 theme.radius 派生（v4 @theme 里 xl = --radius × 1.4），
+    // 默认 radius 8 → 11。与 ShadcnDialog 背景共用同一来源，改主题一起动。
+    readonly property int _radius: theme.radiusXl
 
     // 宽度由 Dialog 固定（384，见 ShadcnDialog），content 直接撑满 parent.width。
     // 注意：不能在此绑定 implicitWidth（会读 bodyColumn.implicitWidth → 滚动视口的
@@ -46,7 +48,10 @@ Item {
     // 布局真实消耗掉的。不计进来会让「自然高度」比实际需要少 1px → 视口比 contentHeight
     // 矮 1px → 内容明明放得下却冒出滚动条（8px 竖条贴着右边框）。
     readonly property int _footerBlock: _footerH > 0 ? _footerH + 1 : 0
-    implicitHeight: Math.min(bodyColumn.implicitHeight + _pad * 2 + _footerBlock, maxHeight)
+    // 取整（ceil）而不是直接求和：文本换行后的隐式高度常带小数（83.4），
+    // 视口是整数像素，差 0.4px 就会让滚动条的 size 变成 0.99x，看起来「总是有一条」。
+    // ceil 后视口高度恒等于 contentHeight（两者都向上取整到同一个整数）。
+    implicitHeight: Math.min(Math.ceil(bodyColumn.implicitHeight + _pad * 2 + _footerBlock), maxHeight)
 
     // ── 可滚动 body ──────────────────────────────
     //
@@ -82,7 +87,7 @@ Item {
         // 而滚动条是 overlay、不挤占宽度，所以 contentWidth: width 是安全的
         // （这正是原来那段「不要写 contentWidth: width」警告的适用前提不同之处）。
         contentWidth: width
-        contentHeight: _padTop + bodyColumn.implicitHeight + _padBottom
+        contentHeight: Math.ceil(_padTop + bodyColumn.implicitHeight + _padBottom)
 
         ScrollBar.vertical: ShadcnScrollBar {
             policy: ScrollBar.AsNeeded
@@ -159,7 +164,9 @@ Item {
         property bool _hovered: false
         Rectangle {
             anchors.fill: parent
-            radius: Math.min(theme.radius, 12)
+            // 关闭钮就是 Button size="icon-sm"（size-7），圆角跟随 sm 档：
+            // rounded-[min(var(--radius-md),12px)]，与 ShadcnButton 的 Small 同源
+            radius: Math.min(theme.radiusMd, 12)
             color: closeButton._hovered ? theme.muted : "transparent"
         }
         // 官方用 lucide XIcon（size-4 = 16px，currentColor 取 button 前景色）

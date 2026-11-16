@@ -4,10 +4,25 @@
 
 ## Unreleased
 
-v0.2.0 发布后的清理，无 API 与行为变化。
+v0.2.0 发布后与 shadcn v4 base 的对齐，无 API 破坏。
 
 ### Changed
 
+- **`ShadcnButton` 尺寸整体收紧一档到 shadcn v4 base 口径**（视觉变化，API 不变）：
+  `ExtraSmall` 32→24(`h-6`) / `Small` 36→28(`h-7`) / `Medium` 40→32(`h-8`) /
+  `Large` 44→36(`h-9`) / `Icon` 40→32(`size-8`)。横向内边距 `px-4`/`px-8` 改为
+  `px-2.5`（xs 为 `px-2`），图标-文字间距 `gap-1`/`gap-1.5`，内联图标随尺寸
+  12/14/16。旧值是 shadcn **v3** 口径，这正是「我们的按钮比官网大一圈」的根因
+- **圆角统一从 `theme.radius` 派生**，不再写死像素。`QtShadcnTheme` 新增
+  `radiusSm`(×0.6) / `radiusMd`(×0.8) / `radiusLg`(=radius) / `radiusXl`(×1.4)，
+  对齐 v4 `@theme inline` 的 `--radius-*` 派生公式。按钮改绑 `radiusLg`/`radiusMd`，
+  对话框（含 Content 与关闭钮）改绑 `radiusXl`/`radiusMd` —— 改主题 radius 时
+  两者一起动，不再各自漂移（此前按钮 6、弹窗 14 就是漂移结果）
+- **`ShadcnScrollBar` 不再在亚像素溢出时显示 thumb**：判定由 `size < 1.0` 改为
+  「实际溢出像素 > 1px」。文本换行后的隐式高度常带小数（如 83.4），`size` 会变成
+  0.996，导致「内容明明放得下」也画出一根几乎撑满全高的条
+- **`ShadcnDialogContent` 高度向上取整**（`ceil`）：视口与 contentHeight 取整到同一
+  整数，避免 0.4px 误差让滚动条常驻
 - **`make run` 不再注入 `QML_IMPORT_PATH`**：QtShadcn 的 qmldir 是
   `prefer :/qt/qml/QtShadcn/`，模块已编译进库资源，链接上即可 import。
   该变量此前被当成硬性步骤，属于多余的坑
@@ -23,6 +38,15 @@ v0.2.0 发布后的清理，无 API 与行为变化。
 
 ### Docs
 
+- `docs/content/2.components/1.button.md`：新增「尺寸对照」表（v4 的 height / padding /
+  gap / 字号 / 内联图标五列），并说明圆角走 `theme.radiusLg` / `theme.radiusMd` 派生
+- `docs/content/2.components/17.dialog.md`：圆角改为 `theme.radiusXl`；补「未实现背景
+  模糊」的原因（试过 ShaderEffectSource 与 layer.effect 两条路，代价大于收益）
+- `docs/content/1.getting-started/3.usage.md`：Theme 属性表补 `radiusSm/Md/Lg/Xl` 派生值
+- `docs/content/4.development/1.component-workflow.md`：研究阶段补「从 registry JSON /
+  style-nova.css 取数」的命令，并把圆角规则改为「抄刻度不抄像素」
+- `docs/content/4.development/2.m3-components-spec.md`：圆角决策表按 v4 实际刻度重写
+- `skills/qtshadcn*/references/*`：Button 尺寸表、Dialog 圆角、圆角决策同步到派生值口径
 - `docs/content/2.components/5.card.md`：新增「布局」小节，说明内容容器是
   `ColumnLayout`、`Layout.fillHeight` 的用法，以及直接子项不能用 `x` / `y`
 - `docs/content/2.components/14.select.md`：新增「数据模型」小节，列出 JS 数组 /

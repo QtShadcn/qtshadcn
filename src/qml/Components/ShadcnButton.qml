@@ -43,15 +43,29 @@ Button {
     QtShadcnTheme { id: theme }
     VariantTokens { id: vt }
 
-    // ── 尺寸表（对齐 shadcn/ui：xs=32 / sm=36 / default=40 / lg=44 / icon=40）──
-    readonly property int _ctrlHeight: size === ShadcnButton.Size.ExtraSmall ? 32
-        : size === ShadcnButton.Size.Small ? 36
-        : size === ShadcnButton.Size.Large ? 44 : 40   // Medium / Icon
-    readonly property int _hPad: size === ShadcnButton.Size.ExtraSmall ? 10
-        : size === ShadcnButton.Size.Small ? 12
-        : size === ShadcnButton.Size.Large ? 32 : 16   // shadcn px-8=32 / px-4=16
+    // ── 尺寸表（对齐 shadcn v4 base / style-nova 的 .cn-button-size-*）──
+    //   xs      h-6  = 24   px-2   = 8    gap-1   = 4   text-xs      = 12
+    //   sm      h-7  = 28   px-2.5 = 10   gap-1   = 4   text-[0.8rem] = 12.8
+    //   default h-8  = 32   px-2.5 = 10   gap-1.5 = 6   text-sm      = 14
+    //   lg      h-9  = 36   px-2.5 = 10   gap-1.5 = 6   text-sm      = 14
+    //   icon    size-8 = 32
+    // 旧值（xs 32 / sm 36 / default 40 / lg 44，default px-4、lg px-8）是 shadcn v3
+    // 口径，v4 整体收紧了一整档 —— 这是「我们的按钮看着比官网大」的根因。
+    readonly property int _ctrlHeight: size === ShadcnButton.Size.ExtraSmall ? 24
+        : size === ShadcnButton.Size.Small ? 28
+        : size === ShadcnButton.Size.Large ? 36 : 32   // Medium / Icon
+    readonly property int _hPad: size === ShadcnButton.Size.ExtraSmall ? 8 : 10
+    // 图标-文字间距（gap-1 / gap-1.5）
+    readonly property int _gap: (size === ShadcnButton.Size.ExtraSmall
+                                 || size === ShadcnButton.Size.Small) ? 4 : 6
+    // 字号：xs=text-xs(12)、sm=text-[0.8rem](12.8)、其余 text-sm(14)。
+    // 注意 Text.font.pixelSize 是 int（只有 pointSize 是 real），12.8 会被截成 12，
+    // 与 xs 混成同一档；这里就近取 13（与 12.8 差 1.5%，肉眼不可辨）。
     readonly property int _fontSize: size === ShadcnButton.Size.ExtraSmall ? 12
-        : size === ShadcnButton.Size.Small ? 12 : 14   // text-sm
+        : size === ShadcnButton.Size.Small ? 13 : 14
+    // 内联图标尺寸：[&_svg]:size-3 / size-3.5 / size-4
+    readonly property int _iconSize: size === ShadcnButton.Size.ExtraSmall ? 12
+        : size === ShadcnButton.Size.Small ? 14 : 16
     readonly property bool _isIcon: size === ShadcnButton.Size.Icon
 
     implicitWidth: _isIcon ? _ctrlHeight : contentItem.implicitWidth + _hPad * 2
@@ -102,8 +116,15 @@ Button {
         return Qt.rgba(a.r * (1 - t) + b.r * t, a.g * (1 - t) + b.g * t, a.b * (1 - t) + b.b * t, 1)
     }
 
-    // 圆角：shadcn button 用 rounded-md = 6px（theme.radius 8 用于卡片/容器）
-    readonly property int _r: 6
+    // 圆角：shadcn v4 的刻度不是 Tailwind 默认值，全部从 --radius 派生（见 QtShadcnTheme）：
+    //   rounded-lg = theme.radiusLg (= --radius 本身)
+    //   rounded-md = theme.radiusMd (= --radius × 0.8)
+    // 按钮基底是 rounded-lg；xs/sm 再用 min(--radius-md, 10/12px) 收小一档。
+    // 组件内不写死像素：theme.radius 调了按钮跟着走。
+    readonly property int _r: (size === ShadcnButton.Size.ExtraSmall
+                               || size === ShadcnButton.Size.Small)
+        ? Math.min(theme.radiusMd, size === ShadcnButton.Size.ExtraSmall ? 10 : 12)
+        : theme.radiusLg
     readonly property int _tl: _groupPosition === "only" || _groupPosition === "first" ? _r : 0
     readonly property int _tr: _groupPosition === "only" || _groupPosition === "last" ? _r : 0
     readonly property int _bl: _groupPosition === "only" || _groupPosition === "first" ? _r : 0
@@ -201,22 +222,22 @@ Button {
         RowLayout {
             id: row
             anchors.centerIn: parent
-            spacing: theme.spacingXs
+            spacing: root._gap
 
             ShadcnSpinner {
-                Layout.preferredWidth: 14
-                Layout.preferredHeight: 14
+                Layout.preferredWidth: root._iconSize
+                Layout.preferredHeight: root._iconSize
                 visible: root.loading
                 color: root._baseFg
             }
 
             // 图标（iconName，shadcn 带图标按钮：svg size-4=16px，随文字色）
             ShadcnIcon {
-                Layout.preferredWidth: 16
-                Layout.preferredHeight: 16
+                Layout.preferredWidth: root._iconSize
+                Layout.preferredHeight: root._iconSize
                 visible: root.iconName.length > 0
                 name: root.iconName
-                size: 16
+                size: root._iconSize
                 color: root._baseFg
             }
 

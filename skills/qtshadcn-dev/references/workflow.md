@@ -50,9 +50,16 @@ T.SomeControl {   // 或直接 QQC 基类
 
 ## 圆角决策
 
-- 控件 6px（`rounded-md`）/ 容器 8px / Badge 胶囊
-- Dialog overlay 圆角 14px（`rounded-xl`，刻意大于 M2 容器，shadcn overlay > inline 惯例）
-- 不跟 luma `rounded-4xl`(26px)
+- **一律绑 `QtShadcnTheme` 的派生值**，不写死像素：
+  `radiusSm`(×0.6) / `radiusMd`(×0.8) / `radiusLg`(= radius) / `radiusXl`(×1.4)，
+  对应 v4 `@theme inline` 里 `--radius-*` 的派生公式（`apps/v4/app/globals.css`）
+- 默认 `radius` = 8 → lg 8 / md 6 / xl 11
+- 对照关系：Button `rounded-lg`(=lg，xs/sm 收一档到 `min(md,10~12)`)；Dialog / Card / Tooltip 类容器 `rounded-xl`(=xl)；Input/Textarea/Select 应为 `rounded-lg`（历史值 6 已偏一档，见 M3 spec 待办）
+- Badge 胶囊（`radius: 999`）、Switch `rounded-full` 不参与该刻度
+- 不跟 luma / aria 变体的 `rounded-4xl`(26~32px)
+
+> 血泪：按钮曾写死 6、弹窗写死 14、Tab 写死 6/8 —— 同一个库三种口径。改主题 radius
+> 时全部不动。所以现在组件里出现裸数字圆角一律视为 bug。
 
 ## 新增组件后必做
 

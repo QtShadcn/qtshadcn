@@ -47,7 +47,15 @@ QtObject {
     readonly property color successForeground:     ThemeManager.tokens["successForeground"]
 
     // ── 形状与间距 ─────────────────────────────
+    // radius 是基底（shadcn 的 --radius）。v4 的 rounded-* 不是 Tailwind 默认刻度，
+    // 而是从 --radius 派生（apps/v4/app/globals.css 的 @theme inline）：
+    //   sm ×0.6 / md ×0.8 / lg ×1.0 / xl ×1.4 / 2xl ×1.8 / 3xl ×2.2 / 4xl ×2.6
+    // 因此组件不写死圆角像素，一律用下面这几个派生值——改 theme.radius 全体跟动。
     readonly property int radius: ThemeManager.tokens["radius"]
+    readonly property int radiusSm: Math.round(radius * 0.6)
+    readonly property int radiusMd: Math.round(radius * 0.8)
+    readonly property int radiusLg: radius                  // rounded-lg = --radius 本身
+    readonly property int radiusXl: Math.round(radius * 1.4)
     readonly property int spacingXs: ThemeManager.tokens["spacingXs"]
     readonly property int spacingSm: ThemeManager.tokens["spacingSm"]
     readonly property int spacingMd: ThemeManager.tokens["spacingMd"]

@@ -15,10 +15,16 @@ Item {
     // 截图模式下自动打开基础对话框，否则文档效果图只有触发按钮。
     // 注意：不能写进 ShadcnDialog 实例的 Component.onCompleted —— 那会覆盖组件
     // 内部负责连接 closeClicked 的同名 handler，关闭钮直接失效。
-    Component.onCompleted: {
-        if (ThemeManager.screenshotMode())
+    //
+    // 必须判 visible：showcase 启动时会实例化所有页面，Popup 渲染在 window overlay
+    // 层、不受父项 visible 约束，隐藏页面里的对话框会叠到别的组件效果图上
+    // （曾把 button.png 左下角盖掉一块）。
+    function maybeShowInScreenshot() {
+        if (ThemeManager.screenshotMode() && visible)
             basicDialog.open()
     }
+    Component.onCompleted: maybeShowInScreenshot()
+    onVisibleChanged: if (visible) maybeShowInScreenshot()
 
     // 标题区（固定，不随内容滚动）
     Column {
@@ -42,7 +48,7 @@ Item {
         Text {
             width: parent.width
             wrapMode: Text.WordWrap
-            text: qsTr("基于 QQC.Dialog，对齐 shadcn v4 base：max-w-sm(384px) + 圆角 12 + bg-popover + ring-1（无阴影）+ 遮罩 10% + fade/zoom 100ms；内置关闭钮、可滚动 body、底部 sticky muted footer。")
+            text: qsTr("基于 QQC.Dialog，对齐 shadcn v4 base：max-w-sm(384px) + 圆角 11（radius×1.4）+ bg-popover + ring-1（无阴影）+ 遮罩 10% + fade/zoom 100ms；内置关闭钮、可滚动 body、底部 sticky muted footer。")
             color: theme.mutedForeground
             font.pixelSize: 13
         }

@@ -60,7 +60,7 @@ ShadcnDialog {
 
 1. **ScrollView 内 Column 取不到 implicitHeight**（被视口裁剪）→ `bodyColumn.height: implicitHeight` 固定自然高度
 2. **关闭钮不能作为 Dialog 的第二个子节点**（破坏 contentItem 单子节点，popup 高度不塌缩）→ 关闭钮改由 `ShadcnDialogContent` 渲染 + `closeClicked` 信号回连 `dialog.close()`
-3. 圆角 14px（`rounded-xl`，overlay > inline 容器惯例）；不跟 luma `rounded-4xl`(26px)
+3. 圆角取 `theme.radiusXl`（`rounded-xl` = `--radius`×1.4，默认 8 → 11），不写死像素；不跟 luma / aria 的 `rounded-4xl`
 4. **footer 灰色条需内缩 1px**（= 对话框 background 的 border.width）：灰色条圆角 = `_radius`，但对话框背景内边缘圆角 = `_radius - border`。不内缩则 footer 圆角比内边缘大 1px，底部两角露出方角（看起来像“超出一点点”）
 
 ## 视觉

@@ -49,6 +49,32 @@ Item {
         }
     }
 
+    // 亚像素溢出：内容比视口多 0.4px（文本换行后的隐式高度常带小数）
+    Component {
+        id: subpixelComp
+        Flickable {
+            width: 100
+            height: 100
+            contentWidth: 100
+            contentHeight: 100.4
+            boundsBehavior: Flickable.StopAtBounds
+            ScrollBar.vertical: ShadcnScrollBar { objectName: "vbar" }
+        }
+    }
+
+    // 真的溢出几像素（超过 1px 阈值）
+    Component {
+        id: slightComp
+        Flickable {
+            width: 100
+            height: 100
+            contentWidth: 100
+            contentHeight: 104
+            boundsBehavior: Flickable.StopAtBounds
+            ScrollBar.vertical: ShadcnScrollBar { objectName: "vbar" }
+        }
+    }
+
     // 横向溢出，用于测水平条的轴向几何
     Component {
         id: wideComp
@@ -133,6 +159,29 @@ Item {
             const thumb = findChild(sb, "thumb")
             verify(!!thumb, "thumb Rectangle exists")
             compare(thumb.visible, true, "thumb visible on overflow")
+        }
+
+        // 亚像素溢出（0.4px）不该显示 thumb：
+        // 曾经只看 size < 1.0，内容高度带小数时 size 会变成 0.996，
+        // 结果「内容明明放得下」也画出一根几乎撑满全高的条——
+        // 肉眼就是「右边一直有条竖线」。判定改成「溢出 > 1px」。
+        function test_subpixel_overflow_hides_thumb() {
+            const f = createTemporaryObject(subpixelComp, root)
+            const sb = findChild(f, "vbar")
+            verify(!!sb, "vertical scrollbar exists")
+            tryCompare(sb, "height", 100)
+            verify(sb.size < 1.0, "size 应略小于 1（正是误判的来源），实际 " + sb.size)
+            const thumb = findChild(sb, "thumb")
+            compare(thumb.visible, false, "0.4px 溢出不应显示 thumb")
+        }
+
+        // 真溢出几像素时仍然要显示
+        function test_real_overflow_still_shows_thumb() {
+            const f = createTemporaryObject(slightComp, root)
+            const sb = findChild(f, "vbar")
+            const thumb = findChild(sb, "thumb")
+            tryCompare(sb, "height", 100)
+            compare(thumb.visible, true, "4px 溢出应显示 thumb")
         }
 
         // 水平条换轴：轨道高 10、thumb 高 8

@@ -21,7 +21,10 @@ ShadcnButton {
 ```
 
 - **variant**：Primary 实心主色 / Secondary 次色 / Outline 描边 / Ghost 幽灵 / Destructive 危险 / Link（hover 下划线）
-- **size**：XS=32 / Small=36 / Medium=40 / Large=44 / Icon=40（对齐 shadcn/ui）
+- **size**：XS=24(`h-6`) / Small=28(`h-7`) / Medium=32(`h-8`) / Large=36(`h-9`) / Icon=32(`size-8`)
+  —— 对齐 shadcn **v4 base**（`.cn-button-size-*`）。旧版 32/36/40/44 是 v3 口径，整体大一档
+- **圆角**：`radiusLg`（= `rounded-lg` = `--radius`），xs/sm 收一档到 `min(radiusMd, 10/12)`
+- **字号 / 图标**：xs 12/12、sm 13/14、其余 14/16（`text-xs` / `text-[0.8rem]` / `text-sm`；`size-3 / 3.5 / 4`）
 - **hover**：实心变体混入亮度（hover:bg-*/90）；outline/ghost hover 用 accent 底 + accentForeground
 - **focus**：3px ring 焦点环；**disabled**：opacity 50%
 - **配色映射**集中在 `VariantTokens`（`vt.button[variant]`），新增 variant 只需枚举 + 映射各加一项

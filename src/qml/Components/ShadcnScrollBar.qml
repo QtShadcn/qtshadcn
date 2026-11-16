@@ -44,10 +44,15 @@ ScrollBar {
         // 自己判断 size < 1.0 —— 否则内容刚好放得下时会显示一根占满整个
         // 轨道的粗条，看起来像装饰条。这里必须照做。
         //
-        // AlwaysOn 要额外放行：它的语义是「即使不需要滚动也显示」，
-        // 若仍被 size < 1.0 卡住，AlwaysOn 就退化成了 AsNeeded
-        // （此时 size=1 → thumb 撑满轨道，与 Radix type="always" 一致）。
-        visible: control.policy === ScrollBar.AlwaysOn || control.size < 1.0
+        // 但只看 size < 1.0 不够：内容/视口高度一旦带小数（文本换行后的隐式高度
+        // 常常是 83.4 这种），size 会变成 0.9988 而不是 1，于是「内容明明放得下」
+        // 也冒出一根几乎撑满全高的条——肉眼就是「右边一直有条竖线」。
+        // 因此换算成「还差多少像素」再判：差值不足 1px 不算需要滚动。
+        //   contentHeight = height / size  →  overflow = height / size - height
+        readonly property real _overflowPx: control.size > 0
+            ? control.height * (1 - control.size) / control.size : 0
+
+        visible: control.policy === ScrollBar.AlwaysOn || _overflowPx > 1
 
         // rounded-full：短边的一半即全圆角。用 min 而不是写死 4 ——
         // 水平条的 thumb 高度是 8，圆角同样取 4，两个方向一致
