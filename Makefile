@@ -37,7 +37,6 @@ EXAMPLES     := $(patsubst $(EXAMPLES_DIR)/%/,%,\
 # 通过 f 变量指定项目名，未指定时默认为 showcase
 TARGET ?= $(if $(f),$(f),showcase)
 BIN     = $(BUILD_DIR)/bin/$(TARGET)
-QML_IMPORT = $(CURDIR)/$(BUILD_DIR)/src:$(CURDIR)/$(BUILD_DIR)/examples/$(TARGET)
 
 .PHONY: build run test lint consumer-smoke clean fresh info list
 
@@ -50,8 +49,11 @@ build:
 	cmake -S . -B $(BUILD_DIR) $(CMAKE_OPTS)
 	cmake --build $(BUILD_DIR) -j$(JOBS)
 
+# 不再注入 QML_IMPORT_PATH：QtShadcn 的 qmldir 是 `prefer :/qt/qml/QtShadcn/`，
+# QML 模块全部编译进库资源，链接上即可 import（0.2.0 起验证过）。示例自身
+# 的 QML 同样在资源里，因此运行时无需任何导入路径。
 run: build
-	QML_IMPORT_PATH="$(QML_IMPORT)" $(BIN)
+	$(BIN)
 
 # 跑 ctest（配置参数与 build 一致，见 CMAKE_OPTS 上方注释）
 # 想只跑测试、不建 examples：make test BUILD_EXAMPLES=OFF
@@ -99,6 +101,6 @@ info:
 	@echo "Build:    $(BUILD_DIR)"
 	@echo "Target:   $(TARGET)"
 	@echo "Bin:      $(BIN)"
-	@echo "QML:      $(QML_IMPORT)"
 	@echo "Examples: $(EXAMPLES)"
 	@echo "Flags:    EXAMPLES=$(BUILD_EXAMPLES) TESTS=$(BUILD_TESTS)"
+	@echo "Lint:     $(QML_LINT) -I $(BUILD_DIR)/src"

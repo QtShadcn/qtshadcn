@@ -36,8 +36,10 @@ add_test(NAME iconregistry_test COMMAND iconregistry_test)
 # 一个 runner 驱动多个 tst_*.qml：QUICK_TEST_MAIN 的 -input 接受单个文件，
 # 因此每个用例文件在 ctest 里是独立一项，失败时能直接定位到组件。
 #
-# -import 必须指向构建目录的模块输出：库未安装，用例里的 `import QtShadcn`
-# 只能靠这里解析（与 examples 运行时 QML_IMPORT_PATH 同一个目录）。
+# -import 指向构建目录的模块输出。运行时其实不靠它：QtShadcn 的 qmldir 是
+# `prefer :/qt/qml/QtShadcn/`，QML 模块已编进库资源，测试 runner 链接了
+# QtShadcn 就能 import。这里保留磁盘副本路径作为冗余保险（模块资源异常时
+# 仍能找到），同时它也是 qmllint 解析组件类型时用的那个目录。
 # 离屏跑：QT_QPA_PLATFORM=offscreen 无窗口；QTSHADCN_SCREENSHOT=1 关掉
 # Card 的 layer + MultiEffect 阴影（GPU 特效在软件渲染下会让内容整块空白）。
 qt_add_executable(qmltests
