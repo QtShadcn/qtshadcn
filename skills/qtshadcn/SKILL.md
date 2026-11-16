@@ -136,6 +136,11 @@ Window {
 | 第三方路径不统一 | 库放 `third_party/qtshadcn` 再 `add_subdirectory`；不要散落绝对路径 |
 | `ShadcnButton.Variant` 无 `Default` | 枚举只有 `Primary/Secondary/Outline/Ghost/Destructive/Link` |
 | 内联属性语法对 `Item` 子类不兼容 | `ShadcnXxx.text: "..."` 简写对 `QQC.ToolTip` 子类有效，对 `Item` 子类报 `Non-existent attached object`；一律用 `ShadcnXxx { text: "..." }` 完整语法 |
+| **`textInteractionFlags` 在 Qt 6.11 不存在** | `Text` / `TextEdit` / `TextInput` 都没有这个属性（`strings QtQuick.framework/Versions/A/QtQuick \| grep -x textInteractionFlags` 查不到属性名），写了会 `Cannot assign to non-existent property` 让**整个 QML 加载失败**（`QQmlApplicationEngine failed to load component`）。要「只读 + 可鼠标选中复制」：`TextEdit { readOnly: true; selectByMouse: true; persistentSelection: true }`；`Text` 完全不可选。`TextEdit` 的 `implicitHeight` 是只读的，自动高度用 `height: Math.max(18, contentHeight)` |
+| **工程在网络盘上 → 构建目录必须挪到本机** | 源码在 SMB/NFS 盘（如 `/Volumes/Keil_v5`）且 `build/` 也在盘上时，CMake 生成的中间文件会在编译阶段\"找不到\"：`include could not find requested file: build/.qt/<app>_qml.cmake`，或 `CMakeFiles/Makefile2` 缺失导致 `make` 报 `No rule to make target 'all'`（重新 configure 也没用）。Makefile 里把 `BUILD_DIR` 默认指向本机（`LOCAL_BUILD ?= $(HOME)/dev/qt/<项目名>-build`），`QML_IMPORT` 跟着 `$(BUILD_DIR)` 走 |
+| **`ShadcnSelect` 可以直喂 C++ 模型（0.2.0 起）** | 委托文本已改为从 delegate 注入的 `modelData` 按 `textRole` 取字段，取不到才退回 `String(modelData)`。旧实现用 `Array.isArray(model)` 分流，而 C++ 的 `QVariantList`/`QStringList` 在 QML 里 `Array.isArray` 为 false，会显示字面量 `"undefined"`。现在 JS 字符串数组、对象数组 + `textRole`、`ListModel`、C++ list 都能直接用，不必再手动转成字符串数组 |
+| **`ShadcnCard` 里要「撑满剩余高度」的内容（0.2.0 起）** | Card 的内容容器是 `ColumnLayout`，子项直接写 `Layout.fillHeight: true`，不用再手算「卡片高 − Header − Footer − 内边距」（旧实现是 `Column`，既不吃 `Layout.*` 也禁竖向 `anchors`，卡片被压扁时固定高度子项会冲出边框）。副作用：Card 直接子项不能再靠 `x`/`y` 自由定位（会被 Layout 接管），居中改用 `Layout.alignment: Qt.AlignCenter` |
+| **隐式宽度来自内容的项放进 Layout 会撑宽整列** | `ShadcnCard` 自 0.2.0 起内部已声明 `Layout.minimumWidth: 0`，不再被 `implicitWidth: 320` 顶住（此前一行 4 张统计卡 = 最小宽 1316px，把整个界面顶宽、右侧被切）。但其他隐式宽来自内容的项（`TextEdit` / `Flickable` / `ComboBox` / `ShadcnSelect`）放进布局时仍要显式 `Layout.minimumWidth: 0`，否则会层层上传撑宽整列；再给不该变宽的列加 `Layout.maximumWidth` 卡住。定位手法：加个 600ms `Timer` 打印各级 `width / Layout.minimumWidth`，一眼看出谁在要求超宽（`onCompleted` 时布局还没收敛，量不准） |
 
 ## References
 

@@ -87,7 +87,11 @@ QT_PREFIX ?= $(shell ls -d $(HOME)/Qt/6.*/macos 2>/dev/null | sort -V | tail -1)
 ifeq ($(QT_PREFIX),)
   QT_PREFIX := $(HOME)/Qt/6.11.1/macos
 endif
-BUILD_DIR ?= build
+# 工程若在网络盘（SMB/NFS，如 /Volumes/xxx）上：构建目录必须放本机，
+# 否则 CMake 生成的 .qt/<app>_qml.cmake、CMakeFiles/Makefile2 编译时「找不到」
+# （make 报 No rule to make target 'all' / include could not find requested file）
+LOCAL_BUILD ?= $(HOME)/dev/qt/$(notdir $(CURDIR))-build
+BUILD_DIR   ?= $(LOCAL_BUILD)
 APP       ?= myapp
 BIN        = $(BUILD_DIR)/bin/$(APP)
 JOBS      ?= $(shell sysctl -n hw.ncpu 2>/dev/null || echo 4)
@@ -114,5 +118,32 @@ info:
 	@echo "Bin:   $(BIN)"
 	@echo "QML:   $(QML_IMPORT)"
 ```
+
+## 无头预览/截图验证（没屏幕时怎么「看」界面）
+
+迭代样式别靠猜，抓一张渲染图再量：
+
+1. **离屏跑必须开 `QTSHADCN_SCREENSHOT=1`**：卡片阴影走 `layer` + `MultiEffect`（GPU 特效），offscreen 软件渲染下**卡片内容整块空白**，只剩表格/自绘 Rectangle 正常。看到「卡片没了」先怀疑这个，不是布局坏了。
+2. **抓图只能在 C++ 里做**：QML 端没暴露 `grabWindow()` / `grabToImage()`（报 `Property 'grabWindow' ... is not a function`）。main.cpp 加 env 开关：
+
+```cpp
+if (qEnvironmentVariableIsSet("MYAPP_GRAB"))
+    QTimer::singleShot(2600, &app, [&engine]() {
+        auto *win = qobject_cast<QQuickWindow *>(engine.rootObjects().first());
+        if (win) qInfo() << win->grabWindow().save("/tmp/shot.png");
+    });
+```
+
+```bash
+MYAPP_GRAB=1 QTSHADCN_SCREENSHOT=1 QML_IMPORT_PATH=... QT_QPA_PLATFORM=offscreen ./app
+```
+
+3. **没有视觉模型时用像素分析兜底**：PNG 纯 stdlib（`zlib` + 反 filter）解码后做「墨迹密度图 + 横/竖线扫描 + 区域平均色」，能客观量出框线在不在、卡片贴不贴内容、哪块是空白（自绘卡片底 ≈247、窗口底 ≈252、描边与底差约 10 亮度 → 扫描阈值要降到 ~6）。
+
+## 布局改动前先量
+
+改完不要只说「好了」：把 `x/y/w/h` 打印出来（`console.log` 或 C++ 抓图后像素扫描），确认「标题同行同高 / 框线同起点 / 无横向溢出」——用户验收就是看这些数字对不对得上。
+
+**RowLayout 里「一列填满、一列被居中」的坑**：同一 RowLayout 下的两列，如果只有一列的子项写了 `Layout.fillHeight: true`（或该列内容高小于行高），另一列**单靠自身 `Layout.fillHeight: true` 不会把自己撑开**，RowLayout 会把它按内容高**垂直居中** → 两列顶边差 `(行高 − 内容高)/2`（实例：差 66px，左列 y=264、右列 y=330）。修法：给内容高较小的那列显式 `Layout.alignment: Qt.AlignTop`。判据就是打印几何看两列 y 是否相等。
 
 Linux 把 `macos` 改成 `gcc_64`；Homebrew 用 `QT_PREFIX=$(brew --prefix qt)`。
