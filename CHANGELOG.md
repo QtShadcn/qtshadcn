@@ -2,6 +2,35 @@
 
 版本唯一来源是根 `CMakeLists.txt` 的 `project(VERSION)`，git tag 必须与之一致（CI 有校验）。
 
+## Unreleased
+
+v0.2.0 发布后的清理，无 API 与行为变化。
+
+### Changed
+
+- **`make run` 不再注入 `QML_IMPORT_PATH`**：QtShadcn 的 qmldir 是
+  `prefer :/qt/qml/QtShadcn/`，模块已编译进库资源，链接上即可 import。
+  该变量此前被当成硬性步骤，属于多余的坑
+- **QML lint 债务清理**：清掉 8 处未使用 `import`（RadioGroup / DropdownMenuGroup /
+  DropdownMenuContent / Table / KbdGroup / ButtonGroup），`UnusedImports` 因此
+  升为阻塞级 —— 未使用的 import 是纯垃圾，删除零风险
+- `ShadcnDialogContent` / `ShadcnAlert` / `ShadcnAvatar` 共 20 处补 `root.` 限定符
+  （原本直接访问 root 自身属性，`_pad` / `_gap` / `_footerH` / `_radius` / `_useImage` / `variant`）
+- `ShadcnCard` 把 `theme.mode === "dark"` 收敛为 `root._isDark`，描边与阴影复用同一判断
+- `.qmllint.ini` 修正阻塞机制：不再逐类别设 `error`（该级别 Qt 6.9 才有，在 CI 的
+  6.8.3 上会让 qmllint 以 `Invalid logging level` 直接 exit 255），改为靠
+  `MaxWarnings=0` 达成同等阻塞效果，一份配置同时适配 6.8 与 6.11
+
+### Docs
+
+- `docs/content/2.components/5.card.md`：新增「布局」小节，说明内容容器是
+  `ColumnLayout`、`Layout.fillHeight` 的用法，以及直接子项不能用 `x` / `y`
+- `docs/content/2.components/14.select.md`：新增「数据模型」小节，列出 JS 数组 /
+  对象数组 + textRole / ListModel / C++ 容器四种来源均可直接使用
+- `docs/content/1.getting-started/5.milestones.md`：修正组件表格行首多余的 `|`
+  （9 行，会渲染出空列）；M6 标记完成（v0.2.0 发布 + `find_package` 收口）
+- `tests/CMakeLists.txt`：修正「库未安装，import 只能靠 -import 解析」的过时注释
+
 ## 0.2.0
 
 破坏性版本：`ShadcnCard` 的内容容器换了类型，子组件宽度管理方式改变。
