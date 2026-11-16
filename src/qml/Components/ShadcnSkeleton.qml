@@ -9,11 +9,11 @@ import QtShadcn
 Rectangle {
     id: root
 
-    property int radius: 4
-
     QtShadcnTheme { id: theme }
 
     color: theme.muted
+    // 圆角来自 Rectangle 自带属性（不要再声明同名 property，会覆盖基类属性）
+    radius: 4
 
     // 闪烁动画
     SequentialAnimation on opacity {
