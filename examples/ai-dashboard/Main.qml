@@ -107,16 +107,14 @@ Window {
                 }
 
                 // 设置页：占位
-                // 注：ShadcnCard 内部用 Column 堆叠子项，直接子项禁用
-                // centerIn/fill/top/bottom 等 anchors，居中用 x/y 绑定
+                // ShadcnCard 的内容容器是 ColumnLayout，子项直接用 Layout 居中即可
                 ShadcnCard {
                     id: settingsCard
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
                     ColumnLayout {
-                        x: (settingsCard.width - width) / 2
-                        y: (settingsCard.height - height) / 2
+                        Layout.alignment: Qt.AlignCenter
                         spacing: theme.spacingMd
 
                         ShadcnIcon {

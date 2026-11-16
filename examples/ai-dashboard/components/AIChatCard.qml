@@ -27,8 +27,9 @@ ShadcnCard {
     ShadcnCardContent {
         id: cardContent
 
-        // 撑满卡片剩余高度（Card 高 - Header - Footer - 4×内边距，兜底防 NaN）
-        height: Math.max(200, card.height - cardHeader.height - cardFooter.height - card.padding * 4)
+        // 撑满卡片剩余高度：交给 ColumnLayout 的 Layout.fillHeight，
+        // 不再手算「Card 高 - Header - Footer - 内边距」
+        Layout.fillHeight: true
 
         ListView {
             id: messageList

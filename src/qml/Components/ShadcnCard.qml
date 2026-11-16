@@ -1,9 +1,14 @@
 import QtQuick
 import QtQuick.Effects
+import QtQuick.Layouts
 import QtShadcn
 
 // shadcn/ui 风格卡片容器（纯组合组件，无 QQC 基类）
 // 对齐 shadcn v4：bg-card + ring-1(前景色 5%/10%) + shadow-md + rounded + 内边距 spacing(6)/spacing(4)
+//
+// 内容容器是 ColumnLayout（不是 Column）：这样卡片内部可以放需要伸缩的内容，
+// 子项用 Layout.fillHeight / Layout.fillWidth 即可，不用再手算
+// 「卡片高 - Header - Footer」这类表达式。
 //
 // 用法:
 //   ShadcnCard {
@@ -35,6 +40,11 @@ Rectangle {
     implicitWidth: 320
     implicitHeight: contentColumn.implicitHeight + root.padding * 2
 
+    // 放进 Layout 时不要被 implicitWidth=320 顶住：Layout 默认拿 implicitWidth
+    // 当 minimumWidth，一行 4 张卡 → 4×320+间距 = 1316px 最小宽，会把窗口顶宽。
+    // 显式给 0 允许压缩；需要固定宽的下限时由调用方设 Layout.minimumWidth。
+    Layout.minimumWidth: 0
+
     color: theme.card
     radius: theme.radius
     clip: true   // shadcn: overflow-hidden
@@ -55,13 +65,12 @@ Rectangle {
         shadowColor: Qt.rgba(0, 0, 0, theme.mode === "dark" ? 0.35 : 0.08)
     }
 
-    Column {
+    // 内容容器用 ColumnLayout：子项可用 Layout.fillWidth / Layout.fillHeight 参与
+    // 布局。不再用 Column —— Column 既不吃 Layout.*，也不允许子项写竖向 anchors，
+    // 会导致「卡片被压扁时内部固定高度子项冲出边框」。
+    ColumnLayout {
         id: contentColumn
 
-        // 注：Column 自身用 anchors.fill 合法；但放进本 Column 的子项
-        // （Header/Content/Footer 及业务内容）不能用 top/bottom/fill/
-        // verticalCenter/centerIn —— 否则报 "Cannot specify ... anchors
-        // for items inside Column"。子项垂直位置一律由 Column 管理。
         anchors.fill: parent
         anchors.margins: root.padding
         spacing: root.padding
