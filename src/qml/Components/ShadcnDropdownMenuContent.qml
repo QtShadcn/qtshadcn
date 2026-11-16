@@ -19,7 +19,9 @@ Rectangle {
     border.color: theme.border
     z: 1000
 
-    layer.enabled: true
+    // layer + MultiEffect 是 GPU 特效，offscreen 软件渲染不支持 → 弹层整体空白；
+    // 截图模式（QTSHADCN_SCREENSHOT=1）下关闭 layer，正常 GUI 运行不受影响
+    layer.enabled: !ThemeManager.screenshotMode()
     layer.effect: MultiEffect {
         shadowEnabled: true
         shadowBlur: 0.5

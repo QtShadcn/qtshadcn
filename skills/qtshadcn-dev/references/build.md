@@ -129,6 +129,15 @@ SKIP_OVERVIEW=1 bash scripts/screenshot.sh    # 跳过 form 等非纯组件页
 - `SHOT_DELAY_MS` 默认 1200；`SLEEP` 默认 0.6
 - offscreen 下 `grabWindow` 走软件渲染，沙箱可跑
 
+### 浮层类组件（Popup）的截图三坑
+
+1. **弹层默认不展开 → 图上只剩触发按钮**。DropdownMenu / Tooltip 这类要交互才出现浮层的，页面里用截图模式自动展开：
+   `open: ThemeManager.screenshotMode()`（`ThemeManager.screenshotMode()` 是 `Q_INVOKABLE`，可绑定）。
+2. **`layer + MultiEffect` 在离屏下整块空白**，弹层比卡片更容易踩：`ShadcnDropdownMenuContent` / `ShadcnDialog` / `ShadcnSelect` 的弹层都要
+   `layer.enabled: !ThemeManager.screenshotMode()`。漏掉时症状是「菜单展开了但看不到」，很容易误判成 Popup 没打开。
+3. **Popup 渲染在 window overlay 层，不受父项 `visible` 约束**。强制 `open` 后，被 StackLayout 隐藏的页面里的浮层依然会画出来，
+   串到别的页面截图上。组件内用 `_ancestorsVisible`（沿 parent 链查 `visible`）把它压住——新增弹层组件时记得照抄。
+
 ## showcase 结构
 
 - `examples/showcase/Main.qml`：左侧菜单 + 右侧 StackLayout

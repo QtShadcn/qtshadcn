@@ -8,23 +8,40 @@ import QtShadcn
 //   ShadcnButton { text: "悬停我"
 //       ShadcnTooltip { text: "这是提示" }
 //   }
+// 程序化显示（演示页 / 截图等无鼠标场景）: ShadcnTooltip { text: "..."; open: true }
 Item {
     id: root
 
     property string text: ""
-    property bool _showing: false
+    // 强制显示：忽略 hover 与计时器，用于演示 / 截图等无鼠标场景
+    property bool open: false
+    // hover 命中状态，由下面两个 Timer 驱动（与 open 取或）
+    property bool _hovered: false
 
     QtShadcnTheme { id: theme }
+
+    // 祖先链可见性：Popup 渲染在 window overlay 层，**不受父项 visible 约束**。
+    // 若不检查，被隐藏的页面（如 StackLayout 非当前页）里的浮层会幽灵般继续显示，
+    // 甚至串到别的页面截图上。沿 parent 链读 visible，任一为 false 即视为不可见。
+    readonly property bool _ancestorsVisible: {
+        var p = root.parent
+        while (p) {
+            if (p.visible === false)
+                return false;
+            p = p.parent;
+        }
+        return true;
+    }
 
     Timer {
         id: showTimer
         interval: 300
-        onTriggered: root._showing = true
+        onTriggered: root._hovered = true
     }
     Timer {
         id: hideTimer
         interval: 100
-        onTriggered: root._showing = false
+        onTriggered: root._hovered = false
     }
 
     // ── hover 探测 ────────────────────────────────────────
@@ -73,10 +90,18 @@ Item {
     QQC.Popup {
         id: _popup
         parent: root.parent
-        visible: root._showing && root.text !== ""
+        visible: (root.open || root._hovered) && root.text !== "" && root._ancestorsVisible
         closePolicy: QQC.Popup.NoAutoClose
 
-        x: root.parent ? Math.round((root.parent.width - width) / 2) : 0
+        // x 居中于触发器内容区；气泡比触发器宽时两侧都会溢出，
+        // 做一次 clamp 把它拉回父容器内（与 Radix 的 shift 行为一致），否则长文本
+        // 气泡会跑出可视区左边缘
+        x: {
+            if (!root.parent)
+                return 0;
+            var centered = Math.round((root.parent.width - width) / 2);
+            return Math.max(0, Math.min(centered, root.parent.width - width));
+        }
         y: root.parent ? root.parent.height + 6 : 0
 
         background: Rectangle {

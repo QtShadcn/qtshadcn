@@ -28,11 +28,23 @@ Item {
 
     QtShadcnTheme { id: theme }
 
+    // 祖先链可见性：Popup 在 window overlay 层，不受父项 visible 约束，
+    // 隐藏页/隐藏容器里的菜单会幽灵显示（截图串页的根源）。
+    readonly property bool _ancestorsVisible: {
+        var p = root.parent
+        while (p) {
+            if (p.visible === false)
+                return false;
+            p = p.parent;
+        }
+        return true;
+    }
+
     // ── 弹层：Overlay 层，天然置顶 ──
     QQC.Popup {
         id: popup
         padding: 0
-        visible: root.open
+        visible: root.open && root._ancestorsVisible
         // 点击外部关闭 + ESC 关闭
         closePolicy: QQC.Popup.CloseOnPressOutside | QQC.Popup.CloseOnEscape
         onClosed: { root.open = false }
