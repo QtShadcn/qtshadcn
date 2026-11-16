@@ -31,6 +31,9 @@ Rectangle {
 
     QtShadcnTheme { id: theme }
 
+    // 暗色判断集中一处（描边透明度与阴影色都用它），避免两处重复写 theme.mode
+    readonly property bool _isDark: theme.mode === "dark"
+
     // 内边距：default 24px（spacing(6)）/ small 16px（spacing(4)），对齐 shadcn --card-spacing
     readonly property int padding: size === ShadcnCard.Size.Small ? 16 : 24
 
@@ -52,7 +55,7 @@ Rectangle {
     // 描边：ring-1 ring-foreground/5（dark 10%）
     border.width: 1
     border.color: Qt.rgba(theme.foreground.r, theme.foreground.g, theme.foreground.b,
-                          theme.mode === "dark" ? 0.10 : 0.05)
+                          root._isDark ? 0.10 : 0.05)
 
     // 阴影：shadow-md（dark 加深，light 浅黑）。
     // 注意：layer + MultiEffect 是 GPU 特效，offscreen 软件渲染不支持 → 卡片内容空白；
@@ -62,7 +65,7 @@ Rectangle {
         shadowEnabled: true
         shadowBlur: 0.4
         shadowVerticalOffset: 2
-        shadowColor: Qt.rgba(0, 0, 0, theme.mode === "dark" ? 0.35 : 0.08)
+        shadowColor: Qt.rgba(0, 0, 0, root._isDark ? 0.35 : 0.08)
     }
 
     // 内容容器用 ColumnLayout：子项可用 Layout.fillWidth / Layout.fillHeight 参与

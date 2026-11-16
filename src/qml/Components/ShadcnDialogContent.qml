@@ -51,23 +51,23 @@ Item {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.bottom: footerBar.top
-        anchors.bottomMargin: _footerH > 0 ? 0 : _pad
+        anchors.bottomMargin: root._footerH > 0 ? 0 : root._pad
         // 注意：不要写 contentWidth: width —— 那会让内容宽=整个 ScrollView 宽(含 padding 区)，
         // 比 body 实际可用宽多出一截 → ScrollView 误判需要水平滚动条 → 滚动条又挤占可用宽 →
         // 反复横跳，产生 implicitWidth binding loop（并表现为「左右乱跳/不支持滑动」）。
         // 去掉后由 bodyColumn.width(=availableWidth) 决定内容宽，无水平溢出、无水平滚动条。
         contentHeight: bodyColumn.implicitHeight
         clip: true
-        topPadding: _pad
-        leftPadding: _pad
-        rightPadding: _pad
-        bottomPadding: _footerH > 0 ? _gap : _pad
+        topPadding: root._pad
+        leftPadding: root._pad
+        rightPadding: root._pad
+        bottomPadding: root._footerH > 0 ? root._gap : root._pad
         ScrollBar.vertical.policy: ScrollBar.AsNeeded
         background: Item {}
 
         Column {
             id: bodyColumn
-            spacing: _gap
+            spacing: root._gap
             width: bodyScroll.availableWidth
             height: implicitHeight   // 固定为自然高度，供 ScrollView 滚动 + 供外层 implicitHeight 计算
         }
@@ -84,8 +84,8 @@ Item {
         anchors.rightMargin: 1
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 1
-        height: _footerH
-        visible: _footerH > 0
+        height: root._footerH
+        visible: root._footerH > 0
         clip: true
 
         // bg-muted/50（半透明 muted 底）——仅底部圆角（与对话框 rounded-b-xl 对齐），
@@ -95,10 +95,10 @@ Item {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.top: parent.top
-            anchors.topMargin: -_radius
+            anchors.topMargin: -root._radius
             color: theme.muted
             opacity: 0.5
-            radius: _radius
+            radius: root._radius
         }
         // border-t（顶部分隔线）
         Rectangle {
@@ -111,9 +111,9 @@ Item {
         // footer 内容（带 padding，底部留白给 rounded-b 圆角）
         Item {
             id: footerSlot
-            x: _pad
-            y: _pad
-            width: parent.width - _pad * 2
+            x: root._pad
+            y: root._pad
+            width: parent.width - root._pad * 2
             height: footerSlot.childrenRect.height
             clip: false
         }

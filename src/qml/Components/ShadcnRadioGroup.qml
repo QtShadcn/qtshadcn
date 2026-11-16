@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls.Basic
-import QtShadcn
 
 // shadcn/ui 风格单选组
 // 对齐 shadcn radio-group：grid gap-3（12px 间距）+ 单选互斥（同组仅一个选中）。

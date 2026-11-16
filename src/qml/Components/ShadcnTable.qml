@@ -1,6 +1,5 @@
 // src/qml/Components/ShadcnTable.qml
 import QtQuick
-import QtQuick.Controls as QQC
 import QtShadcn
 
 // shadcn/ui 风格表格（M5）：原生 TableView 滚动 + 表头水平联动

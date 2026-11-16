@@ -1,7 +1,6 @@
 // src/qml/Components/ShadcnDropdownMenuContent.qml
 import QtQuick
 import QtQuick.Effects
-import QtQuick.Layouts
 import QtShadcn
 
 // shadcn/ui 风格菜单弹层容器（M6）

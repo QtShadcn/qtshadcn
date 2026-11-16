@@ -59,9 +59,9 @@ Rectangle {
         spacing: 10
 
         ShadcnIcon {
-            name: root.iconName || (variant === ShadcnAlert.Variant.Destructive ? "alert-circle"
-                       : variant === ShadcnAlert.Variant.Warning ? "alert-triangle"
-                       : variant === ShadcnAlert.Variant.Success ? "check-circle"
+            name: root.iconName || (root.variant === ShadcnAlert.Variant.Destructive ? "alert-circle"
+                       : root.variant === ShadcnAlert.Variant.Warning ? "alert-triangle"
+                       : root.variant === ShadcnAlert.Variant.Success ? "check-circle"
                        : "info")
             size: 16
             color: root._fg

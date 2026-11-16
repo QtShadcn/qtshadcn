@@ -1,5 +1,4 @@
 import QtQuick
-import QtShadcn
 
 // 按钮组：相邻按钮边框合并（spacing: -1），圆角只保留两端
 // 子项直接放 ShadcnButton / ShadcnToggle 即可，圆角位置自动分配

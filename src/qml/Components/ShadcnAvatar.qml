@@ -51,7 +51,7 @@ Item {
         anchors.fill: parent
         radius: width / 2
         color: root.bgColor
-        clip: _useImage   // 只有图片模式需要 clip 保证圆形裁切
+        clip: root._useImage   // 只有图片模式需要 clip 保证圆形裁切
 
         // 模式一：图片
         Image {

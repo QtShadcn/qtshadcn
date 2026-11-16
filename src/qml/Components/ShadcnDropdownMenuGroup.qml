@@ -1,7 +1,5 @@
 // src/qml/Components/ShadcnDropdownMenuGroup.qml
 import QtQuick
-import QtQuick.Layouts
-import QtShadcn
 
 // shadcn/ui 风格菜单分组容器（M6）
 // 纯语义分组，无视觉样式；视觉分隔由 ShadcnDropdownMenuSeparator 提供
