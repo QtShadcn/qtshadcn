@@ -32,6 +32,11 @@ Item {
     // 高度上限（px）：内容超过则内部滚动；0 = 不限高
     property int maxHeight: 200
 
+    // 创建期守卫：外部写 text 的初始赋值会触发 edit 的 textChanged，
+    // 那不是用户编辑，不该发 textEdited。组件创建完成后才放行。
+    property bool _ready: false
+    Component.onCompleted: _ready = true
+
     implicitWidth: 240
 
     // 高度：min-h-16(64) 起，内容多时自然增高，超过 maxHeight 钳住 → 内部滚动。
@@ -46,6 +51,7 @@ Item {
     // ── 占位文本（自绘：TextEdit 无 placeholderTextColor，用 mutedForeground）──
     Text {
         id: placeholder
+        objectName: "placeholder"
         x: 12   // 对齐 edit.leftPadding
         y: 12   // 对齐 edit.topPadding
         width: root.width - 24
@@ -96,6 +102,7 @@ Item {
 
         TextEdit {
             id: edit
+            objectName: "edit"
             width: flick.width
             wrapMode: TextEdit.Wrap
             textFormat: TextEdit.PlainText
@@ -107,10 +114,19 @@ Item {
             rightPadding: 12
             topPadding: 12
             bottomPadding: 12
-            // 注意：不要用 onTextEdited: root.textEdited(editedText) ——
-            // Qt 6.11 qmlcache 下内联 handler 拿不到信号参数 editedText（ReferenceError），
-            // 改用 text（编辑后的当前值，一定可用）转发
-            onTextEdited: root.textEdited(text)
+            // 注意 1：不要用 onTextEdited: root.textEdited(editedText) ——
+            // Qt 6.11 qmlcache 下内联 handler 拿不到信号参数 editedText（ReferenceError）。
+            //
+            // 注意 2：TextEdit 的 textEdited 信号是 **Qt 6.9 才加的**
+            // （qmltypes 里 revision 1545 = 6*256+9；TextInput 的那份是 521，
+            // 早得多）。本项目最低支持 6.5，直接写 onTextEdited 在 6.8 上既过不了
+            // qmllint（no matching signal found），运行时 handler 也连不上 ——
+            // textEdited 会是个永远不发的死信号。所以改用 textChanged 转发：
+            // 语义比 textEdited 宽一点（程序化改 text 也会发），换来 6.5–6.11 全版本可用。
+            onTextChanged: {
+                if (root._ready)
+                    root.textEdited(edit.text)
+            }
         }
     }
 
