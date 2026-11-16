@@ -24,7 +24,7 @@ description: Use when building a Qt 6 / QML app that consumes the QtShadcn compo
 2. 最小工程：`CMakeLists.txt` + `main.cpp` + QML + Makefile + `third_party/qtshadcn`
 3. 库放 `third_party/qtshadcn`（submodule 或 clone），然后 `add_subdirectory(third_party/qtshadcn)`（作为子项目时默认不编 showcase）
 4. `QQuickStyle::setStyle("Basic")` **必做**；窗口内先放一个 `QtShadcnTheme`
-5. `find_package(QtShadcn)` **尚未提供**，不要写假的 install 导入
+5. 库支持两种接入：源码子项目（`add_subdirectory`，链接 `QtShadcn`）或安装后 `find_package(QtShadcn 0.2 REQUIRED)` + 链接 `QtShadcn::QtShadcn`。别写第三种（如自己手搓 `find_library`）
 
 ```bash
 mkdir -p third_party
@@ -37,7 +37,9 @@ add_subdirectory(third_party/qtshadcn)
 target_link_libraries(myapp PRIVATE QtShadcn Qt6::Quick Qt6::QuickControls2)
 ```
 
-`make run` 要把 `QML_IMPORT_PATH` 指向 **QtShadcn 模块目录的父路径**（上述布局为 `build/third_party/qtshadcn/src`）。完整模板（CMake / `main.cpp` / Makefile）见 [build](references/consumer/build.md)。
+链接上 `QtShadcn` 就够 `import QtShadcn`，**不需要设 `QML_IMPORT_PATH`**：qmldir 里是 `prefer :/qt/qml/QtShadcn/`，QML 模块（qmldir、类型信息、全部 .qml）都编译进了库资源。只有「不链接库、纯靠 import 路径加载」（例如单独跑 `.qml` 文件、给 qmllint 指路）时才需要，那时指到模块目录的**父路径**（`build/third_party/qtshadcn/src`）。
+
+库自 0.2.0 起也支持安装后 `find_package(QtShadcn 0.2 REQUIRED)` + `target_link_libraries(app PRIVATE QtShadcn::QtShadcn)`。完整模板（CMake / `main.cpp` / Makefile）见 [build](references/consumer/build.md)。
 
 ## 使用组件
 

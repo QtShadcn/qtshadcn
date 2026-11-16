@@ -35,16 +35,35 @@ make run
 ```bash
 cmake -S . -B build -DCMAKE_PREFIX_PATH="${QT_PREFIX:-$HOME/Qt/6.11.1/macos}" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 cmake --build build
-QML_IMPORT_PATH="build/src:build/examples/showcase" ./build/bin/showcase
+./build/bin/showcase
 ```
 
 Linux 把前缀里的 `macos` 换成 `gcc_64`；Homebrew 用 `QT_PREFIX=$(brew --prefix qt)`。
 
 ## 📦 接入你的项目
 
-`find_package(QtShadcn)` 尚未提供。两种源码接入方式任选其一，作为子项目引入时**默认不编 showcase**。
+三种方式任选其一。作为子项目引入时**默认不编 showcase**。
 
-**方式一：FetchContent（推荐，锁版本 tag，无需 submodule）**
+**方式一：find_package（预编译安装，最省事）**
+
+```bash
+cmake -S . -B build -DCMAKE_PREFIX_PATH="$HOME/Qt/6.11.1/macos"
+cmake --build build
+cmake --install build --prefix /your/prefix
+```
+
+```cmake
+find_package(QtShadcn 0.2 REQUIRED)
+target_link_libraries(myapp PRIVATE QtShadcn::QtShadcn Qt6::Quick)
+```
+
+链接上 `QtShadcn::QtShadcn` 就够 `import QtShadcn` —— qmldir 里是
+`prefer :/qt/qml/QtShadcn/`，QML 模块（qmldir、类型信息、全部 .qml）已编译进库资源的，
+**运行时不用设 `QML_IMPORT_PATH`**。安装出去的磁盘副本在
+`<prefix>/lib/qml/QtShadcn`（CMake 里变量 `QtShadcn_QML_IMPORT_PATH`），只给 qmllint /
+qmlls / Qt Designer 这类工具链用。
+
+**方式二：FetchContent（锁版本 tag，无需 submodule）**
 
 ```cmake
 include(FetchContent)
@@ -55,9 +74,9 @@ FetchContent_MakeAvailable(qtshadcn)
 target_link_libraries(myapp PRIVATE QtShadcn Qt6::Quick Qt6::QuickControls2)
 ```
 
-此布局下 `QML_IMPORT_PATH` 指到 `build/_deps/qtshadcn-build/src`。CPM.cmake 用户等价写法：`CPMAddPackage("gh:QtShadcn/qtshadcn@v0.2.0")`。
+CPM.cmake 用户等价写法：`CPMAddPackage("gh:QtShadcn/qtshadcn@v0.2.0")`。
 
-**方式二：submodule / clone 到 third_party（便于本地改库源码）**
+**方式三：submodule / clone 到 third_party（便于本地改库源码）**
 
 ```bash
 mkdir -p third_party
@@ -71,9 +90,13 @@ add_subdirectory(third_party/qtshadcn)
 target_link_libraries(myapp PRIVATE QtShadcn Qt6::Quick Qt6::QuickControls2)
 ```
 
-此布局下 `QML_IMPORT_PATH` 为 `build/third_party/qtshadcn/src`。submodule 锁版本同样用 tag：`cd third_party/qtshadcn && git fetch --tags && git checkout v0.2.0`。
+submodule 锁版本同样用 tag：`cd third_party/qtshadcn && git fetch --tags && git checkout v0.2.0`。
 
-`main.cpp` 里必须 `QQuickStyle::setStyle("Basic")`（macOS 默认 native style 会拒绝自定义 `contentItem` / `background`）。`QML_IMPORT_PATH` 始终指到 **QtShadcn 模块目录的父路径**（两种布局见上文）。
+`main.cpp` 里必须 `QQuickStyle::setStyle("Basic")`（macOS 默认 native style 会拒绝自定义 `contentItem` / `background`）。
+
+**什么时候需要 `QML_IMPORT_PATH`**：只有「不链接库、纯靠 import 路径加载」的场合（例如只跑
+`.qml` 文件、或给 qmllint 指路）。链接了 `QtShadcn` 的应用不需要它——模块内容在库资源里。
+`QML_IMPORT_PATH` 要指到模块目录的**父路径**（如 `build/src`，而不是 `build/src/QtShadcn`）。
 
 建议在应用根目录放 `Makefile`（`make build` / `make run` / `make clean`）。完整工程模板见 [skills/qtshadcn/references/consumer/build.md](skills/qtshadcn/references/consumer/build.md)。
 

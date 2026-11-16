@@ -25,9 +25,9 @@ myapp/
 4. `add_subdirectory(third_party/qtshadcn)` —— 作为子项目时默认不编 showcase（`QTSHADCN_BUILD_EXAMPLES=ON` 可打开）
 5. `main.cpp` **必须** `QQuickStyle::setStyle("Basic")`
 6. 窗口里先放 `QtShadcnTheme`
-7. `QML_IMPORT_PATH` = **含 `QtShadcn/` 模块目录的父路径** = `$(BUILD_DIR)/third_party/qtshadcn/src`
+7. **不需要设 `QML_IMPORT_PATH`**：链接 `QtShadcn` 后 `import QtShadcn` 直接可用（模块内容在库资源里，qmldir 是 `prefer :/qt/qml/QtShadcn/`）。只有不链接库、纯靠 import 路径加载时才需要，那时指向**含 `QtShadcn/` 模块目录的父路径**（`$(BUILD_DIR)/third_party/qtshadcn/src`）
 8. 可执行文件输出到 `$(BUILD_DIR)/bin/$(APP)`，与 Makefile 的 `BIN` 一致
-9. `find_package(QtShadcn)` **尚未提供**，不要写假的安装导入
+9. 库已支持安装导出：作为源码子项目引入时不要写 `find_package(QtShadcn)`（那种场景走 `add_subdirectory`）；用预编译前缀时才 `find_package(QtShadcn 0.2 REQUIRED)` + 链接 `QtShadcn::QtShadcn`
 
 ### 最小 CMakeLists.txt
 
@@ -95,7 +95,8 @@ BUILD_DIR   ?= $(LOCAL_BUILD)
 APP       ?= myapp
 BIN        = $(BUILD_DIR)/bin/$(APP)
 JOBS      ?= $(shell sysctl -n hw.ncpu 2>/dev/null || echo 4)
-# 含 QtShadcn 模块目录的父路径（third_party 布局）
+# 只在「不链接库、纯 import 路径加载」时用（如单独跑 .qml、给 qmllint 指路）；
+# 正常链接 QtShadcn 的应用不需要 QML_IMPORT_PATH
 QML_IMPORT ?= $(CURDIR)/$(BUILD_DIR)/third_party/qtshadcn/src
 
 .PHONY: build run clean fresh info
@@ -105,7 +106,7 @@ build:
 	cmake --build $(BUILD_DIR) -j$(JOBS)
 
 run: build
-	QML_IMPORT_PATH="$(QML_IMPORT)" $(BIN)
+	$(BIN)
 
 clean:
 	rm -rf $(BUILD_DIR)
@@ -135,7 +136,7 @@ if (qEnvironmentVariableIsSet("MYAPP_GRAB"))
 ```
 
 ```bash
-MYAPP_GRAB=1 QTSHADCN_SCREENSHOT=1 QML_IMPORT_PATH=... QT_QPA_PLATFORM=offscreen ./app
+MYAPP_GRAB=1 QTSHADCN_SCREENSHOT=1 QT_QPA_PLATFORM=offscreen ./app
 ```
 
 3. **没有视觉模型时用像素分析兜底**：PNG 纯 stdlib（`zlib` + 反 filter）解码后做「墨迹密度图 + 横/竖线扫描 + 区域平均色」，能客观量出框线在不在、卡片贴不贴内容、哪块是空白（自绘卡片底 ≈247、窗口底 ≈252、描边与底差约 10 亮度 → 扫描阈值要降到 ~6）。

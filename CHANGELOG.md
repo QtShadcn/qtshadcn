@@ -33,6 +33,18 @@
 - `ShadcnDropdownMenuShortcut` 缺少 `import QtQuick.Layouts`，且与 `anchors.verticalCenter`
   混用（容器是 RowLayout，anchors 在 Layout 中非法）
 
+### Added
+
+- **`find_package(QtShadcn)` 支持**（M6 收口）：`cmake --install` 后可被外部工程
+  按 `<prefix>/lib/cmake/QtShadcn` 找到，导出的目标是 `QtShadcn::QtShadcn`
+  - 链接该目标即可 `import QtShadcn`，**运行时无需 `QML_IMPORT_PATH`**
+    （qmldir 里是 `prefer :/qt/qml/QtShadcn/`，QML 模块已编译进库资源）
+  - 另装一份磁盘副本到 `<prefix>/lib/qml/QtShadcn`（含 qmldir / qmltypes / .qml / 插件），
+    供 qmllint、qmlls、Qt Designer 使用；CMake 变量 `QtShadcn_QML_IMPORT_PATH` 指过去
+  - 只作为顶层项目构建时安装；被 FetchContent / add_subdirectory 引入时不装
+  - `tests/consumer/` 是消费方冒烟工程，CI 每次安装后用它验证
+    `find_package → 链接 → 实例化组件` 全链路（`make consumer-smoke` 本地同款）
+
 ### Internal
 
 - 新增 `VariantSpec`（`src/qml/Theme/VariantSpec.qml`）：variant → token 映射的具名类型，
@@ -51,3 +63,6 @@
   - 用例做过变异验证：把 Card 容器改回 `Column`、Select 改回 `model[textRole]`、
     Shortcut 去掉 `import QtQuick.Layouts`、Skeleton 默认圆角改成 2，
     对应用例全部失败
+- **示例收敛为 2 个**：只留 `showcase`（组件视觉基线 + 截图验证入口）和
+  `ai-dashboard`（真实消费者，最能暴露 API 设计缺陷）。`fire-safety` / `bms-eol`
+  已从仓库移除，需要时按 tag 从 git 历史取回
