@@ -27,7 +27,13 @@ Item {
         onTriggered: root._showing = false
     }
 
-    // 向上查找有 hovered 属性的祖先（Button 的 contentItem 没有 hovered）
+    // ── hover 探测 ────────────────────────────────────────
+    // hovered 是运行期才在 QQuickItem 上出现的动态属性，静态分析看不到，因此下面
+    // 这一小段用动态属性访问（p.hovered）时必然报 missing-property，局部关闭该告警。
+    // 注意：qmllint 会把注释里的「qmllint + 词」误解析成指令，别在行首写这个词。
+    // 关闭范围：findHoverTarget → Connections → Component.onCompleted
+    //
+    // qmllint disable missing-property
     function findHoverTarget() {
         var p = root.parent
         while (p) {
@@ -42,7 +48,7 @@ Item {
         id: hoverConn
         target: null
         function onHoveredChanged() {
-            if (target && target.hovered) {
+            if (hoverConn.target && hoverConn.target.hovered) {
                 hideTimer.stop()
                 showTimer.restart()
             } else {
@@ -62,6 +68,7 @@ Item {
             }
         }
     }
+    // qmllint enable missing-property
 
     QQC.Popup {
         id: _popup

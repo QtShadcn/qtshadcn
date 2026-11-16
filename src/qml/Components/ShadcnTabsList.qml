@@ -27,6 +27,9 @@ Item {
     property string variant: "default"   // "default" | "line"
 
     // 把 root.variant 同步到每个 ShadcnTabsTrigger（Trigger 有 variant 属性）
+    // itemAt() 静态类型是 QQuickItem，看不到 Trigger 上的 variant，这里做的是
+    // 动态属性赋值，静态分析必然报 missing-property，故局部关闭该告警。
+    // qmllint disable missing-property
     function _syncVariant() {
         for (var i = 0; i < tabBar.count; i++) {
             var item = tabBar.itemAt(i);
@@ -34,6 +37,7 @@ Item {
                 item.variant = root.variant;
         }
     }
+    // qmllint enable missing-property
 
     // 坑：Item 的 height 不会自动采用 implicitHeight（默认 0）——组件自包含显式高度，
     // 否则容器/TabBar 高度塌缩、标签文字全部重叠
