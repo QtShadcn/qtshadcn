@@ -52,12 +52,17 @@ jobs:
           cmake --build build --parallel "$JOBS"
 
       - name: Lint (QML gate)
-        # .qmllint.ini 做分级：类型解析失败 / 覆盖基类属性 / 只读赋值 /
-        # Layout-anchors 冲突等「真错误类」设为 error 直接失败；
-        # 风格类（UnqualifiedAccess）降为 info 只记录，不阻塞。
-        # 另有 MaxWarnings 基线：警告数只许减不许增。
+        # 阻塞机制是 .qmllint.ini 的 MaxWarnings=0：默认级别的任何 warning
+        # （类型解析失败、PropertyOverride、只读赋值、Layout-anchors 冲突…）
+        # 都让退出码非零。风格类 UnqualifiedAccess / UnusedImports 降为 info。
+        #
+        # 不要在这里或配置里用 `error` 级别：6.8 的 qmllint 只接受
+        # disable / info / warning，写 error 会以 "Invalid logging level"
+        # 打印 usage 后 exit 255，门禁变成假失败。
+        #
         # -I build/src 指向构建产物，qmllint 才能解析 QtShadcn 模块。
         run: |
+          echo "qmllint: $(qmllint --version)"
           COUNT=$(find src/qml tests/qml -name '*.qml' | wc -l | tr -d ' ')
           echo "linting $COUNT QML files"
           find src/qml tests/qml -name '*.qml' -print0 | xargs -0 qmllint -I build/src
