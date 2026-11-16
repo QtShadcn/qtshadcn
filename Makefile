@@ -2,7 +2,7 @@
 # 用法:
 #   make build   配置 + 增量构建（默认 showcase）
 #   make run     构建并运行 showcase（前台，Ctrl+C 退出）
-#   make test    配置(开测试) + 构建测试 + 运行 ctest
+#   make test    配置 + 构建 + 运行 ctest（与 build 共用一组配置参数，不翻转状态）
 #   make lint    QML lint 门禁（需先 build，配置见 .qmllint.ini）
 #   make clean   清理构建产物
 #   make fresh   删除构建目录后完整重建（Qt 模块/缓存异常时用）
@@ -11,6 +11,20 @@
 QT_PREFIX ?= $(HOME)/Qt/6.11.1/macos
 BUILD_DIR ?= build
 JOBS      ?= $(shell sysctl -n hw.ncpu 2>/dev/null || echo 4)
+
+# CMake 配置参数（唯一来源，build / test 共用）
+#
+# 为什么必须显式传这两个开关：CMake 的 option() 只在**首次** configure 时
+# 生效，之后一律以 CMakeCache.txt 为准。若某个目标只单向设置状态，
+# 后续目标不传，cache 就会停在那个状态上——症状是「明明没改代码，
+# `make build` 却不产出 build/bin/showcase」，因为 examples 早被关掉了。
+# 现在两个目标传同一组值，状态永远确定，也不会来回增删 target 造成重建。
+BUILD_EXAMPLES ?= ON
+BUILD_TESTS    ?= ON
+CMAKE_OPTS      = -DCMAKE_PREFIX_PATH="$(QT_PREFIX)" \
+                  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+                  -DQTSHADCN_BUILD_EXAMPLES=$(BUILD_EXAMPLES) \
+                  -DQTSHADCN_BUILD_TESTS=$(BUILD_TESTS)
 # qmllint 门禁可执行文件（优先用 Qt 自带，避免 homebrew 版本与 Qt 版本不一致）
 QML_LINT  ?= $(QT_PREFIX)/bin/qmllint
 
@@ -32,17 +46,16 @@ build:
 		echo "   $(EXAMPLES)"; \
 		exit 1; \
 	fi
-	cmake -S . -B $(BUILD_DIR) -DCMAKE_PREFIX_PATH="$(QT_PREFIX)" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+	cmake -S . -B $(BUILD_DIR) $(CMAKE_OPTS)
 	cmake --build $(BUILD_DIR) -j$(JOBS)
 
 run: build
 	QML_IMPORT_PATH="$(QML_IMPORT)" $(BIN)
 
-# 开 QTSHADCN_BUILD_TESTS，关 examples 以聚焦测试、缩短构建
+# 跑 ctest（配置参数与 build 一致，见 CMAKE_OPTS 上方注释）
+# 想只跑测试、不建 examples：make test BUILD_EXAMPLES=OFF
 test:
-	cmake -S . -B $(BUILD_DIR) -DCMAKE_PREFIX_PATH="$(QT_PREFIX)" \
-		-DQTSHADCN_BUILD_TESTS=ON -DQTSHADCN_BUILD_EXAMPLES=OFF \
-		-DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+	cmake -S . -B $(BUILD_DIR) $(CMAKE_OPTS)
 	cmake --build $(BUILD_DIR) -j$(JOBS)
 	ctest --test-dir $(BUILD_DIR) --output-on-failure
 
@@ -73,3 +86,4 @@ info:
 	@echo "Bin:      $(BIN)"
 	@echo "QML:      $(QML_IMPORT)"
 	@echo "Examples: $(EXAMPLES)"
+	@echo "Flags:    EXAMPLES=$(BUILD_EXAMPLES) TESTS=$(BUILD_TESTS)"
