@@ -1,11 +1,17 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls.Basic
-import QtQuick.Effects
 import QtShadcn
 
 // shadcn/ui 风格对话框
 // 基于 QQC.Dialog（Basic style），modal=true；替换 background + Overlay
-// 对齐 shadcn Base UI 默认产物：max-w-sm(384px) + bg-popover + 圆角 14 + 阴影 + 居中 + fade/zoom 动画
+// 对齐 shadcn v4 base 规格（.cn-dialog-*）：
+//   content: bg-popover + rounded-xl(12) + ring-1 ring-foreground/10 + p-4 + gap-4
+//            + max-w-[calc(100%-2rem)] sm:max-w-sm(384) + text-sm
+//   overlay: bg-black/10（+ backdrop-blur-xs，Qt 无 backdrop-filter，不实现）
+//   动画:    fade + zoom-95，duration-100
+// 注意：新版已用 1px ring 取代旧的 shadow-xl，本组件因此不再使用 layer/MultiEffect
 // 内置 ghost 关闭钮（showCloseButton 控制，默认 true）
 //
 // 用法:
@@ -27,6 +33,12 @@ Dialog {
     // 是否显示 ghost 关闭钮（对齐 shadcn showCloseButton，默认 true）
     property bool showCloseButton: true
 
+    // 遮罩不透明度（对齐 .cn-dialog-overlay 的 bg-black/10）。
+    // 不能叫 dim：QQuickPopup 已有 FINAL 属性 dim（Imagine 样式用），覆盖会编译失败。
+    // Qt 侧没有 backdrop-filter，做不了 shadcn 的 backdrop-blur-xs；
+    // 若某些配色下 10% 太浅，调用方可自行调高（如 overlayOpacity: 0.3）。
+    property real overlayOpacity: 0.10
+
     // 隐藏 QQC 默认 header（让用户用 ShadcnDialogHeader）
     header: Item { visible: false }
     // 不使用 QQC 标准按钮（用 ShadcnDialogFooter + ShadcnButton）
@@ -47,23 +59,15 @@ Dialog {
 
     QtShadcnTheme { id: theme }
 
-    // 背景：bg-popover + 圆角(14, rounded-xl) + 1px ring + shadow-xl
+    // 背景：bg-popover + rounded-xl(12) + ring-1 ring-foreground/10
+    // 新版 shadcn 用 1px ring 取代旧的 shadow-xl，因此这里不再需要 layer + MultiEffect
+    // （顺带消掉了「离屏渲染下 MultiEffect 让内容整块空白」的老问题）
     background: Rectangle {
         color: theme.popover
-        radius: 14
+        radius: 12
         border.width: 1
-        border.color: Qt.rgba(theme.foreground.r, theme.foreground.g, theme.foreground.b,
-                              theme.mode === "dark" ? 0.10 : 0.05)
-
-        // layer + MultiEffect 是 GPU 特效，offscreen 软件渲染不支持 → 对话框内容空白；
-        // 截图模式（QTSHADCN_SCREENSHOT=1）下关闭 layer，正常 GUI 运行不受影响
-        layer.enabled: !ThemeManager.screenshotMode()
-        layer.effect: MultiEffect {
-            shadowEnabled: true
-            shadowBlur: 0.5
-            shadowVerticalOffset: 8
-            shadowColor: Qt.rgba(0, 0, 0, 0.18)
-        }
+        // ring-foreground/10：前景色 10% 透明，light/dark 同一档（旧实现 light 用了 5%）
+        border.color: Qt.rgba(theme.foreground.r, theme.foreground.g, theme.foreground.b, 0.10)
     }
 
     // 关闭钮（ghost）由 ShadcnDialogContent 渲染（保持 contentItem 单子节点，
@@ -79,9 +83,14 @@ Dialog {
         }
     }
 
-    // 模态遮罩：QQC.Dialog 默认 modal=true 会自动加 dim 遮罩（Basic 样式下约黑 50%）；
-    // 自定义遮罩需动态管理 Overlay.overlay children（QML 6 attached property 只读），
-    // 当前接受 QQC 默认 50% 透明度，比 shadcn 的 30% 略深但视觉差异不大
+    // 模态遮罩：覆盖 Qt Basic 样式默认的 50% 黑，对齐 shadcn 的 bg-black/10。
+    // Overlay.modal 是 Popup 的 attached property，可赋一个 Item 作为遮罩
+    // （旧注释曾说「QML 6 attached property 只读」，那是错的：只读的是 Overlay.overlay）。
+    // 注意：attached property 的对象字面量是独立组件作用域，里面读 root.overlayOpacity
+    // 属于外层 id 访问，靠文件头的 pragma ComponentBehavior: Bound 才不报 UnqualifiedAccess。
+    Overlay.modal: Rectangle {
+        color: Qt.rgba(0, 0, 0, root.overlayOpacity)
+    }
 
     // 动画：fade-in + zoom-in-95（duration 100ms）
     enter: Transition {

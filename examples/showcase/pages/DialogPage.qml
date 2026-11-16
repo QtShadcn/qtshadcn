@@ -12,6 +12,14 @@ Item {
         id: theme
     }
 
+    // 截图模式下自动打开基础对话框，否则文档效果图只有触发按钮。
+    // 注意：不能写进 ShadcnDialog 实例的 Component.onCompleted —— 那会覆盖组件
+    // 内部负责连接 closeClicked 的同名 handler，关闭钮直接失效。
+    Component.onCompleted: {
+        if (ThemeManager.screenshotMode())
+            basicDialog.open()
+    }
+
     // 标题区（固定，不随内容滚动）
     Column {
         id: header
@@ -34,7 +42,7 @@ Item {
         Text {
             width: parent.width
             wrapMode: Text.WordWrap
-            text: qsTr("基于 QQC.Dialog，max-w-sm(384px) + 圆角 14 + bg-popover + 阴影 + 居中 + fade/zoom 100ms 动画；内置关闭钮、可滚动 body、底部 sticky muted footer。")
+            text: qsTr("基于 QQC.Dialog，对齐 shadcn v4 base：max-w-sm(384px) + 圆角 12 + bg-popover + ring-1（无阴影）+ 遮罩 10% + fade/zoom 100ms；内置关闭钮、可滚动 body、底部 sticky muted footer。")
             color: theme.mutedForeground
             font.pixelSize: 13
         }
@@ -158,7 +166,7 @@ Item {
                         Text {
                             text: qsTr("项目名称")
                             color: theme.popoverForeground
-                            font.pixelSize: 13
+                            font.pixelSize: 14
                         }
                         ShadcnInput {
                             width: parent.width
@@ -215,7 +223,7 @@ Item {
                                 wrapMode: Text.WordWrap
                                 text: qsTr("第 %1 条：示例条款文本，用于演示对话框内容过长时 body 滚动、footer 固定的效果。").arg(index + 1)
                                 color: theme.popoverForeground
-                                font.pixelSize: 13
+                                font.pixelSize: 14
                             }
                         }
                     }

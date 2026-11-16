@@ -31,7 +31,7 @@ Item {
 
     readonly property int _pad: 16        // p-4
     readonly property int _gap: 16        // gap-4
-    readonly property int _radius: 14     // rounded-xl（Base UI 默认；overlay 比 inline 容器略大）
+    readonly property int _radius: 12     // rounded-xl（Tailwind v4 = 0.75rem），与 ShadcnDialog 背景一致
 
     // 宽度由 Dialog 固定（384，见 ShadcnDialog），content 直接撑满 parent.width。
     // 注意：不能在此绑定 implicitWidth（会读 bodyColumn.implicitWidth → 滚动视口的
@@ -42,7 +42,11 @@ Item {
     // 避免滚动容器把 bodyColumn 压成视口高 → childrenRect / implicitHeight 塌缩的循环
     readonly property int _footerH: footerSlot.children.length > 0
         ? footerSlot.childrenRect.height + _pad * 2 : 0
-    implicitHeight: Math.min(bodyColumn.implicitHeight + _pad * 2 + _footerH, maxHeight)
+    // footerBar 自身向下留了 1px（bottomMargin，见下方圆角对齐说明），这段空间也是
+    // 布局真实消耗掉的。不计进来会让「自然高度」比实际需要少 1px → 视口比 contentHeight
+    // 矮 1px → 内容明明放得下却冒出滚动条（8px 竖条贴着右边框）。
+    readonly property int _footerBlock: _footerH > 0 ? _footerH + 1 : 0
+    implicitHeight: Math.min(bodyColumn.implicitHeight + _pad * 2 + _footerBlock, maxHeight)
 
     // ── 可滚动 body ──────────────────────────────
     //
@@ -55,11 +59,17 @@ Item {
     // 下面用内容偏移 + contentHeight 补足，视觉效果与原版一致。
     Flickable {
         id: bodyScroll
+        objectName: "bodyScroll"
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.bottom: footerBar.top
-        anchors.bottomMargin: root._footerH > 0 ? 0 : root._pad
+        // 无 footer 时直接贴底（footerBar 那时高度为 0，但仍有 1px bottomMargin，
+        // 会白占视口 1px → contentHeight 比视口多 1px → 又冒出滚动条）
+        anchors.bottom: root._footerH > 0 ? footerBar.top : parent.bottom
+        // 不留 bottomMargin：底部留白由 contentHeight 里的 _padBottom 提供。
+        // 早先这里在「无 footer」时留了 _pad，结果是视口比内容矮 16px →
+        // 内容明明放得下也永远能滚一下（滚轮能推动文字，很怪）。
+        anchors.bottomMargin: 0
 
         readonly property int _padTop: root._pad
         readonly property int _padBottom: root._footerH > 0 ? root._gap : root._pad
@@ -94,6 +104,7 @@ Item {
     // 与对话框背景「内边缘」圆角对齐，否则 footer 圆角比内边缘大 1px → 底部两角露出方角
     Item {
         id: footerBar
+        objectName: "footerBar"
         anchors.left: parent.left
         anchors.leftMargin: 1
         anchors.right: parent.right
@@ -138,6 +149,7 @@ Item {
     // ── 关闭钮（ghost）：absolute top-2/right-2，size-7(28)，hover bg-muted ──
     Item {
         id: closeButton
+        objectName: "closeButton"
         visible: root.showCloseButton
         width: 28
         height: 28
@@ -150,11 +162,12 @@ Item {
             radius: Math.min(theme.radius, 12)
             color: closeButton._hovered ? theme.muted : "transparent"
         }
-        Text {
+        // 官方用 lucide XIcon（size-4 = 16px，currentColor 取 button 前景色）
+        ShadcnIcon {
             anchors.centerIn: parent
-            text: "✕"
-            color: theme.mutedForeground
-            font.pixelSize: 14
+            name: "x"
+            size: 16
+            color: theme.foreground
         }
         MouseArea {
             anchors.fill: parent

@@ -4,6 +4,6 @@ import QtQuick
 Column {
     id: root
 
-    spacing: 6   // shadcn gap-1.5
+    spacing: 8   // shadcn cn-dialog-header gap-2
     width: parent ? parent.width : implicitWidth
 }
