@@ -39,3 +39,15 @@
   替代 `VariantTokens` 里的内联 `QtObject`，让 `vt.button[i].bg` 这类访问可被静态解析，
   字段拼错变成阻塞级错误
 - 新增 `.qmllint.ini` 分级门禁 + `make lint` + CI lint 步骤，QML 警告基线为 **0**
+- **新增 QML 组件测试**（`tests/qml/tst_*.qml`，11 个用例，由 `tests/qmltests_main.cpp`
+  的 Qt Quick Test runner 驱动，`ctest` 里每个组件是独立一项）
+  - 覆盖：Card / Select / Skeleton / Button / Badge / Switch / Checkbox / Progress /
+    DropdownMenuItem / Input / Alert
+  - 断言锁的是行为而非实现：4 张卡在 640 宽的行里平分为 154、`Layout.fillHeight`
+    真的撑满、C++ `QVariantList` + `textRole` 的下拉项文本、Skeleton `radius` 生效、
+    快捷键在 RowLayout 中右对齐
+  - runner 通过 context property 注入 C++ `QVariantList`，复现「`Array.isArray`
+    为 false」这一纯 QML 造不出的输入形态
+  - 用例做过变异验证：把 Card 容器改回 `Column`、Select 改回 `model[textRole]`、
+    Shortcut 去掉 `import QtQuick.Layouts`、Skeleton 默认圆角改成 2，
+    对应用例全部失败

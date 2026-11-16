@@ -32,6 +32,7 @@ ProgressBar {
 
         // 已填充部分（bg-primary，宽度动画 = transition-all）
         Rectangle {
+            objectName: "progressIndicator"
             width: root.visualPosition * parent.width
             height: 12
             radius: 6

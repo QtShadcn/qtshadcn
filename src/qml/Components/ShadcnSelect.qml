@@ -164,6 +164,7 @@ ComboBox {
         // anchors.verticalCenter 保证文本/图标绝对垂直居中
         contentItem: Item {
             Text {
+                objectName: "delegateText"
                 anchors.left: parent.left
                 anchors.right: arrow.left
                 anchors.verticalCenter: parent.verticalCenter

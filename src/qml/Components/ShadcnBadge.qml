@@ -32,6 +32,7 @@ Item {
     implicitHeight: 20
 
     Rectangle {
+        objectName: "badgeBackground"
         anchors.fill: parent
         radius: 999   // 胶囊
         color: root._bg
@@ -41,6 +42,7 @@ Item {
 
     Text {
         id: contentText
+        objectName: "badgeText"
 
         anchors.centerIn: parent
         text: root.text

@@ -1,4 +1,4 @@
-find_package(Qt6 COMPONENTS Test REQUIRED)
+find_package(Qt6 COMPONENTS Test QuickTest REQUIRED)
 
 qt_add_executable(shadcntablemodel_test
     model/shadcntablemodel_test.cpp
@@ -30,3 +30,47 @@ target_link_libraries(iconregistry_test
         QtShadcn
 )
 add_test(NAME iconregistry_test COMMAND iconregistry_test)
+
+# ── QML 组件测试（Qt Quick Test）───────────────────────────────
+#
+# 一个 runner 驱动多个 tst_*.qml：QUICK_TEST_MAIN 的 -input 接受单个文件，
+# 因此每个用例文件在 ctest 里是独立一项，失败时能直接定位到组件。
+#
+# -import 必须指向构建目录的模块输出：库未安装，用例里的 `import QtShadcn`
+# 只能靠这里解析（与 examples 运行时 QML_IMPORT_PATH 同一个目录）。
+# 离屏跑：QT_QPA_PLATFORM=offscreen 无窗口；QTSHADCN_SCREENSHOT=1 关掉
+# Card 的 layer + MultiEffect 阴影（GPU 特效在软件渲染下会让内容整块空白）。
+qt_add_executable(qmltests
+    qmltests_main.cpp
+)
+target_link_libraries(qmltests
+    PRIVATE
+        Qt6::QuickTest
+        Qt6::Quick
+        Qt6::Gui
+        QtShadcn
+)
+set_target_properties(qmltests PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+file(GLOB QML_TEST_FILES CONFIGURE_DEPENDS
+    RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/qml"
+    "${CMAKE_CURRENT_SOURCE_DIR}/qml/tst_*.qml"
+)
+
+foreach(qml_test_file ${QML_TEST_FILES})
+    get_filename_component(qml_test_name "${qml_test_file}" NAME_WE)
+    add_test(NAME qml_${qml_test_name}
+        COMMAND qmltests
+            -import "${CMAKE_BINARY_DIR}/src"
+            -input "${CMAKE_CURRENT_SOURCE_DIR}/qml/${qml_test_file}"
+    )
+    set_tests_properties(qml_${qml_test_name} PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QTSHADCN_SCREENSHOT=1"
+        TIMEOUT 120
+    )
+endforeach()
+
+list(LENGTH QML_TEST_FILES QML_TEST_COUNT)
+message(STATUS "QML component tests: ${QML_TEST_COUNT}")
