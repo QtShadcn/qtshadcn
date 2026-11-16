@@ -4,6 +4,9 @@ import QtQuick.Effects
 import QtQuick.Layouts
 import QtShadcn
 
+// delegate 需要引用外层 root / theme 的 id，同时避免用 parent.parent 链式访问
+pragma ComponentBehavior: Bound
+
 // shadcn/ui 风格下拉选择（Select / Combobox）
 // 基于 QQC.ComboBox（Basic style），对齐 shadcn select 规范：
 // - trigger：h-9(36px) + rounded-md(6px) + bg-input/50 + border；右侧 chevron-down(16px,
@@ -131,6 +134,7 @@ ComboBox {
 
     // ── 列表项（hover accent + 选中 check）──
     delegate: ItemDelegate {
+        id: delegateRoot
         required property var modelData
         // 注意：不要声明 required property bool checked —— checked 是 AbstractButton 的
         // FINAL 属性，声明即 override 会报 "Cannot override FINAL property"；
@@ -139,9 +143,21 @@ ComboBox {
         width: root.width - root.popup.padding * 2
         height: 32   // py-2 + text-sm ≈ 32
 
-        readonly property string _text: root.textRole
-            ? (Array.isArray(root.model) ? String(modelData) : String(model[root.textRole]))
-            : String(modelData)
+        // 文本取值：优先「当前这条记录」的 textRole 字段，取不到才退回 modelData 本身。
+        //
+        // 不能用 Array.isArray(model) 来分流 —— C++ 的 QVariantList / QStringList
+        // 在 QML 里 Array.isArray 为 false，会误走去查 model[textRole]，
+        // 结果 String(undefined) 显示成字面量 "undefined"。
+        // delegate 注入的 modelData 才是「当前记录」，对 JS 对象数组、ListModel、
+        // C++ model 全都成立，因此统一从这里取。
+        readonly property string _text: {
+            if (root.textRole === "")
+                return String(modelData)
+            var v = (modelData !== undefined && modelData !== null)
+                    ? modelData[root.textRole]
+                    : undefined
+            return (v !== undefined && v !== null) ? String(v) : String(modelData)
+        }
 
         // contentItem 用 anchors 而非 RowLayout：RowLayout 高度取决于内容，
         // 在 QQC contentItem 区里垂直居中不可靠；QQC 会把 contentItem 填满 content 区，
@@ -151,8 +167,8 @@ ComboBox {
                 anchors.left: parent.left
                 anchors.right: arrow.left
                 anchors.verticalCenter: parent.verticalCenter
-                text: parent.parent._text
-                color: (parent.parent.hovered || parent.parent.highlighted)
+                text: delegateRoot._text
+                color: (delegateRoot.hovered || delegateRoot.highlighted)
                        ? theme.accentForeground : theme.foreground
                 font.pixelSize: 14
                 font.weight: Font.Medium   // font-medium
@@ -162,16 +178,16 @@ ComboBox {
                 id: arrow
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
-                visible: parent.parent.highlighted || parent.parent.checked
+                visible: delegateRoot.highlighted || delegateRoot.checked
                 name: "check"
                 size: 14
-                color: (parent.parent.highlighted) ? theme.accentForeground : theme.foreground
+                color: delegateRoot.highlighted ? theme.accentForeground : theme.foreground
             }
         }
 
         background: Rectangle {
             radius: 4
-            color: (parent.hovered || parent.highlighted) ? theme.accent : "transparent"
+            color: (delegateRoot.hovered || delegateRoot.highlighted) ? theme.accent : "transparent"
         }
     }
 
