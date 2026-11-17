@@ -8,6 +8,29 @@ v0.2.0 发布后与 shadcn v4 base 的对齐，无 API 破坏。
 
 ### Added
 
+- **`ShadcnPopover` 组件组**（6 个）：点击触发的浮层，内容可以是任意业务 QML。
+  `w-72`(288) + `rounded-lg` + `p-2.5` + `gap-2.5` + `bg-popover` + `ring-1` + `shadow-md`，
+  `side`/`align`/`alignOffset`/`sideOffset` 四个定位参数透传给 `ShadcnPopupPosition`
+  （贴底自动翻转）。官方 registry 这版 shadow-md 与 ring 并存（不是 Dialog 那种
+  ring 取代 shadow），所以照 DropdownMenuContent 先例做 layer + screenshotMode 关闭
+- **`ShadcnHoverCard` 组件组**（3 个）：悬停预览卡。复用 Popover 的弹层承载，
+  只差触发方式 —— `delay` 600ms 打开、`closeDelay` 300ms 关闭（Base UI PreviewCard
+  的值），指针可移进卡片不关闭。`w-64`(256)，无 flex gap，`alignOffset` 默认 4
+- **`ShadcnAccordion` 组件组**（4 个）+ **`ShadcnCollapsible`**（3 个）：
+  `multiple` / `collapsible` / `value` 三个语义对齐 Base UI。**高度动画是本仓库
+  第一次做**：外层 clip + 动画自己的 height，内容高度由独立 host 固定（单向依赖，
+  避开「动画目标自己在动」的塌缩环）；整条链用 Column 而非 ColumnLayout（Layout
+  会在布局 pass 接管子项高度、覆盖动画）。收起后 `host.visible=false` —— clip
+  不参与命中测试，光裁剪仍会吃点击
+- **`ShadcnCommand` 组件组**（9 个）+ **`CommandFilter`**（C++）：⌘K 命令面板。
+  **声明式而非 model 驱动** —— cmdk 的语义就是 DOM 树过滤，`CommandItem` 写在哪
+  就在哪，过滤只隐藏不匹配项；model 化会丢掉分组/分隔线/快捷键的组合表达力。
+  过滤算法下沉到 C++（`src/core/commandfilter.cpp`）并配独立单测：大小写不敏感、
+  子串 + 子序列匹配、空查询全显、中文直连（不做拼音）。↑↓ 跳过隐藏与禁用项，
+  Enter 发 `activated(value)`。**全局快捷键归宿主**：组件不注册任何 ⌘K，
+  由应用用 `Shortcut` 挂
+
+
 - **`QtShadcnTheme` 动效 token**（#14）：`durationInstant`(100) / `durationQuick`(120) /
   `durationNormal`(150) / `durationSlow`(200) + `easingOut/In/InOut`。全库 11 处
   时长字面量改走 token（涉及 Button / Input / InputGroup / Select / Textarea /

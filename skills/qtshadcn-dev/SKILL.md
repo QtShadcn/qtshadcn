@@ -78,6 +78,12 @@ bash scripts/screenshot.sh button select      # 组件效果图 → docs/public/
 | showcase 页面必须带 pragma Bound | 每个页面都在文末用 `component SectionTitle: Text {...}` 声明内联标题组件（33 份副本），它访问外层 `theme`。缺 `pragma ComponentBehavior: Bound` 就报 unqualified —— 新增页面照抄老页面时容易漏 |
 | 内层组件访问外层 delegate 的 index | `Repeater` 的 delegate 属性（index / modelData）被嵌套子项直接引用时靠隐式作用域链生效，重构就会静默取错值。给 delegate 加 `id`，子项写 `id.index` |
 | Layout 子项不能写 width/height | `QtQuick.Layouts` 管理的子项用 `Layout.preferredWidth/Height`，写 `width`/`height` 是 Qt 文档明说的 undefined behavior（qmllint 报 Quick.layout-positioning） |
+| 高度展开动画不能绑 childrenRect | 外层 clip + 动画自己的 height，内容高度由**独立 host** 固定。若让外层 anchors.fill host，每帧中间值会挤扁内容布局、读回的 implicitHeight 跟着变（动画目标自己在动 → 塌缩环，与 DialogContent/ScrollArea 同源）。且整条链用 `Column` 不用 `ColumnLayout`：Layout 在布局 pass 接管子项高度，会直接覆盖动画 |
+| clip: true 不参与命中测试 | 裁剪只是不画，点击照样穿透到被裁掉的内容。收起态要 `contentHost.visible = height > 0`，否则隐藏内容会吃掉点击 |
+| QQC.Popup.CloseOnEscape 在组件嵌套下不可靠 | 实测即使 focus:true 也收不到 Esc（弹层不在焦点链里）。改用 `Shortcut { sequence: "Escape" }`，变异验证证明 Shortcut 路线是承重的 |
+| Basic style 按钮只认 Space 不认 Enter | `keyClick(Return)` 不触发 clicked（6.11 实测）。需要 Enter 时自己 `Keys.onReturnPressed` / `onEnterPressed` 接管并 accepted，跨版本一致且不双触发 |
+| Button.text 在 Qt 6.8 起是 FINAL | 子类不能 `property string text`，直接编译失败。用基类属性即可 |
+| default property alias 要声明在根项上 | 写在 ColumnLayout 内部时那是布局自己的 default，用户子项会掉进外层 Rectangle（实测 Header 宽塌 0） |
 
 ## 新增组件后必做
 

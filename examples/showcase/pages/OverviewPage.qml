@@ -513,31 +513,31 @@ Item {
                         name: "Accordion",
                         description: "手风琴",
                         page: "AccordionPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Collapsible",
                         description: "可折叠内容",
                         page: "CollapsiblePage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Popover",
                         description: "弹出层",
                         page: "PopoverPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Hover Card",
                         description: "悬浮卡片",
                         page: "HoverCardPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Command",
                         description: "⌘K 命令面板",
                         page: "CommandPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Input OTP",

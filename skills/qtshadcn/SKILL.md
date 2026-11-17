@@ -105,6 +105,11 @@ Window {
 | `ShadcnStatusDot` | 语义色状态圆点（Online/Away/Busy/Offline/Success/Warning/Danger） | [component-display](references/consumer/component-display.md) |
 | `ShadcnDialog` | 对话框（Base UI 规格 + sticky footer + 可滚动 body） | [component-overlay](references/consumer/component-overlay.md) |
 | `ShadcnEmpty` + `EmptyHeader` / `EmptyMedia` / `EmptyTitle` / `EmptyDescription` / `EmptyContent` | 空状态占位（居中列 + 可选虚线描边，Shape 实现） | [component-feedback](references/consumer/component-feedback.md) |
+| `ShadcnPopover` 组 | 点击浮层（Trigger / Content / Header / Title / Description），边界自动翻转 | [component-overlay](references/consumer/component-overlay.md) |
+| `ShadcnHoverCard` 组 | 悬停预览卡（delay 600 / closeDelay 300，复用 Popover 弹层） | [component-overlay](references/consumer/component-overlay.md) |
+| `ShadcnAccordion` 组 | 手风琴（multiple / collapsible / value，高度动画） | [component-navigation](references/consumer/component-navigation.md) |
+| `ShadcnCollapsible` 组 | 单块折叠（open 受控，复用 Accordion 的 Trigger/Content） | [component-navigation](references/consumer/component-navigation.md) |
+| `ShadcnCommand` 组 | 命令面板 ⌘K（声明式组合 + C++ 过滤 + 键盘导航） | [component-navigation](references/consumer/component-navigation.md) |
 
 ### Navigation（M3 ✅）
 

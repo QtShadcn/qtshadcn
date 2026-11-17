@@ -158,6 +158,26 @@ Window {
             page: "MotionPage.qml"
         },
         {
+            title: "Popover",
+            page: "PopoverPage.qml"
+        },
+        {
+            title: "HoverCard",
+            page: "HoverCardPage.qml"
+        },
+        {
+            title: "Accordion",
+            page: "AccordionPage.qml"
+        },
+        {
+            title: "Collapsible",
+            page: "CollapsiblePage.qml"
+        },
+        {
+            title: "Command",
+            page: "CommandPage.qml"
+        },
+        {
             title: "ScrollArea",
             page: "ScrollAreaPage.qml"
         },
@@ -357,6 +377,11 @@ Window {
             FieldPage {}
             EmptyPage {}
             MotionPage {}
+            PopoverPage {}
+            HoverCardPage {}
+            AccordionPage {}
+            CollapsiblePage {}
+            CommandPage {}
             ScrollAreaPage {}
         }
     }
