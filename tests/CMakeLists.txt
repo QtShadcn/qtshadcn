@@ -31,6 +31,18 @@ target_link_libraries(iconregistry_test
 )
 add_test(NAME iconregistry_test COMMAND iconregistry_test)
 
+# 命令面板过滤打分单测（issue #5）：CommandFilter 是纯函数，
+# 直接在 C++ 里断言匹配/排序性质，不必拖起 QML 引擎。
+qt_add_executable(commandfilter_test
+    core/commandfilter_test.cpp
+)
+target_link_libraries(commandfilter_test
+    PRIVATE
+        Qt6::Test
+        QtShadcn
+)
+add_test(NAME commandfilter_test COMMAND commandfilter_test)
+
 # ── QML 组件测试（Qt Quick Test）───────────────────────────────
 #
 # 一个 runner 驱动多个 tst_*.qml：QUICK_TEST_MAIN 的 -input 接受单个文件，

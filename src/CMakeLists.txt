@@ -24,6 +24,8 @@ qt_add_qml_module(QtShadcn
         core/iconregistry.cpp
         core/models/shadcntablemodel.h
         core/models/shadcntablemodel.cpp
+        core/commandfilter.h
+        core/commandfilter.cpp
     QML_FILES
         ${QML_FILES}
 )
@@ -91,6 +93,7 @@ if(QTSHADCN_IS_TOPLEVEL)
         core/thememanager.h
         core/iconregistry.h
         core/models/shadcntablemodel.h
+        core/commandfilter.h
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/QtShadcn
     )
 
