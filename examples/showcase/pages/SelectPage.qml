@@ -31,7 +31,7 @@ Item {
         Text {
             width: parent.width
             wrapMode: Text.WordWrap
-            text: qsTr("基于 QQC.ComboBox：36/32px trigger + chevron-down；弹层 bg-popover + ring + shadow，item hover accent + 选中 check。")
+            text: qsTr("基于 QQC.ComboBox：32/28px trigger + chevron-down；弹层 bg-popover + ring + shadow，item hover accent + 选中 check。")
             color: theme.mutedForeground
             font.pixelSize: 13
         }

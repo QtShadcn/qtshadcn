@@ -25,7 +25,10 @@ Item {
         function test_defaults() {
             const input = createTemporaryObject(inputComp, root)
             verify(!!input, "Component exists")
-            compare(input.implicitHeight, 36)
+            // .cn-input 是 h-8 = 32，与 ShadcnButton default 等高（v3 口径曾是 36）
+            compare(input.implicitHeight, 32)
+            // 圆角走 theme.radiusLg（.cn-input 的 rounded-lg），不写死像素
+            compare(input.background.radius, theme.radiusLg)
             compare(input.placeholderText, qsTr("请输入"))
             compare(input.placeholderTextColor.toString(), theme.mutedForeground.toString())
         }

@@ -31,7 +31,7 @@ Item {
         Text {
             width: parent.width
             wrapMode: Text.WordWrap
-            text: qsTr("基于 QQC.TextArea：min-h 64 + 6px 圆角 + bg-input/50 + 聚焦环；行数多时随内容增高。")
+            text: qsTr("基于 QQC.TextArea：min-h 64 + rounded-lg 圆角 + bg-input/50 + 聚焦环；行数多时随内容增高。")
             color: theme.mutedForeground
             font.pixelSize: 13
         }

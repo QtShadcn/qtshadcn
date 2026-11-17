@@ -8,7 +8,7 @@ import QtShadcn
 // 滚轮滚动内容，内容超高时无法内部滚动；Flickable 提供滚轮/触摸滚动 + 可见滚动条。
 //
 // 规范对齐：
-// - min-h-16(64) + px-3 py-3 + rounded-md(6px) + bg-input/50 + 聚焦 border-ring + 3px ring
+// - min-h-16(64) + px-2.5 py-2 + rounded-lg(= theme.radiusLg) + bg-input/50 + 聚焦 border-ring + 3px ring
 // - maxHeight：内容超高钳住高度 → Flickable 内部滚动；0 = 不限高（随内容增高）
 //
 // 用法:
@@ -67,7 +67,7 @@ Item {
         id: bg
         anchors.fill: parent
         z: -1
-        radius: 6   // shadcn button/控件圆角
+        radius: theme.radiusLg   // .cn-textarea rounded-lg
         color: Qt.rgba(theme.input.r, theme.input.g, theme.input.b, 0.5)   // bg-input/50
         border.width: 1
         border.color: edit.activeFocus ? theme.ring : "transparent"
@@ -78,7 +78,7 @@ Item {
         Rectangle {
             anchors.fill: parent
             anchors.margins: -3
-            radius: 9
+            radius: theme.radiusLg + 3
             visible: edit.activeFocus
             color: "transparent"
             border.width: 3

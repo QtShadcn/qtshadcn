@@ -9,11 +9,11 @@ pragma ComponentBehavior: Bound
 
 // shadcn/ui 风格下拉选择（Select / Combobox）
 // 基于 QQC.ComboBox（Basic style），对齐 shadcn select 规范：
-// - trigger：h-9(36px) + rounded-md(6px) + bg-input/50 + border；右侧 chevron-down(16px,
+// - trigger：h-8(32px) + rounded-lg(= theme.radiusLg) + bg-input/50 + border；右侧 chevron-down(16px,
 //   mutedForeground)；聚焦 border-ring + 3px ring
 // - 弹层：bg-popover + ring-1 + shadow-lg + p-1.5(6px) + rounded-md；item hover accent、
 //   选中项右侧 check 图标；label text-xs mutedForeground；separator border
-// - sm 尺寸：h-8(32px)（size: ShadcnSelect.Size.Sm）
+// - sm 尺寸：h-7(28px) + rounded-[min(radiusMd,10px)]（size: ShadcnSelect.Size.Sm）
 //
 // 用法:
 //   ShadcnSelect {
@@ -29,13 +29,18 @@ ComboBox {
 
     property int size: ShadcnSelect.Size.Default
 
-    readonly property int _ctrlH: size === ShadcnSelect.Size.Sm ? 32 : 36
+    readonly property int _ctrlH: size === ShadcnSelect.Size.Sm ? 28 : 32   // .cn-select-trigger h-7 / h-8
+    // 圆角：default = rounded-lg；sm 收一档 = rounded-[min(var(--radius-md),10px)]
+    // （与 ShadcnButton xs 同式）。抽成属性而不是读 background.radius：
+    // background 的静态类型是 QQuickItem，qmllint 会报 missing-property。
+    readonly property int _radius: size === ShadcnSelect.Size.Sm
+        ? Math.min(theme.radiusMd, 10) : theme.radiusLg
     implicitHeight: _ctrlH
     implicitWidth: 200
 
     // 内容边距：左右 px-3(12)；上下 0（contentItem 占满全高 → 文本垂直居中）。
     // 注意不能四边都设 12（如 padding: 12）——上下也 12 会让 contentItem 高只剩
-    // 36-24=12px，文本被挤压偏上（表现为"没垂直居中"）
+    // 32-24=8px，文本被挤压偏上（表现为"没垂直居中"）
     leftPadding: 12
     rightPadding: 12
     topPadding: 0
@@ -69,7 +74,7 @@ ComboBox {
 
     // ── trigger 背景 ──
     background: Rectangle {
-        radius: 6
+        radius: root._radius
         color: Qt.rgba(theme.input.r, theme.input.g, theme.input.b, 0.5)   // bg-input/50
         border.width: 1
         border.color: root.activeFocus ? theme.ring : "transparent"
@@ -79,7 +84,7 @@ ComboBox {
         Rectangle {
             anchors.fill: parent
             anchors.margins: -3
-            radius: 9
+            radius: root._radius + 3
             visible: root.activeFocus
             color: "transparent"
             border.width: 3
@@ -103,7 +108,7 @@ ComboBox {
         }
 
         background: Rectangle {
-            radius: 6
+            radius: theme.radiusLg   // .cn-select-content rounded-lg
             color: theme.popover
             border.width: 1
             border.color: Qt.rgba(theme.foreground.r, theme.foreground.g, theme.foreground.b,

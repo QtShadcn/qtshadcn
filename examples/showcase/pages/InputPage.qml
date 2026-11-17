@@ -33,7 +33,7 @@ Item {
         Text {
             width: parent.width
             wrapMode: Text.WordWrap
-            text: qsTr("基于 QQC.TextField（Basic style）：h-9(36px) + 6px 圆角 + bg-input/50 + 聚焦 border-ring + 3px 焦点环。")
+            text: qsTr("基于 QQC.TextField（Basic style）：h-8(32px) + rounded-lg 圆角 + bg-input/50 + 聚焦 border-ring + 3px 焦点环。")
             color: theme.mutedForeground
             font.pixelSize: 13
         }

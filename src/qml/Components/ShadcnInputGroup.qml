@@ -30,17 +30,17 @@ TextField {
     font.pixelSize: 14
     selectByMouse: true
 
-    // 内容边距：有 addon 时让位（icon 24 + 间距 12 ≈ 36）
-    leftPadding: _hasPrefix ? 36 : 12
-    rightPadding: _hasSuffix ? 36 : 12
+    // 内容边距：px-2.5(10)；有 addon 时让位（icon 16 + 左边距 10 + 间距 10 = 36）
+    leftPadding: _hasPrefix ? 36 : 10
+    rightPadding: _hasSuffix ? 36 : 10
     topPadding: 4
     bottomPadding: 4
 
-    implicitHeight: 36
+    implicitHeight: 32   // .cn-input-group h-8
     implicitWidth: 240
 
     background: Rectangle {
-        radius: 6
+        radius: theme.radiusLg   // rounded-lg
         color: Qt.rgba(theme.input.r, theme.input.g, theme.input.b, 0.5)
         border.width: 1
         border.color: root.activeFocus ? theme.ring : "transparent"
@@ -51,7 +51,7 @@ TextField {
         Rectangle {
             anchors.fill: parent
             anchors.margins: -3
-            radius: 9
+            radius: theme.radiusLg + 3
             visible: root.activeFocus
             color: "transparent"
             border.width: 3
