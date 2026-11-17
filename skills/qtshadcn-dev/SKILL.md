@@ -72,6 +72,12 @@ bash scripts/screenshot.sh button select      # 组件效果图 → docs/public/
 | `Overlay.overlay` 在 QtObject 里恒为 null | attached property 需要 Item 作用域。定位 helper 不能内部取 overlay，须由调用方在自己的 Item 作用域取到后传进来（`ShadcnPopupPosition` 的 `container` / `frame` 就是这么设计的） |
 | `mapToItem()` 不建立 QML 绑定依赖 | 它是 C++ 调用，改 `anchor.y` 后坐标不重算。需手工遍历祖先几何补依赖（见 `ShadcnPopupPosition._depTick`） |
 | Rectangle 不支持分边描边 | `border.width` 是整圈，设单边会被裁成直角。像素级还原 CSS 的 `border-y border-r`（如 InputOTP 格子）要么自绘线段，要么接受「整圈描边」的等价实现并注明 |
+| examples 的 QML 要 lint 构建副本 | 对**源文件**跑 qmllint 时，`Main.qml` 里引用同模块 `pages/` 子目录的类型会报满屏 `XxxPage was not found [import]`（showcase 一次 36 条假警告）—— 它按源码树推断模块边界，而 `qt_add_qml_module` 已把页面注册进 qmldir。改对 `build/examples/<mod>/` 下的模块副本即可，实测同一文件源 36 条 / 副本 0 条 |
+| qmllint 无 `--import-path` | 该选项**不存在**，传了会被静默忽略（不是报错），于是你以为通过了其实没检查。模块搜索路径只有 `-I` / `--qmldirs` |
+| 注释里出现「qmllint + 版本号」会被当指令 | 写 `// qmllint 6.8 报 xxx` 会让 qmllint 把它解析成指令，报 `Invalid qmllint directive "6.8"` 并 exit 255。改成「Qt 6.8 的 lint 报 xxx」 |
+| showcase 页面必须带 pragma Bound | 每个页面都在文末用 `component SectionTitle: Text {...}` 声明内联标题组件（33 份副本），它访问外层 `theme`。缺 `pragma ComponentBehavior: Bound` 就报 unqualified —— 新增页面照抄老页面时容易漏 |
+| 内层组件访问外层 delegate 的 index | `Repeater` 的 delegate 属性（index / modelData）被嵌套子项直接引用时靠隐式作用域链生效，重构就会静默取错值。给 delegate 加 `id`，子项写 `id.index` |
+| Layout 子项不能写 width/height | `QtQuick.Layouts` 管理的子项用 `Layout.preferredWidth/Height`，写 `width`/`height` 是 Qt 文档明说的 undefined behavior（qmllint 报 Quick.layout-positioning） |
 
 ## 新增组件后必做
 

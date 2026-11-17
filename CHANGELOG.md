@@ -47,6 +47,13 @@ v0.2.0 发布后与 shadcn v4 base 的对齐，无 API 破坏。
 
 ### Fixed
 
+- **`examples/` 一直没被 lint 检查过**：`Makefile` 与 CI 的 lint 只扫 `src/qml tests/qml`，
+  showcase（37 页）与 ai-dashboard 从未纳入。存量 189 条告警已清（119 unqualified /
+  41 import 假警告 / 18 required / 11 unused-imports），两个门禁都已覆盖。
+  顺带修掉的真问题：`ProjectCard` 的 Layout 子项写了 `width`/`height`（undefined
+  behavior）；`Sidebar` / `OverviewPage` / `IconPage` / `Main.qml` 里内层组件直接引用
+  外层 delegate 的 `index`（靠隐式作用域链，重建 delegate 会静默取错值）
+
 - **`ShadcnTable` 列不铺满容器**：`totalWidth` 早已取 `Math.max(列宽和, 容器宽)`，
   但列本身没跟着撑开 —— 表头 Row、单元格、行底部那条 border 全停在「列宽合计」
   处，外框却有容器那么宽，右侧空出一整块（showcase 里列和 600、容器 741，空 141px）。
