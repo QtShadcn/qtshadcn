@@ -47,6 +47,56 @@ Item {
         }
     }
 
+    // 容器 600 宽，列宽合计 300（等分）→ 每列应摊到 200
+    Component {
+        id: stretchComp
+        Item {
+            width: 600
+            height: 300
+
+            ShadcnTableModel {
+                id: stretchModel
+                rows: [ { name: "a", age: 1, city: "x" } ]
+                columns: [
+                    { key: "name", title: "A", width: 100, align: "left" },
+                    { key: "age",  title: "B", width: 100, align: "left" },
+                    { key: "city", title: "C", width: 100, align: "left" }
+                ]
+            }
+
+            ShadcnTable {
+                objectName: "table"
+                anchors.fill: parent
+                model: stretchModel
+            }
+        }
+    }
+
+    // 容器 600，列宽 40/20/40（合计 100）→ 按比例摊成 240/120/240
+    Component {
+        id: proportionalComp
+        Item {
+            width: 600
+            height: 300
+
+            ShadcnTableModel {
+                id: propModel
+                rows: [ { name: "a", age: 1, city: "x" } ]
+                columns: [
+                    { key: "name", title: "A", width: 40, align: "left" },
+                    { key: "age",  title: "B", width: 20, align: "left" },
+                    { key: "city", title: "C", width: 40, align: "left" }
+                ]
+            }
+
+            ShadcnTable {
+                objectName: "table"
+                anchors.fill: parent
+                model: propModel
+            }
+        }
+    }
+
     // TableView 的 delegate 不是普通 children，会挂到 contentItem 下；
     // objectName 也不唯一（每格同名），所以按名字收集成数组。
     function collectByName(node, name, out) {
@@ -120,6 +170,61 @@ Item {
 
             tryVerify(function() { return table.totalWidth === 560 }, 5000,
                       "totalWidth should be 200+160+200")
+        }
+
+        // ── 容器比列宽合计宽时，列要跟着撑开 ────────────────────────
+        //
+        // 回归锁定：totalWidth 早已取 Math.max(列宽和, 容器宽)，但列本身没跟着
+        // 撑开 —— 结果表头 Row、单元格、行底部那条 border 都停在「列宽合计」处，
+        // 而外框有容器那么宽，右侧空出一整块（showcase 里空 140px，肉眼就是
+        // 「表格右边缺一块、分割线断在半路」）。对齐 shadcn 的 <table class="w-full">：
+        // 列宽是「期望宽度」，容器更宽时按比例分摊多余空间。
+        function test_columns_stretch_to_fill_container() {
+            const box = createTemporaryObject(stretchComp, root)
+            verify(!!box, "Component exists")
+            const table = findChild(box, "table")
+
+            // 列宽 100+100+100=300，容器 600 → 每列摊到 200
+            tryVerify(function() { return table.totalWidth === 600 }, 5000,
+                      "totalWidth 应等于容器宽（列和 300 < 容器 600）: " + table.totalWidth)
+            tryVerify(function() {
+                const w = table.columnWidths
+                return Math.round(w[0]) === 200 && Math.round(w[1]) === 200
+                       && Math.round(w[2]) === 200
+            }, 5000, "等分三列应摊到 200/200/200，实际 " + JSON.stringify(table.columnWidths))
+
+            // 比例保持：40/20/40 的列宽在 600 容器里应摊成 240/120/240
+            const box2 = createTemporaryObject(proportionalComp, root)
+            const table2 = findChild(box2, "table")
+            tryVerify(function() { return table2.totalWidth === 600 }, 5000,
+                      "proportional: totalWidth 600")
+            tryVerify(function() {
+                const w = table2.columnWidths
+                return Math.round(w[0]) === 240 && Math.round(w[1]) === 120
+                       && Math.round(w[2]) === 240
+            }, 5000, "40/20/40 应按比例摊成 240/120/240，实际 " + JSON.stringify(table2.columnWidths))
+        }
+
+        // 表头 Row 与单元格的实际宽度都要撑满，不能只是 totalWidth 变大。
+        // 上面那条测的是数据，这条测的是「画出来的东西」—— 两者不同：
+        // 数据对了但 delegate 仍用原始列宽，视觉上照样缺一块。
+        function test_header_and_cells_reach_container_edge() {
+            const box = createTemporaryObject(stretchComp, root)
+            const table = findChild(box, "table")
+
+            tryVerify(function() { return table.totalWidth === 600 }, 5000)
+            tryVerify(function() { return root.collectByName(table, "headerCell").length === 3 },
+                      5000, "header cells created")
+
+            const headers = root.collectByName(table, "headerCell")
+            let sum = 0
+            for (let i = 0; i < headers.length; ++i)
+                sum += headers[i].width
+            compare(sum, 600, "表头各格宽度之和应等于 totalWidth（撑满，不留白）")
+
+            // 每一格都要真的变宽，而不是只把最后一个拉长
+            for (let i = 0; i < headers.length; ++i)
+                compare(headers[i].width, 200, "header[" + i + "] 应摊到 200")
         }
 
         // 点击行既更新 currentRow，也发 rowClicked(row)

@@ -40,22 +40,66 @@ Item {
     // 这里把模型状态抽成显式属性，由 model 的信号驱动，绑定才有可靠的通知源。
     property int columnCount: 0
     property int rowCount: 0
-    readonly property var columnWidths: _columnWidths
     readonly property var columnTitles: _columnTitles
     readonly property var columnAligns: _columnAligns
     // 模型内容版本号。数据变了但行列没变（sortBy / updateRow 走 dataChanged）
     // 时靠它让 delegate 的正文重新求值。
     property int revision: 0
 
-    property var _columnWidths: []
+    property var _rawWidths: []      // 模型声明的期望列宽
     property var _columnTitles: []
     property var _columnAligns: []
 
-    // 列总宽（横向滚动用）
-    readonly property int totalWidth: {
+    // 期望列宽之和（不考虑容器）
+    readonly property int _rawWidthSum: {
         let w = 0
         for (let c = 0; c < root.columnCount; ++c)
-            w += _columnWidths[c] || 120
+            w += _rawWidths[c] || 120
+        return w
+    }
+
+    // ── 实际列宽：容器更宽时按比例分摊多余空间 ──────────────────
+    //
+    // 对齐 shadcn 的 <table class="w-full">：列宽是「期望宽度」，容器宽了就按
+    // 比例放大，铺满整个容器。
+    //
+    // 曾经只把 totalWidth 取 Math.max(列宽和, 容器宽)，但列本身没跟着撑开 ——
+    // 于是表头 Row、单元格、行底部那条 border 全停在「列宽合计」处，外框却有
+    // 容器那么宽，右侧空出一整块（showcase 里列和 600、容器 741，空 141px）。
+    // 肉眼就是「表格右边缺一块、分割线断在半路」。
+    //
+    // 列和 > 容器时不做压缩：那是横向滚动场景，保持各列原宽，靠 totalWidth 滚动。
+    readonly property var columnWidths: {
+        const n = root.columnCount
+        const sum = root._rawWidthSum
+        const out = []
+        if (n <= 0)
+            return out
+        const available = root.width
+        if (available <= 0 || sum >= available) {
+            // 不需要拉伸（或没有容器信息）：原样返回
+            for (let c = 0; c < n; ++c)
+                out.push(_rawWidths[c] || 120)
+            return out
+        }
+        // 按比例放大，并把取整误差补到最后一列，保证各列之和精确等于容器宽
+        let used = 0
+        for (let c = 0; c < n; ++c) {
+            const raw = _rawWidths[c] || 120
+            const w = (c === n - 1) ? available - used
+                                    : Math.floor(raw * available / sum)
+            out.push(w)
+            used += w
+        }
+        return out
+    }
+
+    // 列总宽（横向滚动用）：拉伸后通常等于容器宽；列和更大时取列和
+    readonly property int totalWidth: {
+        let w = 0
+        const cw = root.columnWidths
+        for (let c = 0; c < cw.length; ++c)
+            w += cw[c]
         return Math.max(w, root.width)
     }
 
@@ -71,7 +115,7 @@ Item {
             aligns.push(meta.align || "left")
         }
         root.columnCount = n
-        root._columnWidths = widths
+        root._rawWidths = widths
         root._columnTitles = titles
         root._columnAligns = aligns
     }

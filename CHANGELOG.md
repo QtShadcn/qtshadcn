@@ -31,6 +31,18 @@ v0.2.0 发布后与 shadcn v4 base 的对齐，无 API 破坏。
   `border-dashed` 不设宽度，Tailwind preflight 把 border-width 归零，官方默认其实
   没有可见描边；文档页的 Outlined 示例才额外加 `border`）
 
+### Fixed
+
+- **`ShadcnTable` 列不铺满容器**：`totalWidth` 早已取 `Math.max(列宽和, 容器宽)`，
+  但列本身没跟着撑开 —— 表头 Row、单元格、行底部那条 border 全停在「列宽合计」
+  处，外框却有容器那么宽，右侧空出一整块（showcase 里列和 600、容器 741，空 141px）。
+  现在列宽视为**期望宽度**，容器更宽时按比例分摊（对齐 shadcn 的
+  `<table class="w-full">`），各列之和精确等于容器宽；列和 ≥ 容器宽时保持原宽走
+  横向滚动。新增 `columnWidths` 只读属性暴露拉伸后的实际列宽
+- `tst_ShadcnTable` 补两条用例：一条测数据层（`columnWidths` 比例是否正确），
+  一条测渲染层（表头各格实际宽度之和是否等于 `totalWidth`）—— 两者不是一回事，
+  数据对了但 delegate 仍用原始列宽的话，视觉上照样缺一块
+
 ### Changed
 
 - **`ShadcnButton` 尺寸整体收紧一档到 shadcn v4 base 口径**（视觉变化，API 不变）：
