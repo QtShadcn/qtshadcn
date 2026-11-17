@@ -35,6 +35,9 @@ ColumnLayout {
     // 官方 [[data-variant=legend]+&]:-mt-1.5 —— Description 紧跟 Legend 时上提 6px。
     // CSS 是靠选择器完成的，QML 没有相邻兄弟选择器，只能在容器里显式处理：
     // 用 Layout.topMargin 拉近（-6px = -(spacingMd / 2)）
+    // 同样是对 children[i] 动态挂 Layout 附加属性（静态类型 QtObject）：
+    // Qt 6.8 的 lint 报 Quick.attached-property-type，6.11 不报。局部关闭。
+    // qmllint disable Quick.attached-property-type
     onChildrenChanged: {
         for (var i = 1; i < root.children.length; ++i) {
             var prev = root.children[i - 1]
@@ -43,4 +46,5 @@ ColumnLayout {
                 cur.Layout.topMargin = -(theme.spacingMd / 2)
         }
     }
+    // qmllint enable Quick.attached-property-type
 }

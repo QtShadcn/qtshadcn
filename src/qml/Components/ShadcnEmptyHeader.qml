@@ -23,6 +23,9 @@ ColumnLayout {
     // CSS items-center：头部内的直接子项（Media/Title/Description，以及用户塞进来的
     // 任意内容）默认水平居中；子项自己写过 Layout.alignment 时尊重它。
     // QML 无法跨文件共享函数，ShadcnEmpty / ShadcnEmptyContent 里是同名副本。
+    // 动态给子项挂 Layout 附加属性：静态类型是 QtObject，Qt 6.8 的 lint 会报
+    // Quick.attached-property-type（6.11 不报）。同 ShadcnEmpty，局部关闭。
+    // qmllint disable Quick.attached-property-type
     function centerChildren() {
         for (let i = 0; i < root.children.length; ++i) {
             const child = root.children[i]
@@ -30,6 +33,7 @@ ColumnLayout {
                 child.Layout.alignment = Qt.AlignHCenter
         }
     }
+    // qmllint enable Quick.attached-property-type
 
     onChildrenChanged: centerChildren()
     Component.onCompleted: centerChildren()

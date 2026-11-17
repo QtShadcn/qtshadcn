@@ -92,6 +92,11 @@ Rectangle {
         // CSS 的 items-center：直接子项默认水平居中。子项自己写过
         // Layout.alignment 时尊重它（如 Header/Content 的 max-w-sm 居中也是这么来的）。
         // QML 无法跨文件共享函数，ShadcnEmptyHeader / ShadcnEmptyContent 里是同名副本。
+        // children[i] 的静态类型是 QtObject，静态分析无法确认 Layout 附加属性
+        // 能挂到它上面 —— Qt 6.8 的 lint 报 Quick.attached-property-type，6.11
+        // 放宽了不报，所以本地是绿的、CI 才炸。这里是运行期动态赋值，静态分析
+        // 必然判断不了，故局部关闭该类别（与 ShadcnTabsList / ShadcnTooltip 同法）。
+        // qmllint disable Quick.attached-property-type
         function centerChildren() {
             for (let i = 0; i < column.children.length; ++i) {
                 const child = column.children[i]
@@ -99,6 +104,7 @@ Rectangle {
                     child.Layout.alignment = Qt.AlignHCenter
             }
         }
+        // qmllint enable Quick.attached-property-type
 
         onChildrenChanged: centerChildren()
         Component.onCompleted: centerChildren()
