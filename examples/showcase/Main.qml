@@ -151,6 +151,10 @@ Window {
             page: "EmptyPage.qml"
         },
         {
+            title: "Motion",
+            page: "MotionPage.qml"
+        },
+        {
             title: "ScrollArea",
             page: "ScrollAreaPage.qml"
         },
@@ -348,6 +352,7 @@ Window {
             KbdPage {}
             FieldPage {}
             EmptyPage {}
+            MotionPage {}
             ScrollAreaPage {}
         }
     }

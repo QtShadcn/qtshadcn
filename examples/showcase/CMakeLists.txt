@@ -41,6 +41,7 @@ qt_add_qml_module(showcase
         pages/KbdPage.qml
         pages/FieldPage.qml
         pages/EmptyPage.qml
+        pages/MotionPage.qml
         pages/ScrollAreaPage.qml
 )
 
