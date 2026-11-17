@@ -1,3 +1,6 @@
+// 页内 SectionTitle 等内联组件要访问外层 theme，显式声明后静态分析能确认来源
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -64,6 +67,7 @@ Item {
                         Repeater {
                             model: 20
                             delegate: Item {
+                                id: listItem
                                 required property int index
                                 width: parent.width
                                 height: 36
@@ -71,7 +75,7 @@ Item {
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.left: parent.left
                                     anchors.leftMargin: 12
-                                    text: qsTr("列表项 %1").arg(index + 1)
+                                    text: qsTr("列表项 %1").arg(listItem.index + 1)
                                     color: theme.foreground
                                     font.pixelSize: 13
                                 }
@@ -95,8 +99,9 @@ Item {
                         Repeater {
                             model: 12
                             delegate: ShadcnBadge {
+                                id: badgeItem
                                 required property int index
-                                text: qsTr("标签 %1").arg(index + 1)
+                                text: qsTr("标签 %1").arg(badgeItem.index + 1)
                                 anchors.verticalCenter: parent.verticalCenter
                             }
                         }
@@ -118,14 +123,15 @@ Item {
                         Repeater {
                             model: 288
                             delegate: Rectangle {
+                                id: gridCell
                                 required property int index
                                 width: 56
                                 height: 26
                                 radius: 3
-                                color: index % 2 === 0 ? theme.muted : theme.accent
+                                color: gridCell.index % 2 === 0 ? theme.muted : theme.accent
                                 Text {
                                     anchors.centerIn: parent
-                                    text: Math.floor(index / 12) + "," + (index % 12)
+                                    text: Math.floor(gridCell.index / 12) + "," + (gridCell.index % 12)
                                     color: theme.mutedForeground
                                     font.pixelSize: 10
                                 }

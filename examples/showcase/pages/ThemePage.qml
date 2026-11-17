@@ -1,3 +1,6 @@
+// 页内 SectionTitle 等内联组件要访问外层 theme，显式声明后静态分析能确认来源
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -65,6 +68,7 @@ Item {
                 model: ["background", "foreground", "primary", "primaryForeground", "secondary", "secondaryForeground", "muted", "mutedForeground", "accent", "accentForeground", "destructive", "destructiveForeground", "border", "ring"]
 
                 delegate: RowLayout {
+                    id: swatchRow
                     required property var modelData
                     spacing: theme.spacingMd
 
@@ -74,13 +78,13 @@ Item {
                         radius: theme.radius / 2
                         border.width: 1
                         border.color: theme.tokens["border"]
-                        color: theme.tokens[modelData]
+                        color: theme.tokens[swatchRow.modelData]
                     }
 
                     Text {
                         Layout.preferredWidth: 180
                         verticalAlignment: Text.AlignVCenter
-                        text: modelData
+                        text: swatchRow.modelData
                         color: theme.foreground
                         font.pixelSize: 13
                     }
@@ -88,7 +92,7 @@ Item {
                     Text {
                         Layout.preferredWidth: 90
                         verticalAlignment: Text.AlignVCenter
-                        text: theme.tokens[modelData]
+                        text: theme.tokens[swatchRow.modelData]
                         color: theme.mutedForeground
                         font.pixelSize: 13
                     }

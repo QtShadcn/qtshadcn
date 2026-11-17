@@ -1,3 +1,6 @@
+// 页内 SectionTitle 等内联组件要访问外层 theme，显式声明后静态分析能确认来源
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -60,17 +63,26 @@ Item {
                 delegate: Rectangle {
                     id: card
 
+                    required property var modelData
+
+                    // 卡片数据来自 model 的 var 对象，qmllint 无法静态校验 modelData.xxx
+                    // （var 类型没有属性信息）。拆成显式类型属性，既消除告警也让类型清楚。
+                    readonly property bool available: modelData.available === true
+                    readonly property string cardName: modelData.name || ""
+                    readonly property string cardDesc: modelData.description || ""
+                    readonly property string cardPage: modelData.page || ""
+
                     Layout.fillWidth: true
                     Layout.preferredHeight: 68
 
                     radius: 8
 
-                    color: modelData.available ? (mouseArea.containsMouse ? theme.accent : theme.background) : theme.background
+                    color: card.available ? (mouseArea.containsMouse ? theme.accent : theme.background) : theme.background
 
                     border.width: 1
                     border.color: theme.border
 
-                    opacity: modelData.available ? 1.0 : 0.55
+                    opacity: card.available ? 1.0 : 0.55
 
                     Behavior on color {
                         ColorAnimation {
@@ -95,7 +107,7 @@ Item {
                         Text {
                             width: parent.width
 
-                            text: modelData.name
+                            text: card.cardName
 
                             color: theme.foreground
                             font.pixelSize: 13
@@ -107,7 +119,7 @@ Item {
                         Text {
                             width: parent.width
 
-                            text: modelData.description
+                            text: card.cardDesc
 
                             color: theme.mutedForeground
                             font.pixelSize: 11
@@ -127,7 +139,7 @@ Item {
                         anchors.rightMargin: 12
                         anchors.verticalCenter: parent.verticalCenter
 
-                        text: modelData.available ? "›" : ""
+                        text: card.available ? "›" : ""
 
                         color: theme.mutedForeground
                         font.pixelSize: 18
@@ -142,14 +154,14 @@ Item {
 
                         anchors.fill: parent
 
-                        enabled: modelData.available
+                        enabled: card.available
 
                         hoverEnabled: enabled
 
                         cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
 
                         onClicked: {
-                            root.navigateTo(modelData.page);
+                            root.navigateTo(card.cardPage);
                         }
                     }
                 }

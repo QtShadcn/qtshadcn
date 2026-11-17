@@ -1,3 +1,6 @@
+// 页内 SectionTitle 等内联组件要访问外层 theme，显式声明后静态分析能确认来源
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts

@@ -1,3 +1,6 @@
+// delegate 里访问外层 id，显式声明后静态分析能确认来源
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import QtShadcn
@@ -68,13 +71,17 @@ Rectangle {
                 model: sidebar.items
 
                 delegate: Rectangle {
+                    id: navRow
                     required property int index
                     required property var modelData
+                    // 菜单项数据来自 var 对象，静态分析无类型信息；拆显式属性统一限定到 navRow
+                    readonly property string itemIcon: modelData.icon === undefined ? "" : modelData.icon
+                    readonly property string itemLabel: modelData.label === undefined ? "" : modelData.label
 
                     width: parent.width
                     height: sidebar.navItemHeight
                     radius: theme.radius
-                    color: sidebar.currentIndex === index ? theme.accent
+                    color: sidebar.currentIndex === navRow.index ? theme.accent
                            : navMouse.containsMouse ? theme.muted : "transparent"
 
                     Row {
@@ -85,16 +92,16 @@ Rectangle {
 
                         ShadcnIcon {
                             anchors.verticalCenter: parent.verticalCenter
-                            name: modelData.icon
+                            name: navRow.itemIcon
                             size: 16
-                            color: sidebar.currentIndex === index ? theme.accentForeground : theme.foreground
+                            color: sidebar.currentIndex === navRow.index ? theme.accentForeground : theme.foreground
                         }
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
-                            text: modelData.label
-                            color: sidebar.currentIndex === index ? theme.accentForeground : theme.foreground
+                            text: navRow.itemLabel
+                            color: sidebar.currentIndex === navRow.index ? theme.accentForeground : theme.foreground
                             font.pixelSize: 13
-                            font.bold: sidebar.currentIndex === index
+                            font.bold: sidebar.currentIndex === navRow.index
                         }
                     }
 
@@ -103,7 +110,7 @@ Rectangle {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: sidebar.currentIndex = index
+                        onClicked: sidebar.currentIndex = navRow.index
                     }
                 }
             }
@@ -115,9 +122,14 @@ Rectangle {
         }
 
         // 明暗主题切换
+        // 静态分析解析不了「同模块、另一个子目录」里的类型：ThemeToggle 在 theme/，
+        // 本文件在 components/。它已正确注册进 qmldir、运行时能加载，缺的只是
+        // 跨子目录的类型索引。行内禁用 import 类别，只包这一处。
+        // qmllint disable import
         ThemeToggle {
             Layout.fillWidth: true
         }
+        // qmllint enable import
 
         // 底部信息块
         Rectangle {

@@ -1,3 +1,6 @@
+// 页内 SectionTitle 等内联组件要访问外层 theme，显式声明后静态分析能确认来源
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -225,6 +228,7 @@ Item {
                         Repeater {
                             model: 20
                             Text {
+                                required property int index
                                 width: parent.width
                                 wrapMode: Text.WordWrap
                                 text: qsTr("第 %1 条：示例条款文本，用于演示对话框内容过长时 body 滚动、footer 固定的效果。").arg(index + 1)

@@ -1,3 +1,6 @@
+// delegate 里访问外层 root / theme，显式声明后静态分析能确认来源
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls as QQC
 import QtQuick.Effects
@@ -260,6 +263,7 @@ Window {
                     model: root.menuItems
 
                     delegate: Rectangle {
+                        id: menuRow
                         required property int index
                         required property var modelData
 
@@ -272,10 +276,10 @@ Window {
                             anchors.left: parent.left
                             anchors.leftMargin: 12
                             anchors.verticalCenter: parent.verticalCenter
-                            color: root.currentIndex === index ? theme.accentForeground : theme.foreground
-                            font.bold: root.currentIndex === index
+                            color: root.currentIndex === menuRow.index ? theme.accentForeground : theme.foreground
+                            font.bold: root.currentIndex === menuRow.index
                             font.pixelSize: 13
-                            text: modelData.title
+                            text: menuRow.modelData.title
                         }
                         MouseArea {
                             id: mouseArea
@@ -283,7 +287,7 @@ Window {
                             anchors.fill: parent
                             hoverEnabled: true
 
-                            onClicked: root.currentIndex = index
+                            onClicked: root.currentIndex = menuRow.index
                         }
                     }
                 }
@@ -482,7 +486,10 @@ Window {
                         ]
 
                         delegate: Rectangle {
+                            id: swatch
                             required property var modelData
+                            // 色值来自 var 对象，静态分析无类型信息；拆显式属性后各处都限定到 swatch
+                            readonly property string swatchColor: modelData.color === undefined ? "" : modelData.color
 
                             property Gradient defaultGradient: Gradient {
                                 GradientStop { color: "#18181b"; position: 0.0 }
@@ -494,16 +501,16 @@ Window {
                             width: 24
                             height: 24
                             radius: 6
-                            border.width: ThemeManager.primary === modelData.color ? 2 : 1
-                            border.color: ThemeManager.primary === modelData.color ? theme.ring : theme.border
-                            color: modelData.color === "" ? "transparent" : modelData.color
-                            gradient: modelData.color === "" ? defaultGradient : null
+                            border.width: ThemeManager.primary === swatch.swatchColor ? 2 : 1
+                            border.color: ThemeManager.primary === swatch.swatchColor ? theme.ring : theme.border
+                            color: swatch.swatchColor === "" ? "transparent" : swatch.swatchColor
+                            gradient: swatch.swatchColor === "" ? defaultGradient : null
 
                             MouseArea {
                                 anchors.fill: parent
                                 hoverEnabled: true
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: ThemeManager.primary = modelData.color
+                                onClicked: ThemeManager.primary = swatch.swatchColor
                             }
                         }
                     }

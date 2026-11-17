@@ -1,3 +1,6 @@
+// delegate 里访问外层 id，显式声明后静态分析能确认来源
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import QtShadcn
@@ -29,8 +32,8 @@ ShadcnCard {
 
             // 项目图标
             Rectangle {
-                width: 36
-                height: 36
+                Layout.preferredWidth: 36
+                Layout.preferredHeight: 36
                 radius: theme.radius
                 color: theme.muted
 

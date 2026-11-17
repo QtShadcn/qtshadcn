@@ -1,3 +1,6 @@
+// 页内 SectionTitle 等内联组件要访问外层 theme，显式声明后静态分析能确认来源
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -148,6 +151,7 @@ Item {
                     model: IconRegistry.names
 
                     delegate: Item {
+                        id: iconCell
                         required property string modelData
 
                         width: 88
@@ -166,13 +170,13 @@ Item {
                             spacing: 8
                             ShadcnIcon {
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                name: modelData
+                                name: iconCell.modelData
                                 size: 24
                                 color: root.iconColor
                             }
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
-                                text: modelData
+                                text: iconCell.modelData
                                 color: theme.mutedForeground
                                 font.pixelSize: 10
                             }

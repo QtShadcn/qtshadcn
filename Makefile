@@ -71,7 +71,20 @@ lint:
 		exit 1; \
 	fi
 	@echo "linting $$(find src/qml tests/qml -name '*.qml' 2>/dev/null | wc -l | tr -d ' ') QML files"
-	@find src/qml tests/qml -name '*.qml' -print0 | xargs -0 "$(QML_LINT)" -I "$(BUILD_DIR)/src" && echo "✅ lint 通过"
+	@find src/qml tests/qml -name '*.qml' -print0 | xargs -0 "$(QML_LINT)" -I "$(BUILD_DIR)/src" \
+		&& echo "✅ lint 通过（库 + 测试）"
+# examples 要 lint 构建目录里的模块副本，不能直接 lint 源文件：
+# Main.qml 引用同模块 pages/ 子目录里的类型，qmllint 解析源文件时会报
+# "XxxPage was not found [import]"（36 条假警告）—— 因为它按源码树推断模块边界，
+# 而 qt_add_qml_module 把页面都注册进了 qmldir。构建目录里的副本带完整 qmldir，
+# qmllint 才能正确解析。这个差异实测过：同一份 Main.qml，源文件 36 条 import
+# 错误、构建副本 0 条。
+	@echo "linting examples（用构建目录的模块副本）"
+	@for mod in showcase ai-dashboard; do \
+		find "$(BUILD_DIR)/examples/$$mod" -name '*.qml' -print0 \
+			| xargs -0 "$(QML_LINT)" -I "$(BUILD_DIR)/src" || exit 1; \
+	done
+	@echo "✅ lint 通过（examples）"
 
 # 安装 + 消费方冒烟：验证 find_package(QtShadcn) 这条路真的能用
 # （装到本地前缀 → 用 tests/consumer 这个独立工程构建 → 离屏跑一次）

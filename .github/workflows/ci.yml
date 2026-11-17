@@ -39,8 +39,10 @@ jobs:
           # qtsvg/network，本项目 CMake 需要的组件均在其中（显式列模块名反而会被 aqt 拒）
           install-deps: false
 
-      - name: Configure (tests on, examples off)
-        run: cmake -S . -B build -DQTSHADCN_BUILD_TESTS=ON -DQTSHADCN_BUILD_EXAMPLES=OFF
+      - name: Configure (tests + examples on)
+        # examples 必须一起构建：lint 步骤要检查它们的 QML（构建目录里的模块副本），
+        # 且 showcase 是「组件是否真能渲染」的唯一验证入口。
+        run: cmake -S . -B build -DQTSHADCN_BUILD_TESTS=ON -DQTSHADCN_BUILD_EXAMPLES=ON
 
       - name: Build
         # 必须给 -j 一个具体数字：裸 `-j` 是无限并行，make 会在几秒内把上百个编译
@@ -64,8 +66,20 @@ jobs:
         run: |
           echo "qmllint: $(qmllint --version)"
           COUNT=$(find src/qml tests/qml -name '*.qml' | wc -l | tr -d ' ')
-          echo "linting $COUNT QML files"
+          echo "linting $COUNT QML files (lib + tests)"
           find src/qml tests/qml -name '*.qml' -print0 | xargs -0 qmllint -I build/src
+
+          # examples 要 lint 构建目录里的模块副本，不能直接 lint 源文件：
+          # Main.qml 引用同模块 pages/ 子目录里的类型，对源文件 qmllint 会报
+          # "XxxPage was not found [import]"（showcase 一口气 36 条假警告）——
+          # 它按源码树推断模块边界，而 qt_add_qml_module 把这些页面都注册进了
+          # qmldir。构建副本带完整 qmldir，才能真正解析。实测同一份 Main.qml
+          # 源文件 36 条 import 错误、构建副本 0 条。
+          for mod in showcase ai-dashboard; do
+            echo "linting examples/$mod (built module copy)"
+            find "build/examples/$mod" -name '*.qml' -print0 \
+              | xargs -0 qmllint -I build/src
+          done
 
       - name: Test
         env:
