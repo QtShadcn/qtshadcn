@@ -87,22 +87,43 @@ Item {
     }
     // qmllint enable missing-property
 
+    // ── 弹层定位：边界翻转 / 钳制（issue #16）──
+    // 原实现是一套手写的横向 Math.min/max clamp + 纵向硬编码在触发项下方；
+    // 现在统一交给 ShadcnPopupPosition，三处弹层只有一份规则。
+    readonly property Item _overlay: QQC.Overlay.overlay
+
+    // 触发项 = 声明这个 tooltip 的父项（hover 也绑在它身上）
+    readonly property Item _trigger: root.parent
+
+    // 对外暴露定位结果（只读引用）与气泡本体：Item 基类没有 popup 属性，
+    // 但消费方 / 测试需要读气泡的实际几何
+    readonly property alias placement: _placement
+    readonly property alias popup: _popup
+
+    ShadcnPopupPosition {
+        id: _placement
+        anchor: root._trigger
+        container: root._overlay
+        // 尺寸必须取 popup 自身的 implicit*（含 padding）：只取 contentItem 的
+        // 隐式尺寸会漏掉四周留白，气泡会画到 trigger 上（实测差 24px 上下/左右）
+        popupWidth: _popup.implicitWidth
+        popupHeight: _popup.implicitHeight
+        side: "bottom"
+        sideOffset: 6           // 原硬编码 +6
+        // 气泡比触发项宽时居中于触发项（原实现的居中语义）
+        align: "center"
+    }
+
     QQC.Popup {
         id: _popup
-        parent: root.parent
+        // 坐标系 = overlay 层；parent 用 _placement.frame 保证与 x/y 同一坐标系
+        parent: _placement.frame
+        x: _placement.x
+        y: _placement.y
+        // 钳制时按可用高度收窄，内容区 wrapMode 会自动多折一行
+        height: _placement.clamped ? _placement.height : implicitHeight
         visible: (root.open || root._hovered) && root.text !== "" && root._ancestorsVisible
         closePolicy: QQC.Popup.NoAutoClose
-
-        // x 居中于触发器内容区；气泡比触发器宽时两侧都会溢出，
-        // 做一次 clamp 把它拉回父容器内（与 Radix 的 shift 行为一致），否则长文本
-        // 气泡会跑出可视区左边缘
-        x: {
-            if (!root.parent)
-                return 0;
-            var centered = Math.round((root.parent.width - width) / 2);
-            return Math.max(0, Math.min(centered, root.parent.width - width));
-        }
-        y: root.parent ? root.parent.height + 6 : 0
 
         background: Rectangle {
             color: theme.popover

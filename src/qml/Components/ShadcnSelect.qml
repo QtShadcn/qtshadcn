@@ -92,10 +92,32 @@ ComboBox {
         }
     }
 
+    // ── 弹层定位：边界翻转 / 钳制（issue #16，与 DropdownMenu / Tooltip 共用）──
+    // container 必须在这里取 Overlay.overlay —— QtObject 里读不到 attached property。
+    readonly property Item _overlay: Overlay.overlay
+
+    // 对外暴露定位结果（只读引用），翻转后动画方向 / 是否钳制都在这里
+    readonly property alias placement: _placement
+
+    ShadcnPopupPosition {
+        id: _placement
+        anchor: root
+        container: root._overlay
+        popupWidth: root.width
+        popupHeight: root.popup ? root.popup.implicitHeight : 0
+        side: "bottom"
+        sideOffset: 4           // 原硬编码 y: root.height + 4
+    }
+
     // ── 弹层（bg-popover + ring + shadow + padding）──
     popup: Popup {
-        y: root.height + 4   // sideOffset 4
+        // 定位：坐标系 = overlay 层（_placement 的输出就是该坐标系下的值）
+        parent: _placement.frame
+        x: _placement.x
+        y: _placement.y
         width: root.width
+        // 两侧都放不下时钳到可用高度；ListView 自带 clip，条目多时可直接滚动
+        height: _placement.clamped ? _placement.height : implicitHeight
         padding: 6           // p-1.5
 
         contentItem: ListView {
