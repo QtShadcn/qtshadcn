@@ -27,6 +27,7 @@ qt_add_qml_module(showcase
         pages/ProgressPage.qml
         pages/SelectPage.qml
         pages/InputGroupPage.qml
+        pages/InputOTPPage.qml
         pages/FormPage.qml
         pages/AvatarPage.qml
         pages/StatusDotPage.qml
@@ -38,6 +39,8 @@ qt_add_qml_module(showcase
         pages/AlertPage.qml
         pages/SkeletonPage.qml
         pages/KbdPage.qml
+        pages/FieldPage.qml
+        pages/EmptyPage.qml
         pages/ScrollAreaPage.qml
 )
 

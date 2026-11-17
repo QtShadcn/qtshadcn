@@ -67,6 +67,11 @@ bash scripts/screenshot.sh button select      # 组件效果图 → docs/public/
 | TextArea 内部滚动 | QQC.TextArea 无 Flickable、TextEdit 不响应滚轮 → Flickable + TextEdit + ScrollBar |
 | contentHeight 早期 undefined | Math.min/max 遇 NaN 传播 → `> 0` 兜底 |
 | SF Mono 字体不存在 | macOS 上不在系统字体列表（触发 ~108ms 加载警告 + 构建字体别名表）→ 用 `Menlo`（`Qt.platform.os === "osx"` 判定） |
+| 虚线边框不能用 Rectangle.border | QML `Rectangle` 只有实线 `border.width/color`，`BorderImage` 也不支持描边。虚线用 `Shape` + `ShapePath { strokeStyle: ShapePath.DashLine; dashPattern: [4,4] }`（见 `ShadcnEmpty`）。两个坑：① 描边以路径为中线向两侧各展开 `strokeWidth/2`，路径必须内缩半个线宽，否则外侧被父项裁掉；② dash 长度会乘 pen width（QPainter 规则），线宽 1 时 `[4,4]` 才是 4px 实 4px 空 |
+| CSS `items-center` 无对应属性 | `ColumnLayout.alignment` 只管「自己相对父布局」，不管子项。要复刻 flex 的 `items-center`（子项默认居中、但尊重子项自设的 `Layout.alignment`），只能用 `function centerChildren()` + `onChildrenChanged` + `Component.onCompleted` 遍历 children 补 `Layout.alignment`。跨文件不能共享函数，`ShadcnEmpty` / `EmptyHeader` / `EmptyContent` 各有一份同名副本 |
+| `Overlay.overlay` 在 QtObject 里恒为 null | attached property 需要 Item 作用域。定位 helper 不能内部取 overlay，须由调用方在自己的 Item 作用域取到后传进来（`ShadcnPopupPosition` 的 `container` / `frame` 就是这么设计的） |
+| `mapToItem()` 不建立 QML 绑定依赖 | 它是 C++ 调用，改 `anchor.y` 后坐标不重算。需手工遍历祖先几何补依赖（见 `ShadcnPopupPosition._depTick`） |
+| Rectangle 不支持分边描边 | `border.width` 是整圈，设单边会被裁成直角。像素级还原 CSS 的 `border-y border-r`（如 InputOTP 格子）要么自绘线段，要么接受「整圈描边」的等价实现并注明 |
 
 ## 新增组件后必做
 

@@ -83,15 +83,17 @@ Window {
 
 | 组件 | 说明 | 参考 |
 |------|------|------|
-| `ShadcnInput` | 单行输入（36px + 6px 圆角 + 聚焦环） | [component-form](references/consumer/component-form.md) |
+| `ShadcnInput` | 单行输入（`h-8` 32px + `radiusLg` 圆角 + 聚焦环） | [component-form](references/consumer/component-form.md) |
 | `ShadcnInputGroup` | 输入框前缀/后缀（icon 或文本） | [component-form](references/consumer/component-form.md) |
 | `ShadcnTextarea` | 多行输入（Flickable 实现，`maxHeight` 内部滚动） | [component-form](references/consumer/component-form.md) |
 | `ShadcnCheckbox` | 复选框（16px + 选中 primary 底 + check） | [component-form](references/consumer/component-form.md) |
 | `ShadcnRadio` / `ShadcnRadioGroup` | 单选组（16px 正圆 + 内圆点） | [component-form](references/consumer/component-form.md) |
-| `ShadcnSwitch` | 开关（Default 44×20 / Small 28×16） | [component-form](references/consumer/component-form.md) |
+| `ShadcnSwitch` | 开关（Default 32×18 / Small 24×14） | [component-form](references/consumer/component-form.md) |
 | `ShadcnSlider` | 滑块（4px muted 轨道 + 12px 正圆 thumb） | [component-form](references/consumer/component-form.md) |
 | `ShadcnProgress` | 进度条（12px 轨道 + primary 指示条 + 百分比） | [component-form](references/consumer/component-form.md) |
 | `ShadcnSelect` | 下拉选择（trigger + chevron + popover 弹层） | [component-form](references/consumer/component-form.md) |
+| `ShadcnInputOTP` | 验证码输入（N 格 + 首末格外圆角 + `completed` 信号） | [component-form](references/consumer/component-form.md) |
+| `ShadcnField` 组 | 表单字段容器（label / 描述 / 错误 / 必填 + orientation） | [component-form](references/consumer/component-form.md) |
 
 ### Layout & Feedback（M3 ✅）
 
@@ -102,6 +104,7 @@ Window {
 | `ShadcnAvatar` | 圆形头像（图片/图标/首字母 + 5 尺寸 + StatusDot 覆盖） | [component-display](references/consumer/component-display.md) |
 | `ShadcnStatusDot` | 语义色状态圆点（Online/Away/Busy/Offline/Success/Warning/Danger） | [component-display](references/consumer/component-display.md) |
 | `ShadcnDialog` | 对话框（Base UI 规格 + sticky footer + 可滚动 body） | [component-overlay](references/consumer/component-overlay.md) |
+| `ShadcnEmpty` + `EmptyHeader` / `EmptyMedia` / `EmptyTitle` / `EmptyDescription` / `EmptyContent` | 空状态占位（居中列 + 可选虚线描边，Shape 实现） | [component-feedback](references/consumer/component-feedback.md) |
 
 ### Navigation（M3 ✅）
 

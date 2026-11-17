@@ -95,6 +95,10 @@ Window {
             page: "InputGroupPage.qml"
         },
         {
+            title: "InputOTP",
+            page: "InputOTPPage.qml"
+        },
+        {
             title: "Form",
             page: "FormPage.qml"
         },
@@ -137,6 +141,14 @@ Window {
         {
             title: "Kbd",
             page: "KbdPage.qml"
+        },
+        {
+            title: "Field",
+            page: "FieldPage.qml"
+        },
+        {
+            title: "Empty",
+            page: "EmptyPage.qml"
         },
         {
             title: "ScrollArea",
@@ -322,6 +334,7 @@ Window {
             ProgressPage {}
             SelectPage {}
             InputGroupPage {}
+            InputOTPPage {}
             FormPage {}
             AvatarPage {}
             StatusDotPage {}
@@ -333,6 +346,8 @@ Window {
             AlertPage {}
             SkeletonPage {}
             KbdPage {}
+            FieldPage {}
+            EmptyPage {}
             ScrollAreaPage {}
         }
     }

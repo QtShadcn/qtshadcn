@@ -6,6 +6,31 @@
 
 v0.2.0 发布后与 shadcn v4 base 的对齐，无 API 破坏。
 
+### Added
+
+- **`ShadcnPopupPosition`**：弹层边界定位器，纯计算 `QtObject`。`QQC.Popup` 只有
+  「相对父项摆一个坐标」，没有 Radix 那套 side / align / collisionPadding —— 靠近
+  窗口底部的弹层会整块被顶出可视区。它按 Radix 规则算：首选方向放得下就放、放不下
+  翻对侧、两侧都不够则取空间大的一侧并把高度钳住（`clamped` 供调用方接滚动）。
+  `ShadcnDropdownMenu` / `ShadcnSelect` / `ShadcnTooltip` 三处已接入，顺带消掉三处
+  重复的 `+4` / `+6` 魔数和 Tooltip 手写的横向钳制
+- **`ShadcnInputOTP`**：验证码输入，N 格 32×32（`size-8`）。一个透明 `TextField`
+  承接全部键盘输入（键入 / 粘贴 / 退格 / 输入法），按字符自绘到格子；首格左圆角、
+  末格右圆角，整体是一个圆角矩形被竖线切开而不是 N 个独立方块。属性 `length`
+  （默认 6）/ `text` / `enabled`，填满时发 `completed(string)`
+- **`ShadcnField` 组件组**（10 个）：表单字段容器，管 label / 描述 / 错误 / 必填的
+  组合与间距。`orientation` = Vertical / Horizontal / Responsive（`Responsive` 用
+  「容器宽度 ≥ 断点」等价 CSS 容器查询，宽度优先取最近的 `FieldGroup`）；
+  `invalid` 时标签转 destructive；`FieldError` 无内容不占位且按 message 去重、
+  多条渲染成列表。子项宽度由 Field 统一接管（等价 `*:w-full` / `*:w-auto`）。
+  与 `ShadcnInputGroup` 职责正交（前者管字段外层，后者管输入框内 addon），可叠加
+- **`ShadcnEmpty` 组件组**（6 个）：空状态占位。`Empty` = Header（Media + Title +
+  Description）+ Content，居中列 + `rounded-xl`。**虚线描边用 `Shape` +
+  `ShapePath.DashLine` 真实实现** —— QML `Rectangle` 的 border 只有实线，
+  `BorderImage` 也不支持描边。默认 `bordered: false`，与官方一致（`cn-empty` 只设
+  `border-dashed` 不设宽度，Tailwind preflight 把 border-width 归零，官方默认其实
+  没有可见描边；文档页的 Outlined 示例才额外加 `border`）
+
 ### Changed
 
 - **`ShadcnButton` 尺寸整体收紧一档到 shadcn v4 base 口径**（视觉变化，API 不变）：
@@ -38,6 +63,15 @@ v0.2.0 发布后与 shadcn v4 base 的对齐，无 API 破坏。
 
 ### Docs
 
+- `docs/content/2.components/30.input-otp.md` / `31.field.md` / `32.empty.md`：三个新组件组文档
+- `docs/content/1.getting-started/5.milestones.md`：Input / Select / Textarea / Switch /
+  Dialog 的尺寸描述同步到 v4 实际值（原文写 36px / 6px 圆角 / 44×20 / 448px，全部过时）
+- `docs/content/2.components/11.switch.md`、`3.usage.md`：Switch 轨道与滑块尺寸修正
+- `docs/content/4.development/2.m3-components-spec.md`：文首加快照警示 —— 该文是
+  2026-08-18 抓取，抓的是 style-luma 且混了 v3 口径，按它写会写大一号
+- `skills/qtshadcn*/`：组件索引补 4 组新组件；dev skill 的坑表补 5 条（虚线用 Shape、
+  `items-center` 无对应属性、`Overlay.overlay` 在 QtObject 里恒为 null、
+  `mapToItem()` 不建立绑定依赖、Rectangle 不支持分边描边）
 - `docs/content/2.components/1.button.md`：新增「尺寸对照」表（v4 的 height / padding /
   gap / 字号 / 内联图标五列），并说明圆角走 `theme.radiusLg` / `theme.radiusMd` 派生
 - `docs/content/2.components/17.dialog.md`：圆角改为 `theme.radiusXl`；补「未实现背景

@@ -459,7 +459,7 @@ Item {
                         name: "Dropdown Menu",
                         description: "下拉菜单",
                         page: "DropdownMenuPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Menubar",
@@ -477,7 +477,7 @@ Item {
                         name: "Scroll Area",
                         description: "滚动区域",
                         page: "ScrollAreaPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Resizable",
@@ -531,19 +531,19 @@ Item {
                         name: "Input OTP",
                         description: "验证码输入",
                         page: "InputOTPPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Field",
                         description: "表单字段",
                         page: "FieldPage.qml",
-                        available: false
+                        available: true
                     },
                     {
                         name: "Empty",
                         description: "空状态",
                         page: "EmptyPage.qml",
-                        available: false
+                        available: true
                     }
                 ]
             }

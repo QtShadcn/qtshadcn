@@ -1,6 +1,6 @@
 ---
 name: form-components
-description: ShadcnInput / InputGroup / Textarea / Checkbox / RadioGroup / Switch / Slider / Progress / Select 用法、属性与坑。
+description: ShadcnInput / InputOTP / InputGroup / Field 组 / Textarea / Checkbox / RadioGroup / Switch / Slider / Progress / Select 用法、属性与坑。
 ---
 
 # 表单控件（M3）
@@ -95,3 +95,43 @@ ShadcnSelect { size: ShadcnSelect.Size.Sm; model: ["S", "M", "L"] }
 
 - 基于 QQC.ComboBox（Basic）：trigger `bg-input/50` + 6px 圆角 + 左右 12px padding + chevron-down；弹层 `bg-popover` + ring + shadow，item hover accent + 选中 check
 - **坑**：① QQC 默认 indicator（double-arrow.png）要 `indicator: Item { visible: false }` 隐藏（否则双箭头）；② 左右 padding 用 `leftPadding/rightPadding:12`，**不能四边 `padding:12`**（上下 12 会让 contentItem 高只剩 12px 挤压）；③ delegate contentItem 用 anchors 不用 RowLayout（垂直居中可靠）
+
+## ShadcnField 组
+
+```qml
+ShadcnField {
+    invalid: input.text.length === 0 && touched      // 错误态：标签转 destructive
+    ShadcnFieldLabel { text: "邮箱"; required: true }  // required 加红色 *
+    ShadcnInput { id: input }
+    ShadcnFieldDescription { text: "不会公开" }
+    ShadcnFieldError { errors: [ "格式错误", "格式错误", "已被占用" ] }  // 自动去重
+}
+
+// 横向：label 左、控件右
+ShadcnField {
+    orientation: ShadcnField.Orientation.Horizontal
+    ShadcnFieldLabel { text: "接收更新" }
+    ShadcnSwitch {}
+}
+
+// 横向 + 描述：用 FieldContent 把 title/desc 打包成一列
+ShadcnField {
+    orientation: ShadcnField.Orientation.Horizontal
+    ShadcnFieldContent {
+        ShadcnFieldTitle { text: "飞行模式" }
+        ShadcnFieldDescription { text: "关闭所有无线连接" }
+    }
+    ShadcnSwitch {}
+}
+```
+
+- 组件：`ShadcnField` / `FieldLabel` / `FieldTitle` / `FieldDescription` / `FieldError` /
+  `FieldContent` / `FieldGroup` / `FieldSet` / `FieldLegend` / `FieldSeparator`
+- 间距：Field `gap-2`(8)、FieldGroup `gap-5`(20)、FieldSet `gap-4`(16)
+- `ShadcnFieldError`：无内容**不占位**；`errors` 按 message 去重，1 条纯文本、多条 `list-disc` 列表
+- **与 ShadcnInputGroup 正交**：Field 管字段外层排版，InputGroup 管输入框内部 addon，可叠加
+- **坑**：① 直接子项别自己写 `Layout.fillWidth`（Field 统一接管，等价 `*:w-full`/`*:w-auto`）；
+  ② `invalid` 不会自动变——Field 不探测控件是否有效，由业务绑定；
+  ③ 描述文字自带 `text-muted-foreground`，`invalid` 时**不会变红**（官方同样行为）；
+  ④ `Responsive` 用「容器宽度 >= `responsiveBreakpoint`」等价 CSS 容器查询，
+  断点默认 768 太大，窄卡片里要调小（如 420），且优先取最近的 `FieldGroup` 宽度
