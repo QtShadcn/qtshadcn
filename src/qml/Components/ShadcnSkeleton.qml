@@ -16,6 +16,8 @@ Rectangle {
     radius: 4
 
     // 闪烁动画
+    // 注：700ms 是「呼吸一次的周期」，属循环动画，不归 theme 的 duration* 管
+    // （那几档是过渡时长，语义是「状态 A 到状态 B 用多久」）。同理见 Spinner 的旋转周期。
     SequentialAnimation on opacity {
         loops: Animation.Infinite
         running: true

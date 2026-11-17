@@ -40,7 +40,7 @@ Switch {
                 : theme.input
         border.width: 0   // v4: border border-transparent（无可见边框）
 
-        Behavior on color { ColorAnimation { duration: 150 } }
+        Behavior on color { ColorAnimation { duration: theme.durationNormal } }
 
         // 焦点环：activeFocus 时 3px 外环（与 Input 一致）
         Rectangle {
@@ -69,7 +69,7 @@ Switch {
         x: root.checked ? root._w - root._tw - root._gap : 0
         y: (root._h - implicitHeight) / 2
 
-        Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
+        Behavior on x { NumberAnimation { duration: theme.durationNormal; easing.type: Easing.OutCubic } }
     }
 
     // 禁用态：opacity 50%（shadcn: disabled:opacity-50）

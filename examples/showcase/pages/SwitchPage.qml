@@ -33,7 +33,7 @@ Item {
         Text {
             width: parent.width
             wrapMode: Text.WordWrap
-            text: qsTr("基于 QQC.Switch（Basic style），胶囊轨道 + 滑块，size default 44×20 / small 28×16。")
+            text: qsTr("基于 QQC.Switch（Basic style），胶囊轨道 + 滑块，size default 32×18 / small 24×14。")
             color: theme.mutedForeground
             font.pixelSize: 13
         }

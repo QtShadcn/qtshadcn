@@ -8,6 +8,20 @@ v0.2.0 发布后与 shadcn v4 base 的对齐，无 API 破坏。
 
 ### Added
 
+- **`QtShadcnTheme` 动效 token**（#14）：`durationInstant`(100) / `durationQuick`(120) /
+  `durationNormal`(150) / `durationSlow`(200) + `easingOut/In/InOut`。全库 11 处
+  时长字面量改走 token（涉及 Button / Input / InputGroup / Select / Textarea /
+  Switch / TabsTrigger / Progress / ScrollBar）。新增 `reducedMotion` 开关与
+  `motionDuration(ms)`，打开后所有过渡归零（无障碍）。
+  **700ms 不纳入**：Spinner 旋转、Skeleton 呼吸是循环动画的**周期**，语义与
+  「过渡时长」不同，两者调参动机也不同，已在代码注释与文档里说明
+- **`ShadcnFadeZoomTransition`**：弹层通用过渡（fade + zoom-95）。
+  `ShadcnDialog` / `ShadcnDropdownMenu` / `ShadcnSelect` 三处 `enter`/`exit`
+  曾一字不差重复 24 行，现在各 2 行
+- **`tst_ShadcnFadeZoomTransition`**：两条运行时用例，采样 `opacity` 是否经历
+  中间值 —— 过渡写错不会报错、弹层照样打开、截图也看不出来，只能这么测
+
+
 - **`ShadcnPopupPosition`**：弹层边界定位器，纯计算 `QtObject`。`QQC.Popup` 只有
   「相对父项摆一个坐标」，没有 Radix 那套 side / align / collisionPadding —— 靠近
   窗口底部的弹层会整块被顶出可视区。它按 Radix 规则算：首选方向放得下就放、放不下

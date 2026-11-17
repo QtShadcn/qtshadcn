@@ -61,6 +61,6 @@ ScrollBar {
         // shadcn 恒定 bg-border；pressed 加深是根据桌面端习惯补的拖拽反馈
         // （Web 版靠浏览器指针态表达，桌面没有等价物）
         color: control.pressed ? theme.mutedForeground : theme.border
-        Behavior on color { ColorAnimation { duration: 100 } }
+        Behavior on color { ColorAnimation { duration: theme.motionDuration(theme.durationInstant) } }
     }
 }

@@ -105,16 +105,6 @@ Dialog {
     }
 
     // 动画：fade-in + zoom-in-95（duration 100ms）
-    enter: Transition {
-        ParallelAnimation {
-            NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 100 }
-            NumberAnimation { property: "scale"; from: 0.95; to: 1.0; duration: 100; easing.type: Easing.OutCubic }
-        }
-    }
-    exit: Transition {
-        ParallelAnimation {
-            NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 100 }
-            NumberAnimation { property: "scale"; from: 1.0; to: 0.95; duration: 100; easing.type: Easing.InCubic }
-        }
-    }
+    enter: ShadcnFadeZoomTransition { shown: true }
+    exit: ShadcnFadeZoomTransition { shown: false }
 }

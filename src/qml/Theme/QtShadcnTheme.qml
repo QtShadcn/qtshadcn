@@ -61,4 +61,39 @@ QtObject {
     readonly property int spacingMd: ThemeManager.tokens["spacingMd"]
     readonly property int spacingLg: ThemeManager.tokens["spacingLg"]
     readonly property int spacingXl: ThemeManager.tokens["spacingXl"]
+
+    // ── 动效（motion）────────────────────────────────────────────
+    //
+    // shadcn 的过渡时长都写死在 tailwind 类里（duration-100 / duration-200 …），
+    // 本项目此前也是字面量散落各处（100 有 13 处、120 有 8 处、150 有 3 处…）。
+    // 想在全局统一调「弹层进场快一点」要翻遍所有组件，漏一处就不一致。
+    //
+    // 这里给三档语义时长 + 两个通用缓动，组件只引用语义名不写字面量：
+    //   instant  100ms  弹层进出、hover 反馈这类「立即响应」的瞬时切换
+    //   quick    120ms  颜色/边框过渡（输入聚焦、hover 变色）
+    //   normal   150ms  位移类（开关滑块、缩略图）
+    //   slow     200ms  accordion/collapsible 这类高度展开
+    // 缓动用 Easing 枚举，调用方仍写 easing.type: theme.easingOut。
+    //
+    // 注意：700ms 那个（Spinner 旋转、Skeleton 呼吸）是循环动画的周期，
+    // 不是「过渡时长」，语义不同，不归这几档管，各组件保留自己的常量。
+    readonly property int durationInstant: 100
+    readonly property int durationQuick: 120
+    readonly property int durationNormal: 150
+    readonly property int durationSlow: 200
+
+    readonly property int easingOut: Easing.OutCubic
+    readonly property int easingIn: Easing.InCubic
+    readonly property int easingInOut: Easing.InOutSine
+
+    // 全局减弱动画开关（无障碍）。开启后 duration* 一律归零 —— 调用方
+    // 不需要逐处判断，只要都走 token 就自动生效。桌面端没有系统的
+    // prefers-reduced-motion 对接，先做成显式属性。
+    property bool reducedMotion: false
+
+    // 把 token 时长按 reducedMotion 折算。组件里写 motionDuration(theme.durationInstant)
+    // 而不是直接读属性，减弱动画才会真的生效。
+    function motionDuration(ms) {
+        return reducedMotion ? 0 : ms
+    }
 }

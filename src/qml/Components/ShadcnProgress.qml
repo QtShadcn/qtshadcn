@@ -38,7 +38,7 @@ ProgressBar {
             radius: 6
             color: theme.primary
 
-            Behavior on width { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+            Behavior on width { NumberAnimation { duration: theme.motionDuration(theme.durationSlow); easing.type: Easing.OutCubic } }
         }
 
         // 百分比文本（shadcn ProgressValue，text-sm font-medium）

@@ -143,7 +143,7 @@ Button {
         border.color: root.activeFocus ? theme.ring
             : root._checked ? theme.accentForeground : theme.border
 
-        Behavior on color { ColorAnimation { duration: 120 } }
+        Behavior on color { ColorAnimation { duration: theme.durationQuick } }
 
         // 组内分隔线：middle/last 左侧 1px（仅无 border 的 variant，如 Primary）
         // 用按钮自身前景色（primary 组 = 白色 primaryForeground，深底上可见；
@@ -172,7 +172,7 @@ Button {
             visible: root.checkable
             color: theme.tokens[vt.checkedOverride.bg]
             opacity: root._checked ? 1 : 0
-            Behavior on opacity { NumberAnimation { duration: 120 } }
+            Behavior on opacity { NumberAnimation { duration: theme.durationQuick } }
         }
 
         // hover / pressed：背景色叠加（outline/ghost → accent；其余按亮度黑/白；link 无）

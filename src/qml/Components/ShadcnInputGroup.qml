@@ -45,7 +45,7 @@ TextField {
         border.width: 1
         border.color: root.activeFocus ? theme.ring : "transparent"
 
-        Behavior on border.color { ColorAnimation { duration: 120 } }
+        Behavior on border.color { ColorAnimation { duration: theme.durationQuick } }
 
         // 聚焦环（含 addon 的整框一起 ring）
         Rectangle {

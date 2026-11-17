@@ -37,6 +37,7 @@ Item {
     }
 
     // RotationAnimator：渲染线程动画，不走 QML 引擎每帧回传
+    // 注：700ms = 转一圈的周期，是循环动画而非过渡时长，故不接 theme.duration*
     RotationAnimator {
         target: shape
         from: 0

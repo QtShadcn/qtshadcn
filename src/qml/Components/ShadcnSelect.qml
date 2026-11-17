@@ -78,7 +78,7 @@ ComboBox {
         color: Qt.rgba(theme.input.r, theme.input.g, theme.input.b, 0.5)   // bg-input/50
         border.width: 1
         border.color: root.activeFocus ? theme.ring : "transparent"
-        Behavior on border.color { ColorAnimation { duration: 120 } }
+        Behavior on border.color { ColorAnimation { duration: theme.durationQuick } }
 
         // 聚焦环
         Rectangle {
@@ -147,18 +147,8 @@ ComboBox {
         }
 
         // 进出动画（shadcn data-open:animate-in fade/zoom 100ms）
-        enter: Transition {
-            ParallelAnimation {
-                NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 100 }
-                NumberAnimation { property: "scale"; from: 0.95; to: 1.0; duration: 100; easing.type: Easing.OutCubic }
-            }
-        }
-        exit: Transition {
-            ParallelAnimation {
-                NumberAnimation { property: "opacity"; from: 1.0; to: 0.0; duration: 100 }
-                NumberAnimation { property: "scale"; from: 1.0; to: 0.95; duration: 100; easing.type: Easing.InCubic }
-            }
-        }
+        enter: ShadcnFadeZoomTransition { shown: true }
+        exit: ShadcnFadeZoomTransition { shown: false }
     }
 
     // ── 列表项（hover accent + 选中 check）──

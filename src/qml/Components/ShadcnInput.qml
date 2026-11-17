@@ -37,7 +37,7 @@ TextField {
         border.width: 1
         border.color: root.activeFocus ? theme.ring : "transparent"
 
-        Behavior on border.color { ColorAnimation { duration: 120 } }
+        Behavior on border.color { ColorAnimation { duration: theme.durationQuick } }
 
         // 键盘焦点环：activeFocus 时 3px 外环（shadcn focus-visible:ring-3 ring-ring/30）
         Rectangle {

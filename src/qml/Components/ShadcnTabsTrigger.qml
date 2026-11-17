@@ -57,7 +57,7 @@ TabButton {
 
             Behavior on opacity {
                 NumberAnimation {
-                    duration: 120
+                    duration: theme.durationQuick
                 }
             }
         }
@@ -88,7 +88,7 @@ TabButton {
 
         Behavior on color {
             ColorAnimation {
-                duration: 120
+                duration: theme.durationQuick
             }
         }
     }
@@ -156,7 +156,7 @@ TabButton {
 
         Behavior on opacity {
             NumberAnimation {
-                duration: 150
+                duration: theme.durationNormal
             }
         }
     }
