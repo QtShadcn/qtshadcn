@@ -2,8 +2,8 @@
 """pyqtshadcn 最小演示：一行接入 PyQt6 引擎并加载 QtShadcn 组件。
 
 运行:
-    QT_QPA_PLATFORM=offscreen python examples/prototype_main.py   # 无界面验证
-    python examples/prototype_main.py                              # 真实窗口
+    QT_QPA_PLATFORM=offscreen python examples/prototype/main.py   # 无界面验证
+    python examples/prototype/main.py                              # 真实窗口
 """
 import os
 import sys

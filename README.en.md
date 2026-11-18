@@ -216,7 +216,7 @@ Run from this repository's root directory:
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -e .
-QT_QPA_PLATFORM=offscreen python python/examples/prototype_main.py
+QT_QPA_PLATFORM=offscreen python examples/prototype/main.py
 ```
 
 The example enters the Qt event loop; use Ctrl+C after verification. The packaged QML and icons are currently copies of

@@ -189,7 +189,7 @@ sys.exit(app.exec())
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -e .
-QT_QPA_PLATFORM=offscreen python python/examples/prototype_main.py
+QT_QPA_PLATFORM=offscreen python examples/prototype/main.py
 ```
 
 示例会进入 Qt 事件循环，验证完成后可用 Ctrl+C 退出。包内 QML 与图标目前是
