@@ -192,13 +192,13 @@ pip install -e .
 QT_QPA_PLATFORM=offscreen python examples/prototype/main.py
 ```
 
-示例会进入 Qt 事件循环，验证完成后可用 Ctrl+C 退出。包内 QML 与图标目前是
-`src/qml`、`src/assets/icons` 的副本。
+示例会进入 Qt 事件循环，验证完成后可用 Ctrl+C 退出。构建时直接从
+`src/qml` 和 `src/assets/icons` 打包 QML 与图标。修改这些资源后需重新运行 `pip install -e .`。
 
 ### 已知限制
 
 - `ShadcnTableModel` 尚未从 C++ 移植到 Python，因此目前无法使用 `ShadcnTable`。
-- `IconRegistry` 仅支持随包附带的 75 个 SVG 图标，目前尚不支持 C++ 版的远程 CDN 下载和磁盘缓存。
+- `IconRegistry` 仅支持随包附带的 SVG 图标，目前尚不支持 C++ 版的远程 CDN 下载和磁盘缓存。
 
 ## 📄 文档
 

@@ -20,12 +20,11 @@ dependencies = [
 Homepage = "https://github.com/QtShadcn/qtshadcn"
 Repository = "https://github.com/QtShadcn/qtshadcn"
 
-[tool.setuptools.packages.find]
-where = ["python/src"]
+[tool.setuptools]
+packages = ["pyqtshadcn"]
+package-dir = { pyqtshadcn = "python" }
 
 [tool.setuptools.package-data]
 pyqtshadcn = [
-    "QtShadcn/qml/**/*.qml",
-    "icons/**/*.svg",
     "QtShadcn/qmldir",
 ]

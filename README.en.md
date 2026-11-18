@@ -219,13 +219,13 @@ pip install -e .
 QT_QPA_PLATFORM=offscreen python examples/prototype/main.py
 ```
 
-The example enters the Qt event loop; use Ctrl+C after verification. The packaged QML and icons are currently copies of
-`src/qml` and `src/assets/icons`.
+The example enters the Qt event loop; use Ctrl+C after verification. Builds package QML and icons directly from
+`src/qml` and `src/assets/icons`. Rerun `pip install -e .` after changing these assets.
 
 ### Known limitations
 
 - `ShadcnTableModel` has not been ported from C++ to Python, so `ShadcnTable` is currently unavailable.
-- `IconRegistry` supports only the 75 bundled SVG icons. It currently lacks remote CDN downloads or the disk cache
+- `IconRegistry` supports only the bundled SVG icons. It currently lacks remote CDN downloads or the disk cache
   present in the C++ implementation.
 
 ## 📄 Documentation

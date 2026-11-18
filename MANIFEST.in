@@ -1,0 +1,16 @@
+include LICENSE THIRD-PARTY-NOTICES.md README.md README.en.md README.zh.md
+recursive-include python *.py qmldir
+recursive-include src/qml *.qml
+recursive-include src/assets/icons *.svg
+prune .github
+prune build
+prune docs
+prune examples
+prune public
+prune scripts
+prune skills
+prune tests
+prune vendor
+prune python/QtShadcn/qml
+prune python/icons
+exclude CMakeLists.txt Makefile .gitignore .qmllint.ini
