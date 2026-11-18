@@ -25,6 +25,23 @@ wheels = [
 ]
 
 [[package]]
+name = "clang-tidy"
+version = "19.1.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/6b/a1/98bcbbb38c218d6de2e9c167036f003a586f7505e5a29a548474a72772b2/clang_tidy-19.1.0.1.tar.gz", hash = "sha256:06ada450c9cfdb5235bb4b4fe6a62fab606cb5326483658a726642ed03dfbd3c", size = 11299, upload-time = "2025-02-10T10:46:38.921Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e2/10/9e5207b9cc86f734fb19a51544859bed2e2dc9e72c11f9eeba4112296e2b/clang_tidy-19.1.0.1-py2.py3-none-macosx_10_9_x86_64.whl", hash = "sha256:b69aed894812f72064b8daf7a8e6b14a64db1c2244bacacf023870937c68cb3b", size = 27986369, upload-time = "2025-02-10T10:45:46.61Z" },
+    { url = "https://files.pythonhosted.org/packages/f8/19/aba495ce0e6cedd5541690b82a3e206300944ff7163d72d0905ec15ab319/clang_tidy-19.1.0.1-py2.py3-none-macosx_11_0_arm64.whl", hash = "sha256:e1fa54e4f6b7cb8abb7118a8b504bbd79d1051c3ca3ab0f302c632a2d42450c7", size = 26730162, upload-time = "2025-02-10T10:45:53.337Z" },
+    { url = "https://files.pythonhosted.org/packages/06/fa/9b2b79fb69b7c530d4b4ba58b8afde89ff0bd21241d962b9c3b5e752baae/clang_tidy-19.1.0.1-py2.py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ef727c2b081bca8beb0ac8a864c11f6e0c9d669ff2960c685ec3b4474e933eec", size = 37014421, upload-time = "2025-02-10T10:45:59.202Z" },
+    { url = "https://files.pythonhosted.org/packages/41/9d/c125b6a5cdc3123707db2fb2c998f7c95d34d96de3b7e7b20f97293799fd/clang_tidy-19.1.0.1-py2.py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:f9eaab00ae36fa0607c8db0780d7fa31b5db516e5597b260822a927ffa6e5f8b", size = 43106615, upload-time = "2025-02-10T10:46:06.906Z" },
+    { url = "https://files.pythonhosted.org/packages/4b/13/5a59f81f6117dd769571cf357a27e193158790e314aacaaec28167bfc259/clang_tidy-19.1.0.1-py2.py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:511fb73f2c8d86a3b34eee7c4a91306bdb17fc6f9565a662dd5ffa7b4836891d", size = 37693117, upload-time = "2025-02-10T10:46:14.21Z" },
+    { url = "https://files.pythonhosted.org/packages/3f/7d/3546e06dffba61ff149eab80398036290096a5e42374a1288e42a867cf94/clang_tidy-19.1.0.1-py2.py3-none-musllinux_1_2_i686.whl", hash = "sha256:986f3d010ed753f60aebd567ae0ed09dd5eb093b4469c254c2ea5f3bbfb0fd63", size = 45486848, upload-time = "2025-02-10T10:46:20.385Z" },
+    { url = "https://files.pythonhosted.org/packages/eb/18/7b5efcfe4210b4d5618f325dbfb05e17c77d1f0d2ecdefa28d5c64eb984f/clang_tidy-19.1.0.1-py2.py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:424a58a7fc445521fdf8918b7363ca64f3c476720c42efdb698a9e2dbaaf163b", size = 40761031, upload-time = "2025-02-10T10:46:27.686Z" },
+    { url = "https://files.pythonhosted.org/packages/8d/e8/29e615a01ae5fc86189a7ab00d6116c7046eebc1e94591ef6e6d5d015677/clang_tidy-19.1.0.1-py2.py3-none-win32.whl", hash = "sha256:134fe16cfc540402bfc70797255cd1c4aff3592c9bcb22d99423d40cdcb9d4c3", size = 20053826, upload-time = "2025-02-10T10:46:32.508Z" },
+    { url = "https://files.pythonhosted.org/packages/e5/83/259a42526c8bd933a520001701439e99cfbf4171f02156f53c521795afbe/clang_tidy-19.1.0.1-py2.py3-none-win_amd64.whl", hash = "sha256:8f3a4e0819f6699794315815002c0d1dd775a8c134777a6579b711fab0ceb70c", size = 23150374, upload-time = "2025-02-10T10:46:36.428Z" },
+]
+
+[[package]]
 name = "pyqt6"
 version = "6.12.1"
 source = { registry = "https://pypi.org/simple" }
@@ -102,12 +119,14 @@ dependencies = [
 [package.optional-dependencies]
 dev = [
     { name = "clang-format" },
+    { name = "clang-tidy" },
     { name = "ruff" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "clang-format", marker = "extra == 'dev'", specifier = "==19.1.7" },
+    { name = "clang-tidy", marker = "extra == 'dev'", specifier = "==19.1.0.1" },
     { name = "pyqt6", specifier = ">=6.10" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.9" },
 ]
