@@ -15,9 +15,8 @@ A modern, composable UI component library for Qt 6 / QML, inspired by [shadcn/ui
 with its layered composition of Design Tokens → Components → Compositions → Themes.
 
 > [!TIP]
-> QtShadcn offers PyQt6 bindings, installable from PyPI with `pip install pyqtshadcn`. They are maintained at
-> [QtShadcn/pyqtshadcn](https://github.com/QtShadcn/pyqtshadcn) using synchronized copies of the QML source and icons.
-> The bindings currently omit `ShadcnTable`, which depends on the C++ `ShadcnTableModel`.
+> QtShadcn offers PyQt6 bindings, installable from PyPI with `pip install pyqtshadcn`. For more information, see
+> [Python bindings](#python-bindings).
 
 ## ✨ Features
 
@@ -168,6 +167,66 @@ Window {
 - **Change the accent color at runtime**: `ThemeManager.primary = "#2563eb"` (an empty string restores the default).
 - For component usage, visit the [documentation](docs/content/2.components/) or agentic
   [skills](skills/qtshadcn/SKILL.md).
+
+## Python bindings
+
+`pyqtshadcn` implements the `ThemeManager` and `IconRegistry` QML singletons in pure Python. No C++ plugin build is
+needed, avoiding ABI mismatches with Qt bundled by PyQt6. Requires Python ≥ 3.10 and PyQt6 ≥ 6.10
+(installed automatically by pip).
+
+<details>
+
+<summary>Example Code:</summary>
+
+```python
+import sys
+
+from PyQt6.QtCore import QUrl
+from PyQt6.QtGui import QGuiApplication
+from PyQt6.QtQml import QQmlApplicationEngine
+from pyqtshadcn import setup
+
+app = QGuiApplication(sys.argv)
+engine = QQmlApplicationEngine()
+
+# Adds the packaged QML import path and registers the `ThemeManager` and
+# `IconRegistry` singletons
+setup(engine)
+
+engine.loadData(b"""
+import QtQuick
+import QtQuick.Controls.Basic
+import QtShadcn
+Window {
+    width: 400; height: 300; visible: true
+    QtShadcnTheme { id: theme }
+    ShadcnButton { text: "Hello"; onClicked: theme.mode = "dark" }
+}
+""", QUrl("qrc:/main.qml"))
+
+sys.exit(app.exec())
+```
+
+</details>
+
+### Local development
+
+Run from this repository's root directory:
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -e .
+QT_QPA_PLATFORM=offscreen python python/examples/prototype_main.py
+```
+
+The example enters the Qt event loop; use Ctrl+C after verification. The packaged QML and icons are currently copies of
+`src/qml` and `src/assets/icons`.
+
+### Known limitations
+
+- `ShadcnTableModel` has not been ported from C++ to Python, so `ShadcnTable` is currently unavailable.
+- `IconRegistry` supports only the 75 bundled SVG icons. It currently lacks remote CDN downloads or the disk cache
+  present in the C++ implementation.
 
 ## 📄 Documentation
 

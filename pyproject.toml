@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=77.0.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -9,7 +9,7 @@ description = "PyQt6 pure-Python adapter for the QtShadcn QML component library 
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-license-files = ["LICENSE"]
+license-files = ["LICENSE", "THIRD-PARTY-NOTICES.md"]
 authors = [{ name = "QtShadcn" }]
 keywords = ["qt", "qml", "pyqt6", "shadcn", "ui", "components"]
 dependencies = [
@@ -17,11 +17,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/QtShadcn/pyqtshadcn"
-Repository = "https://github.com/QtShadcn/pyqtshadcn"
+Homepage = "https://github.com/QtShadcn/qtshadcn"
+Repository = "https://github.com/QtShadcn/qtshadcn"
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["python/src"]
 
 [tool.setuptools.package-data]
 pyqtshadcn = [

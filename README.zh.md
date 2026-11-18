@@ -12,7 +12,7 @@ Qt 6 / QML 可组合 UI 组件库，对齐 shadcn/ui 的设计哲学：**Design 
 
 > ⚠️ **开发状态**：本项目仍在活跃开发中，API 可能随迭代调整。已可用组件与里程碑进度见 [文档站里程碑](docs/content/1.getting-started/5.milestones.md) 与 [Skills](skills/qtshadcn/SKILL.md)，欢迎 [Issue](https://github.com/QtShadcn/qtshadcn/issues) 与 PR。
 
-> 🐍 **PyQt6 纯 Python 适配**：无需 C++ 编译、可直接 `pip install pyqtshadcn` 加载本库 QML 组件，见独立仓库 [QtShadcn/pyqtshadcn](https://github.com/QtShadcn/pyqtshadcn)（QML 源与图标为同步副本，当前不含依赖 C++ `ShadcnTableModel` 的 `ShadcnTable`）。
+> 🐍 **PyQt6 纯 Python 适配**：可通过 PyPI 安装：`pip install pyqtshadcn`。更多信息见 [Python 绑定](#python-绑定)。
 
 ## ✨ 特性
 
@@ -142,6 +142,63 @@ Window {
 - **主题接入**：任何使用组件的页面先放一个 `QtShadcnTheme`；`theme.mode = "dark"` 全局随动
 - **运行时改主色**：`ThemeManager.primary = "#2563eb"`（空串恢复默认）
 - 完整组件用法见 [组件文档](docs/content/2.components/) 或仓库内 [skills](skills/qtshadcn/SKILL.md)
+
+## Python 绑定
+
+`pyqtshadcn` 用纯 Python 实现 `ThemeManager` 和 `IconRegistry` 两个 QML 单例，无需编译 C++ 插件，
+避免与 PyQt6 自带 Qt 的 ABI 不匹配。需要 Python ≥ 3.10 与 PyQt6 ≥ 6.10（pip 会自动安装 PyQt6）。
+
+<details>
+
+<summary>示例代码：</summary>
+
+```python
+import sys
+
+from PyQt6.QtCore import QUrl
+from PyQt6.QtGui import QGuiApplication
+from PyQt6.QtQml import QQmlApplicationEngine
+from pyqtshadcn import setup
+
+app = QGuiApplication(sys.argv)
+engine = QQmlApplicationEngine()
+
+# 添加包内 QML import path，并注册 ThemeManager 和 IconRegistry 单例
+setup(engine)
+
+engine.loadData(b"""
+import QtQuick
+import QtQuick.Controls.Basic
+import QtShadcn
+Window {
+    width: 400; height: 300; visible: true
+    QtShadcnTheme { id: theme }
+    ShadcnButton { text: "Hello"; onClicked: theme.mode = "dark" }
+}
+""", QUrl("qrc:/main.qml"))
+
+sys.exit(app.exec())
+```
+
+</details>
+
+### 本地开发
+
+在本仓库根目录运行：
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -e .
+QT_QPA_PLATFORM=offscreen python python/examples/prototype_main.py
+```
+
+示例会进入 Qt 事件循环，验证完成后可用 Ctrl+C 退出。包内 QML 与图标目前是
+`src/qml`、`src/assets/icons` 的副本。
+
+### 已知限制
+
+- `ShadcnTableModel` 尚未从 C++ 移植到 Python，因此目前无法使用 `ShadcnTable`。
+- `IconRegistry` 仅支持随包附带的 75 个 SVG 图标，目前尚不支持 C++ 版的远程 CDN 下载和磁盘缓存。
 
 ## 📄 文档
 
