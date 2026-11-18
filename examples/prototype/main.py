@@ -5,17 +5,17 @@
     QT_QPA_PLATFORM=offscreen python examples/prototype/main.py   # 无界面验证
     python examples/prototype/main.py                              # 真实窗口
 """
+
 import os
 import sys
 
 # macOS 上 QtQuick 窗口默认不合成图层（创建了也"看不见"），需此变量才真实绘制
 os.environ.setdefault("QT_MAC_WANTS_LAYER", "1")
 
-from PyQt6.QtCore import QUrl  # noqa: E402
-from PyQt6.QtGui import QGuiApplication  # noqa: E402
-from PyQt6.QtQml import QQmlApplicationEngine  # noqa: E402
-
-from pyqtshadcn import setup  # noqa: E402
+from PyQt6.QtCore import QUrl
+from PyQt6.QtGui import QGuiApplication
+from PyQt6.QtQml import QQmlApplicationEngine
+from pyqtshadcn import setup
 
 
 def main() -> int:
@@ -71,12 +71,15 @@ def main() -> int:
 
     # 验证核心卖点：明暗切换时 token 字典整体替换
     from pyqtshadcn import ThemeManager
+
     tm = ThemeManager()
     light_bg = tm.property("tokens")["background"]
     tm.setProperty("mode", "dark")
     dark_bg = tm.property("tokens")["background"]
-    print(f"[VERIFY] mode 切换: light.background={light_bg} -> dark.background={dark_bg} "
-          f"({'OK' if light_bg != dark_bg else 'FAIL'})")
+    print(
+        f"[VERIFY] mode 切换: light.background={light_bg} -> dark.background={dark_bg} "
+        f"({'OK' if light_bg != dark_bg else 'FAIL'})"
+    )
 
     return app.exec()
 

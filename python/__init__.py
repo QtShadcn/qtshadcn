@@ -19,11 +19,11 @@ from .capability import (
 )
 
 __all__ = [
-    "setup",
-    "ThemeManager",
     "IconRegistry",
-    "register_types",
+    "ThemeManager",
     "qtshadcn_import_path",
+    "register_types",
+    "setup",
 ]
 
 __version__ = "0.1.0"

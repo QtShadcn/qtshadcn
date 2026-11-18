@@ -16,6 +16,11 @@ dependencies = [
     "PyQt6>=6.10",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.9",
+]
+
 [project.urls]
 Homepage = "https://github.com/QtShadcn/qtshadcn"
 Repository = "https://github.com/QtShadcn/qtshadcn"
@@ -28,3 +33,42 @@ package-dir = { pyqtshadcn = "python" }
 pyqtshadcn = [
     "QtShadcn/qmldir",
 ]
+
+[tool.ruff]
+indent-width = 4
+line-length = 100
+target-version = "py310"
+extend-exclude = [
+    "build*",
+    "dist",
+    "docs",
+    "python/icons",
+    "python/QtShadcn",
+    "vendor",
+]
+
+[tool.ruff.lint]
+select = [
+    "B",
+    "BLE",
+    "E",
+    "F",
+    "I",
+    "RUF",
+    "S",
+    "TC",
+    "UP",
+    "W",
+]
+ignore = [
+    "E501",
+    "RUF001",
+    "RUF002",
+    "RUF003",
+]
+
+[tool.ruff.format]
+indent-style = "space"
+line-ending = "lf"
+quote-style = "double"
+skip-magic-trailing-comma = false

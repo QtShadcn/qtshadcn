@@ -16,7 +16,6 @@ import base64
 import os
 import re
 from pathlib import Path
-from typing import Optional
 
 from PyQt6.QtCore import (
     QObject,
@@ -51,7 +50,7 @@ class ThemeManager(QObject):
     primaryChanged = pyqtSignal()
     tokensChanged = pyqtSignal()
 
-    def __init__(self, parent: Optional[QObject] = None) -> None:
+    def __init__(self, parent: QObject | None = None) -> None:
         super().__init__(parent)
         self._mode = "light"
         self._primary = ""
@@ -83,9 +82,7 @@ class ThemeManager(QObject):
         self._rebuild()
         self.primaryChanged.emit()
 
-    primary = pyqtProperty(
-        str, fget=_get_primary, fset=_set_primary, notify=primaryChanged
-    )
+    primary = pyqtProperty(str, fget=_get_primary, fset=_set_primary, notify=primaryChanged)
 
     # ── tokens ──
     def _get_tokens(self) -> QVariant:
@@ -103,9 +100,7 @@ class ThemeManager(QObject):
 
     # ── 重建 token 字典 ──
     def _rebuild(self) -> None:
-        primary_color = self._primary or (
-            "#fafafa" if self._mode == "dark" else "#18181b"
-        )
+        primary_color = self._primary or ("#fafafa" if self._mode == "dark" else "#18181b")
         pc = QColor(primary_color)
         lum = 0.299 * pc.redF() + 0.587 * pc.greenF() + 0.114 * pc.blueF()
         primary_fg = "#18181b" if lum > 0.5 else "#fafafa"
@@ -188,7 +183,7 @@ class IconRegistry(QObject):
     remoteEnabledChanged = pyqtSignal()
     iconReady = pyqtSignal(str)
 
-    def __init__(self, parent: Optional[QObject] = None) -> None:
+    def __init__(self, parent: QObject | None = None) -> None:
         super().__init__(parent)
         self._remote_enabled = True
         self._icons: dict[str, str] = {}
@@ -229,7 +224,7 @@ class IconRegistry(QObject):
         return name in self._icons
 
     @pyqtSlot(str, str, result=str)
-    def dataUrl(self, name: str, color: Optional[str] = None) -> str:
+    def dataUrl(self, name: str, color: str | None = None) -> str:
         svg = self._icons.get(name, "")
         if not svg:
             return ""
@@ -246,10 +241,18 @@ class IconRegistry(QObject):
 def register_types(engine_uri: str = "QtShadcn") -> None:
     """注册 ThemeManager / IconRegistry 为 QML singleton（内部使用）。"""
     qmlRegisterSingletonType(
-        ThemeManager, engine_uri, 1, 0,
-        lambda engine, _: ThemeManager(engine), name="ThemeManager",
+        ThemeManager,
+        engine_uri,
+        1,
+        0,
+        lambda engine, _: ThemeManager(engine),
+        name="ThemeManager",
     )
     qmlRegisterSingletonType(
-        IconRegistry, engine_uri, 1, 0,
-        lambda engine, _: IconRegistry(engine), name="IconRegistry",
+        IconRegistry,
+        engine_uri,
+        1,
+        0,
+        lambda engine, _: IconRegistry(engine),
+        name="IconRegistry",
     )
