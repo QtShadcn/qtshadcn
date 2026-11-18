@@ -22,8 +22,8 @@ QString ThemeManager::mode() const
 
 void ThemeManager::setMode(const QString &mode)
 {
-    const QString normalized = (mode == QStringLiteral("dark")) ? QStringLiteral("dark")
-                                                                : QStringLiteral("light");
+    const QString normalized =
+        (mode == QStringLiteral("dark")) ? QStringLiteral("dark") : QStringLiteral("light");
     if (m_mode == normalized)
         return;
     m_mode = normalized;
@@ -67,8 +67,7 @@ void ThemeManager::rebuildTokens()
 {
     // 主色覆盖：空 = 内置默认（light 深色 / dark 浅色）；设置后统一用该色
     const QString primaryColor = m_primary.isEmpty()
-        ? (m_mode == QStringLiteral("dark") ? QStringLiteral("#fafafa")
-                                            : QStringLiteral("#18181b"))
+        ? (m_mode == QStringLiteral("dark") ? QStringLiteral("#fafafa") : QStringLiteral("#18181b"))
         : m_primary;
     // 前景自动对比色：感知亮度 > 0.5 → 深色文字，否则白字（shadcn: text-primary-foreground）
     const QColor pc(primaryColor);
@@ -80,8 +79,8 @@ void ThemeManager::rebuildTokens()
             // 颜色语义
             { QStringLiteral("background"),            QStringLiteral("#09090b") },
             { QStringLiteral("foreground"),            QStringLiteral("#fafafa") },
-            { QStringLiteral("primary"),               primaryColor },
-            { QStringLiteral("primaryForeground"),     primaryFg },
+            { QStringLiteral("primary"),               primaryColor              },
+            { QStringLiteral("primaryForeground"),     primaryFg                 },
             { QStringLiteral("secondary"),             QStringLiteral("#27272a") },
             { QStringLiteral("secondaryForeground"),   QStringLiteral("#fafafa") },
             { QStringLiteral("muted"),                 QStringLiteral("#27272a") },
@@ -104,26 +103,27 @@ void ThemeManager::rebuildTokens()
             { QStringLiteral("success"),               QStringLiteral("#166534") },
             { QStringLiteral("successForeground"),     QStringLiteral("#f0fdf4") },
             // 形状与间距
-            { QStringLiteral("radius"),                8 },
-            { QStringLiteral("spacingXs"),             4 },
-            { QStringLiteral("spacingSm"),             8 },
-            { QStringLiteral("spacingMd"),             12 },
-            { QStringLiteral("spacingLg"),             16 },
-            { QStringLiteral("spacingXl"),             24 },
+            { QStringLiteral("radius"),                8                         },
+            { QStringLiteral("spacingXs"),             4                         },
+            { QStringLiteral("spacingSm"),             8                         },
+            { QStringLiteral("spacingMd"),             12                        },
+            { QStringLiteral("spacingLg"),             16                        },
+            { QStringLiteral("spacingXl"),             24                        },
         };
     } else {
         m_tokens = {
             // 颜色语义
             { QStringLiteral("background"),            QStringLiteral("#ffffff") },
             { QStringLiteral("foreground"),            QStringLiteral("#09090b") },
-            { QStringLiteral("primary"),               primaryColor },
-            { QStringLiteral("primaryForeground"),     primaryFg },
+            { QStringLiteral("primary"),               primaryColor              },
+            { QStringLiteral("primaryForeground"),     primaryFg                 },
             { QStringLiteral("secondary"),             QStringLiteral("#f5f5f5") },
             { QStringLiteral("secondaryForeground"),   QStringLiteral("#18181b") },
             { QStringLiteral("muted"),                 QStringLiteral("#f5f5f5") },
             { QStringLiteral("mutedForeground"),       QStringLiteral("#71717a") },
             { QStringLiteral("accent"),                QStringLiteral("#f5f5f5") },
-            // accentForeground 需与 foreground(#09090b) 有可见差异（outline/ghost hover 文字切换反馈）；
+            // accentForeground 需与 foreground(#09090b) 有可见差异（outline/ghost hover
+            // 文字切换反馈）；
             // #3f3f46 在 accent 背景上对比度 ~9:1 可读（zinc-700）
             { QStringLiteral("accentForeground"),      QStringLiteral("#3f3f46") },
             { QStringLiteral("destructive"),           QStringLiteral("#ef4444") },
@@ -142,12 +142,12 @@ void ThemeManager::rebuildTokens()
             { QStringLiteral("success"),               QStringLiteral("#15803d") },
             { QStringLiteral("successForeground"),     QStringLiteral("#f0fdf4") },
             // 形状与间距
-            { QStringLiteral("radius"),                8 },
-            { QStringLiteral("spacingXs"),             4 },
-            { QStringLiteral("spacingSm"),             8 },
-            { QStringLiteral("spacingMd"),             12 },
-            { QStringLiteral("spacingLg"),             16 },
-            { QStringLiteral("spacingXl"),             24 },
+            { QStringLiteral("radius"),                8                         },
+            { QStringLiteral("spacingXs"),             4                         },
+            { QStringLiteral("spacingSm"),             8                         },
+            { QStringLiteral("spacingMd"),             12                        },
+            { QStringLiteral("spacingLg"),             16                        },
+            { QStringLiteral("spacingXl"),             24                        },
         };
     }
     emit tokensChanged();

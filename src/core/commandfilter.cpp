@@ -1,4 +1,5 @@
 // src/core/commandfilter.cpp
+
 #include "commandfilter.h"
 
 #include <QHash>
@@ -19,10 +20,10 @@ constexpr double kNonMatch = 0.99;      // 查询耗尽但目标没耗尽：仍�
 
 // 打分递归的中间状态：memo 是 cmdk 的 `${i},${j}` 记忆表
 struct Scorer {
-    const QString &input;   // 原始 value（含拼进去的 keywords），与 cmdk 一致地用于分隔符判断
-    const QString &search;  // 原始 search（大小写罚分用它比对）
-    const QString &fmtInput;   // 归一化后的 value（indexOf 在它上面做）
-    const QString &fmtSearch;  // 归一化后的 search
+    const QString &input;     // 原始 value（含拼进去的 keywords），与 cmdk 一致地用于分隔符判断
+    const QString &search;    // 原始 search（大小写罚分用它比对）
+    const QString &fmtInput;  // 归一化后的 value（indexOf 在它上面做）
+    const QString &fmtSearch; // 归一化后的 search
     mutable QHash<QString, double> memo;
 
     // JS 的 charAt(i)：越界返回空串。这里用 QChar(0) 表达「无字符」，
@@ -36,8 +37,18 @@ struct Scorer {
     {
         // /[\\\/_+.#"@\[\(\{&]/
         switch (c.unicode()) {
-        case '\\': case '/': case '_': case '+': case '.': case '#':
-        case '"': case '@': case '[': case '(': case '{': case '&':
+        case '\\':
+        case '/':
+        case '_':
+        case '+':
+        case '.':
+        case '#':
+        case '"':
+        case '@':
+        case '[':
+        case '(':
+        case '{':
+        case '&':
             return true;
         default:
             return false;
@@ -47,8 +58,8 @@ struct Scorer {
     static bool isSimilar(QChar c)
     {
         // /[\s-]/
-        return c == QLatin1Char('-') || c == QLatin1Char(' ') || c == QLatin1Char('\t')
-            || c == QLatin1Char('\n') || c == QLatin1Char('\r');
+        return c == QLatin1Char('-') || c == QLatin1Char(' ') || c == QLatin1Char('\t') ||
+            c == QLatin1Char('\n') || c == QLatin1Char('\r');
     }
 
     // 统计 [from, to) 内满足谓词的字符数（对应 JS 的 slice(...).match(regex) 取 .length）
@@ -156,8 +167,7 @@ QString CommandFilter::normalize(const QString &text) const
     return out;
 }
 
-double CommandFilter::score(const QString &value,
-                            const QString &search,
+double CommandFilter::score(const QString &value, const QString &search,
                             const QStringList &keywords) const
 {
     // 查询为空 = 不过滤。cmdk 此时返回 .99（>0，全部命中）；这里给满分，
@@ -167,17 +177,17 @@ double CommandFilter::score(const QString &value,
         return 1.0;
 
     // keywords 拼到 value 后一起打分（cmdk: `${value} ${keywords.join(" ")}`）
-    const QString full = keywords.isEmpty() ? value : value + QLatin1Char(' ') + keywords.join(QLatin1Char(' '));
+    const QString full =
+        keywords.isEmpty() ? value : value + QLatin1Char(' ') + keywords.join(QLatin1Char(' '));
 
     const QString fmtFull = normalize(full);
     const QString fmtSearch = normalize(search);
 
-    Scorer s{full, search, fmtFull, fmtSearch, {}};
+    Scorer s { full, search, fmtFull, fmtSearch, {} };
     return s.run(0, 0);
 }
 
-bool CommandFilter::matches(const QString &value,
-                            const QString &search,
+bool CommandFilter::matches(const QString &value, const QString &search,
                             const QStringList &keywords) const
 {
     return score(value, search, keywords) > 0.0;

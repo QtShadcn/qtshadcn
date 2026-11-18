@@ -22,7 +22,8 @@ class IconRegistry : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QStringList names READ names NOTIFY iconsChanged)
-    Q_PROPERTY(bool remoteEnabled READ remoteEnabled WRITE setRemoteEnabled NOTIFY remoteEnabledChanged)
+    Q_PROPERTY(
+        bool remoteEnabled READ remoteEnabled WRITE setRemoteEnabled NOTIFY remoteEnabledChanged)
     QML_ELEMENT
     QML_SINGLETON
 
@@ -60,9 +61,9 @@ private:
     QString cacheDir() const;
     QString svg(const QString &name) const;
 
-    QHash<QString, QString> m_icons;        // 本地内置（qrc）
-    QHash<QString, QString> m_remoteCache;  // 远程已加载（内存，值 = 原始 svg）
-    QSet<QString> m_downloading;            // 下载中（避免重复请求）
+    QHash<QString, QString> m_icons;       // 本地内置（qrc）
+    QHash<QString, QString> m_remoteCache; // 远程已加载（内存，值 = 原始 svg）
+    QSet<QString> m_downloading;           // 下载中（避免重复请求）
     bool m_remoteEnabled = true;
     QNetworkAccessManager *m_nam = nullptr;
 };

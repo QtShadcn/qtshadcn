@@ -1,4 +1,5 @@
 // tests/core/iconregistry_test.cpp
+
 #include <QTest>
 #include <QObject>
 #include <QSignalSpy>
@@ -21,7 +22,7 @@ private slots:
 void IconRegistryTest::hasBuiltinIcon()
 {
     IconRegistry reg;
-    QVERIFY(reg.has(QStringLiteral("github")));   // 本地内置图标
+    QVERIFY(reg.has(QStringLiteral("github"))); // 本地内置图标
     QVERIFY(reg.has(QStringLiteral("sun")));
     QVERIFY(reg.has(QStringLiteral("moon")));
 }
@@ -42,8 +43,9 @@ void IconRegistryTest::namesSortedCaseInsensitive()
         QCOMPARE(n, n.toLower());
     // 按大小写不敏感升序排列
     QStringList sorted = names;
-    std::sort(sorted.begin(), sorted.end(),
-              [](const QString &a, const QString &b) { return a.compare(b, Qt::CaseInsensitive) < 0; });
+    std::sort(sorted.begin(), sorted.end(), [](const QString &a, const QString &b) {
+        return a.compare(b, Qt::CaseInsensitive) < 0;
+    });
     QCOMPARE(names, sorted);
 }
 
@@ -62,11 +64,11 @@ void IconRegistryTest::dataUrlReplacesCurrentColor()
 void IconRegistryTest::dataUrlDefaultColorIsBlack()
 {
     IconRegistry reg;
-    const QString url = reg.dataUrl(QStringLiteral("github"));   // 不传颜色
+    const QString url = reg.dataUrl(QStringLiteral("github")); // 不传颜色
     QVERIFY(url.startsWith(QStringLiteral("data:image/svg+xml;base64,")));
     const QByteArray b64 = url.mid(QStringLiteral("data:image/svg+xml;base64,").size()).toLatin1();
     const QString svg = QString::fromUtf8(QByteArray::fromBase64(b64));
-    QVERIFY(svg.contains(QStringLiteral("#000000")));            // 默认黑色
+    QVERIFY(svg.contains(QStringLiteral("#000000"))); // 默认黑色
     QVERIFY(!svg.contains(QStringLiteral("currentColor")));
 }
 
@@ -77,7 +79,7 @@ void IconRegistryTest::dataUrlUnknownIconReturnsEmpty()
     reg.setRemoteEnabled(false);
     QSignalSpy spy(&reg, &IconRegistry::iconReady);
     QCOMPARE(reg.dataUrl(QStringLiteral("no-such-icon")), QString());
-    QCOMPARE(spy.count(), 0);   // 未触发下载
+    QCOMPARE(spy.count(), 0); // 未触发下载
 }
 
 void IconRegistryTest::unsafeNameDoesNotTriggerRemote()
@@ -86,8 +88,8 @@ void IconRegistryTest::unsafeNameDoesNotTriggerRemote()
     IconRegistry reg;
     QSignalSpy spy(&reg, &IconRegistry::iconReady);
     // 这些名字既不在本地、也不匹配 ^[a-z0-9-]+$，dataUrl 应返回空且不下载
-    QCOMPARE(reg.dataUrl(QStringLiteral("Foo")), QString());        // 大写
-    QCOMPARE(reg.dataUrl(QStringLiteral("bad name")), QString());   // 空格
+    QCOMPARE(reg.dataUrl(QStringLiteral("Foo")), QString());      // 大写
+    QCOMPARE(reg.dataUrl(QStringLiteral("bad name")), QString()); // 空格
     QCOMPARE(spy.count(), 0);
 }
 

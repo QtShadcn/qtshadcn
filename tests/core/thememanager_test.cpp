@@ -1,4 +1,5 @@
 // tests/core/thememanager_test.cpp
+
 #include <QTest>
 #include <QObject>
 #include <QSignalSpy>
@@ -53,11 +54,11 @@ void ThemeManagerTest::modeChangedOnlyOnChange()
 {
     ThemeManager m;
     QSignalSpy spy(&m, &ThemeManager::modeChanged);
-    m.setMode(QStringLiteral("light"));   // 已经是 light，不应发信号
+    m.setMode(QStringLiteral("light")); // 已经是 light，不应发信号
     QCOMPARE(spy.count(), 0);
     m.setMode(QStringLiteral("dark"));
     QCOMPARE(spy.count(), 1);
-    m.setMode(QStringLiteral("dark"));    // 仍是 dark，不应重复发
+    m.setMode(QStringLiteral("dark")); // 仍是 dark，不应重复发
     QCOMPARE(spy.count(), 1);
 }
 
@@ -107,11 +108,11 @@ void ThemeManagerTest::primaryChangedOnlyOnChange()
 {
     ThemeManager m;
     QSignalSpy spy(&m, &ThemeManager::primaryChanged);
-    m.setPrimary(QString());         // 默认就是空，不发
+    m.setPrimary(QString()); // 默认就是空，不发
     QCOMPARE(spy.count(), 0);
     m.setPrimary(QStringLiteral("#ff0000"));
     QCOMPARE(spy.count(), 1);
-    m.setPrimary(QStringLiteral("#ff0000"));  // 同值，不重复发
+    m.setPrimary(QStringLiteral("#ff0000")); // 同值，不重复发
     QCOMPARE(spy.count(), 1);
 }
 

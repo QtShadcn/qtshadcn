@@ -9,6 +9,7 @@
 // 对齐基准：cmdk 的 commandScore（node_modules/cmdk/dist/command-score.js）。
 // 断言的是**性质**（匹配/不匹配、相对顺序、单调性）而不是逐位小数 —— 逐位钉死
 // 会让任何一次浮点实现细节调整都变成「测试失败」，而行为其实没变。
+
 #include "commandfilter.h"
 
 #include <QtTest>
@@ -94,8 +95,10 @@ void CommandFilterTest::rankingOrder()
     const double sparse = filter.score(QStringLiteral("n e w work"), q);
     QVERIFY2(prefix > 0 && middle > 0 && sparse > 0, "三条都应命中");
     // 词首/前缀命中 > 串中命中 > 稀疏命中（cmdk 的 1 / .9 / .17 分档）
-    QVERIFY2(prefix >= middle, qPrintable(QStringLiteral("prefix=%1 middle=%2").arg(prefix).arg(middle)));
-    QVERIFY2(middle > sparse, qPrintable(QStringLiteral("middle=%1 sparse=%2").arg(middle).arg(sparse)));
+    QVERIFY2(prefix >= middle,
+             qPrintable(QStringLiteral("prefix=%1 middle=%2").arg(prefix).arg(middle)));
+    QVERIFY2(middle > sparse,
+             qPrintable(QStringLiteral("middle=%1 sparse=%2").arg(middle).arg(sparse)));
 
     // 完全相等的满分
     QCOMPARE(filter.score(QStringLiteral("new"), QStringLiteral("new")), 1.0);
@@ -124,7 +127,7 @@ void CommandFilterTest::multibyteCjk()
 void CommandFilterTest::keywordsContribute()
 {
     // 关键词拼进 value 一起打分（cmdk: `${value} ${keywords.join(" ")}`）
-    const QStringList kw{QStringLiteral("theme"), QStringLiteral("dark")};
+    const QStringList kw { QStringLiteral("theme"), QStringLiteral("dark") };
     QVERIFY(filter.matches(QStringLiteral("主题"), QStringLiteral("theme"), kw));
     QVERIFY(filter.matches(QStringLiteral("主题"), QStringLiteral("dark"), kw));
     // 没关键词时同样的查询不命中 —— 证明 keywords 真的在起作用
@@ -147,10 +150,10 @@ void CommandFilterTest::matchesPredicate()
     QVERIFY(filter.matches(QStringLiteral("a"), QStringLiteral("a")));
     QVERIFY(!filter.matches(QStringLiteral("a"), QStringLiteral("b")));
     // matches 必须与 score>0 严格等价（组件两处都会用到）
-    const QStringList values{QStringLiteral("New file"), QStringLiteral("新建文件"),
-                             QStringLiteral("Search Emoji"), QStringLiteral("zzz")};
-    const QStringList queries{QStringLiteral("new"), QStringLiteral("件"),
-                              QStringLiteral("sme"), QStringLiteral("q")};
+    const QStringList values { QStringLiteral("New file"), QStringLiteral("新建文件"),
+                               QStringLiteral("Search Emoji"), QStringLiteral("zzz") };
+    const QStringList queries { QStringLiteral("new"), QStringLiteral("件"), QStringLiteral("sme"),
+                                QStringLiteral("q") };
     for (const QString &v : values) {
         for (const QString &s : queries)
             QCOMPARE(filter.matches(v, s), filter.score(v, s) > 0.0);

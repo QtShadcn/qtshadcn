@@ -9,6 +9,7 @@
 // TestSetup 注入一个 C++ 侧 QVariantList 模型：ShadcnSelect 的 textRole
 // 取值缺陷正是「C++ 的 QVariantList 在 QML 里 Array.isArray 为 false」，
 // 纯 QML 造不出这个形态，必须在 C++ 里给。
+
 #include <QtQuickTest>
 #include <QQmlContext>
 #include <QQmlEngine>
@@ -24,7 +25,7 @@ public slots:
     void qmlEngineAvailable(QQmlEngine *engine)
     {
         QVariantList people;
-        for (const QString &name : {QStringLiteral("C++甲"), QStringLiteral("C++乙")}) {
+        for (const QString &name : { QStringLiteral("C++甲"), QStringLiteral("C++乙") }) {
             QVariantMap person;
             person.insert(QStringLiteral("label"), name);
             people.append(person);

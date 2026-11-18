@@ -1,10 +1,13 @@
 // src/core/models/shadcntablemodel.cpp
+
 #include "shadcntablemodel.h"
 #include <QObject>
 #include <algorithm>
 
 ShadcnTableModel::ShadcnTableModel(QObject *parent)
-    : QAbstractTableModel(parent) {}
+    : QAbstractTableModel(parent)
+{
+}
 
 int ShadcnTableModel::rowCount(const QModelIndex &parent) const
 {
@@ -49,26 +52,31 @@ QVariant ShadcnTableModel::cellOf(const QVariant &item, const QString &key)
 
 QVariant ShadcnTableModel::cellData(int row, int column) const
 {
-    if (row < 0 || row >= m_rows.size()) return QVariant();
-    if (column < 0 || column >= m_columns.size()) return QVariant();
+    if (row < 0 || row >= m_rows.size())
+        return QVariant();
+    if (column < 0 || column >= m_columns.size())
+        return QVariant();
     const QString key = m_columns.at(column).toMap().value("key").toString();
     return cellOf(m_rows.at(row), key);
 }
 
 QVariantMap ShadcnTableModel::columnMeta(int column) const
 {
-    if (column < 0 || column >= m_columns.size()) return QVariantMap();
+    if (column < 0 || column >= m_columns.size())
+        return QVariantMap();
     return m_columns.at(column).toMap();
 }
 
 QVariantMap ShadcnTableModel::getRow(int row) const
 {
     QVariantMap out;
-    if (row < 0 || row >= m_rows.size()) return out;
+    if (row < 0 || row >= m_rows.size())
+        return out;
     const QVariant item = m_rows.at(row);
     if (item.canConvert<QObject *>()) {
         QObject *obj = item.value<QObject *>();
-        if (!obj) return out;
+        if (!obj)
+            return out;
         for (const QByteArray &p : obj->dynamicPropertyNames())
             out[QString::fromUtf8(p)] = obj->property(p.constData());
     } else {
@@ -79,7 +87,8 @@ QVariantMap ShadcnTableModel::getRow(int row) const
 
 void ShadcnTableModel::updateRow(int row, const QVariantMap &values)
 {
-    if (row < 0 || row >= m_rows.size()) return;
+    if (row < 0 || row >= m_rows.size())
+        return;
     QVariant item = m_rows.at(row);
     if (item.canConvert<QObject *>()) {
         QObject *obj = item.value<QObject *>();
@@ -98,17 +107,22 @@ void ShadcnTableModel::updateRow(int row, const QVariantMap &values)
 
 void ShadcnTableModel::sortBy(int column, bool ascending)
 {
-    if (column < 0 || column >= m_columns.size() || m_rows.isEmpty()) return;
+    if (column < 0 || column >= m_columns.size() || m_rows.isEmpty())
+        return;
     const QString key = m_columns.at(column).toMap().value("key").toString();
     std::sort(m_rows.begin(), m_rows.end(), [&](const QVariant &a, const QVariant &b) {
         // Qt 6 移除了 QVariant::operator<，改用静态 QVariant::compare 返回 QPartialOrdering
-        const bool less = QVariant::compare(cellOf(a, key), cellOf(b, key)) == QPartialOrdering::Less;
+        const bool less =
+            QVariant::compare(cellOf(a, key), cellOf(b, key)) == QPartialOrdering::Less;
         return ascending ? less : !less;
     });
     emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
 }
 
-QVariantList ShadcnTableModel::rows() const { return m_rows; }
+QVariantList ShadcnTableModel::rows() const
+{
+    return m_rows;
+}
 void ShadcnTableModel::setRows(const QVariantList &rows)
 {
     beginResetModel();
@@ -117,7 +131,10 @@ void ShadcnTableModel::setRows(const QVariantList &rows)
     emit rowsChanged();
 }
 
-QVariantList ShadcnTableModel::columns() const { return m_columns; }
+QVariantList ShadcnTableModel::columns() const
+{
+    return m_columns;
+}
 void ShadcnTableModel::setColumns(const QVariantList &columns)
 {
     beginResetModel();

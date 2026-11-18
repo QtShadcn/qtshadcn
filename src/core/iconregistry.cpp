@@ -31,14 +31,14 @@ void IconRegistry::load()
     // 从 qrc 枚举 :/icons/*.svg，文件名即图标名（lucide 命名）
     static const QRegularExpression commentRe(QStringLiteral("<!--[\\s\\S]*?-->"));
     const QDir dir(QStringLiteral(":/icons"));
-    const QStringList files = dir.entryList({QStringLiteral("*.svg")}, QDir::Files, QDir::Name);
+    const QStringList files = dir.entryList({ QStringLiteral("*.svg") }, QDir::Files, QDir::Name);
     for (const QString &file : files) {
         QFile f(QStringLiteral(":/icons/%1").arg(file));
         if (!f.open(QIODevice::ReadOnly))
             continue;
         QString svg = QString::fromUtf8(f.readAll());
-        svg.remove(commentRe);                       // 去掉 lucide-static 的 license 注释
-        const QString name = file.left(file.size() - 4);  // 去 ".svg"
+        svg.remove(commentRe);                           // 去掉 lucide-static 的 license 注释
+        const QString name = file.left(file.size() - 4); // 去 ".svg"
         m_icons.insert(name, svg.trimmed());
     }
 }
@@ -49,7 +49,7 @@ void IconRegistry::loadDiskCache()
     const QDir dir(cacheDir());
     if (!dir.exists())
         return;
-    const QStringList files = dir.entryList({QStringLiteral("*.svg")}, QDir::Files, QDir::Name);
+    const QStringList files = dir.entryList({ QStringLiteral("*.svg") }, QDir::Files, QDir::Name);
     for (const QString &file : files) {
         QFile f(dir.filePath(file));
         if (!f.open(QIODevice::ReadOnly))
@@ -62,8 +62,7 @@ void IconRegistry::loadDiskCache()
 QString IconRegistry::cacheDir() const
 {
     const QString base = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
-    return base.isEmpty() ? QStringLiteral("/tmp/qtshadcn-icons")
-                          : base + QStringLiteral("/icons");
+    return base.isEmpty() ? QStringLiteral("/tmp/qtshadcn-icons") : base + QStringLiteral("/icons");
 }
 
 QStringList IconRegistry::names() const
@@ -85,7 +84,7 @@ QString IconRegistry::dataUrl(const QString &name, const QString &color) const
         if (m_remoteCache.contains(name))
             svgStr = m_remoteCache.value(name);
         else
-            const_cast<IconRegistry *>(this)->requestRemote(name);   // 未命中 → 触发下载
+            const_cast<IconRegistry *>(this)->requestRemote(name); // 未命中 → 触发下载
     }
     if (svgStr.isEmpty())
         return QString();
@@ -134,12 +133,12 @@ void IconRegistry::requestRemote(const QString &name)
     if (!m_nam)
         m_nam = new QNetworkAccessManager(this);
 
-    QNetworkRequest request(QUrl(QStringLiteral("https://unpkg.com/lucide-static@latest/icons/%1.svg").arg(name)));
-    request.setTransferTimeout(15000);   // 15s 超时
+    QNetworkRequest request(
+        QUrl(QStringLiteral("https://unpkg.com/lucide-static@latest/icons/%1.svg").arg(name)));
+    request.setTransferTimeout(15000); // 15s 超时
     QNetworkReply *reply = m_nam->get(request);
-    connect(reply, &QNetworkReply::finished, this, [this, reply, name] {
-        onReplyFinished(reply, name);
-    });
+    connect(reply, &QNetworkReply::finished, this,
+            [this, reply, name] { onReplyFinished(reply, name); });
 }
 
 void IconRegistry::onReplyFinished(QNetworkReply *reply, const QString &name)
@@ -148,8 +147,8 @@ void IconRegistry::onReplyFinished(QNetworkReply *reply, const QString &name)
     reply->deleteLater();
 
     if (reply->error() != QNetworkReply::NoError) {
-        qWarning("IconRegistry: 远程图标 %s 下载失败: %s",
-                 qPrintable(name), qPrintable(reply->errorString()));
+        qWarning("IconRegistry: 远程图标 %s 下载失败: %s", qPrintable(name),
+                 qPrintable(reply->errorString()));
         return;
     }
 
