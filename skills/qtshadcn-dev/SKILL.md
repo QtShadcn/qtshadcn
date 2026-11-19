@@ -38,6 +38,9 @@ description: Use when adding, modifying, or aligning components inside the QtSha
 
 ## 构建与验证（摘要）
 
+Python 开发、`make fmt`、Ruff / clang-tidy 与 CI 检查见 [build](references/build.md#python-开发与代码检查)。
+以下 qmlcache / C++ 构建说明适用于 C++ 路线。
+
 ```bash
 make build     # 产物 build/src/QtShadcn（QML 模块）+ build/bin/showcase
 QT_QPA_PLATFORM=offscreen \
@@ -93,6 +96,9 @@ bash scripts/screenshot.sh button select      # 组件效果图 → docs/public/
 4. docs `docs/content/2.components/<n>.<slug>.md` 用法文档 + 效果图（`scripts/screenshot.sh`）
 5. 本项目 skills 同步：`qtshadcn` 的组件索引表 + `references/consumer/component-*.md`；有新坑补本 skill「开发坑」
 6. 修 bug / 加组件走 issue 驱动（先 `gh issue create` → 实现 → 验证 → commit + push → `gh issue close` 附验证摘要）
+
+新增、重命名或删除 QML 文件时，同步检查 `python/QtShadcn/qmldir`；Python 包直接使用
+`src/qml` 和 `src/assets/icons`，无需维护资源副本。构建与刷新方式见 [build](references/build.md#python-开发与代码检查)。
 
 ## References
 

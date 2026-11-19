@@ -22,6 +22,47 @@ make info     # 打印 Qt / 产物路径
 - 库文件名随平台：`libQtShadcn.dylib`（macOS）/ `.so`（Linux）/ `.dll`（Windows）
 - **沙箱 shell 跑不了 GUI**，`make run` 让用户在自己的终端执行
 
+## Python 开发与代码检查
+
+在仓库根目录执行：
+
+```bash
+uv sync --locked --extra dev
+make fmt
+uv run --locked --extra dev ruff check
+uv run --locked --extra dev ruff format --check --extend-exclude '*.md'
+uv build
+uv run --locked --extra dev python examples/prototype/main.py
+```
+
+- `make fmt` 修改 Python 和 C++ 源文件；CI 只检查格式，不改文件。开发工具版本由 `uv.lock` 锁定。
+- `python/` 映射为 `pyqtshadcn` 包；构建时从 `src/qml`、`src/assets/icons` 打包资源。
+  新增、重命名或删除 QML 文件时检查 `python/QtShadcn/qmldir`（此索引不会自动生成）。
+- editable 安装后修改共享资源，需重新执行 `uv sync --locked --extra dev --reinstall-package pyqtshadcn`，
+  或在已激活的开发环境中执行 `pip install -e .`，刷新包内资源。
+- Python 用法与已知限制见 [README](../../../README.zh.md#python-绑定)。Python 示例会进入 Qt 事件循环，验证后用 Ctrl+C 退出。
+
+clang-tidy 是可选的 C++ 编译检查，不属于 `make fmt`。可在独立构建目录启用：
+
+```bash
+cmake -S . -B build-tidy \
+  -DCMAKE_CXX_CLANG_TIDY="$PWD/.venv/bin/clang-tidy" \
+  -DCMAKE_PREFIX_PATH="$QT_PREFIX" \
+  -DQTSHADCN_BUILD_EXAMPLES=ON \
+  -DQTSHADCN_BUILD_TESTS=ON
+cmake --build build-tidy
+```
+
+C++ CI 先检查 clang-format，再构建并运行 clang-tidy、QML lint、测试和安装消费方验证；
+clang-tidy 的项目警告在 CI 中视为失败。macOS SDK 头文件路径处理见
+[ci.yml](../../../.github/workflows/ci.yml)。
+
+Python CI 在 Python 3.10–3.15 上构建 wheel 并编译字节码，以检查打包结果。
+
+Python 3.13 离屏冒烟检查复用矩阵构建的 wheel，验证安装后的 QML 绑定；
+其他 Python 版本的运行时兼容性仍未验证。详见
+[python.yml](../../../.github/workflows/python.yml)。
+
 ## QML 静态验证（无窗口，本仓库 showcase）
 
 ```bash
