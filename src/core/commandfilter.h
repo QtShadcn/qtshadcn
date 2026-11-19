@@ -40,13 +40,11 @@ public:
     //   search   用户输入的查询串；空串视为「不过滤」，恒返回满分
     //   keywords 附加关键词（拼到 value 后一起打分，与 cmdk 一致）
     // 返回值：0 = 不匹配；(0, 1] = 匹配且越大越靠前（1 = 完全相等）
-    Q_INVOKABLE double score(const QString &value,
-                             const QString &search,
+    Q_INVOKABLE double score(const QString &value, const QString &search,
                              const QStringList &keywords = QStringList()) const;
 
     // 便捷谓词：score(...) > 0
-    Q_INVOKABLE bool matches(const QString &value,
-                             const QString &search,
+    Q_INVOKABLE bool matches(const QString &value, const QString &search,
                              const QStringList &keywords = QStringList()) const;
 
     // cmdk 的归一化：小写化 + 把空白与连字符统一成空格（打分用的两侧都做）

@@ -3,6 +3,7 @@
 #   make build   配置 + 增量构建（默认 showcase）
 #   make run     构建并运行 showcase（前台，Ctrl+C 退出）
 #   make test    配置 + 构建 + 运行 ctest（与 build 共用一组配置参数，不翻转状态）
+#   make fmt     Format Python and C++ sources
 #   make lint    QML lint 门禁（需先 build，配置见 .qmllint.ini）
 #   make consumer-smoke  安装到本地前缀 + 用独立工程验证 find_package(QtShadcn)
 #   make clean   清理构建产物
@@ -28,6 +29,8 @@ CMAKE_OPTS      = -DCMAKE_PREFIX_PATH="$(QT_PREFIX)" \
                   -DQTSHADCN_BUILD_TESTS=$(BUILD_TESTS)
 # qmllint 门禁可执行文件（优先用 Qt 自带，避免 homebrew 版本与 Qt 版本不一致）
 QML_LINT  ?= $(QT_PREFIX)/bin/qmllint
+RUFF ?= uv run --locked --extra dev ruff
+CLANG_FORMAT ?= uv run --locked --extra dev clang-format
 
 # 动态扫描 examples 下所有包含 CMakeLists.txt 的子项目
 EXAMPLES_DIR := examples
@@ -38,7 +41,7 @@ EXAMPLES     := $(patsubst $(EXAMPLES_DIR)/%/,%,\
 TARGET ?= $(if $(f),$(f),showcase)
 BIN     = $(BUILD_DIR)/bin/$(TARGET)
 
-.PHONY: build run test lint consumer-smoke clean fresh info list
+.PHONY: build run test fmt lint consumer-smoke clean fresh info list
 
 build:
 	@if [ ! -d "$(EXAMPLES_DIR)/$(TARGET)" ]; then \
@@ -61,6 +64,11 @@ test:
 	cmake -S . -B $(BUILD_DIR) $(CMAKE_OPTS)
 	cmake --build $(BUILD_DIR) -j$(JOBS)
 	ctest --test-dir $(BUILD_DIR) --output-on-failure
+
+fmt:
+	$(RUFF) format --extend-exclude '*.md'
+	find src examples tests -type f \( -name '*.cpp' -o -name '*.h' \) \
+		-exec $(CLANG_FORMAT) -i {} +
 
 # QML lint 门禁（.qmllint.ini 分级：真错误类阻塞，风格类只记录）
 # 需要先 build 一次：-I 指向 $(BUILD_DIR)/src，qmllint 靠它解析 QtShadcn 模块

@@ -1,0 +1,18 @@
+# 构建产物
+build/
+dist/
+*.egg-info/
+.eggs/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# 虚拟环境
+.venv/
+venv/
+
+# 编辑器
+.idea/
+.vscode/
+*.swp
+.DS_Store

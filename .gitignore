@@ -46,3 +46,10 @@ cmake-build-*/
 # Hermes agent
 .hermes
 .workbuddy
+
+# Python build outputs and editable-install resources
+.venv/
+*.egg-info/
+__pycache__/
+python/QtShadcn/qml/
+python/icons/

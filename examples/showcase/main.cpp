@@ -20,15 +20,16 @@ int main(int argc, char *argv[])
     parser.setApplicationDescription("QtShadcn showcase");
     parser.addHelpOption();
     // 截图模式：--screenshot <Page文件名> --output <out.png> [--crop x,y,w,h]
-    QCommandLineOption shotOpt(QStringList() << "screenshot",
-                               QStringLiteral("Capture a component page (e.g. ButtonPage.qml) to PNG and exit."),
-                               QStringLiteral("page"));
-    QCommandLineOption outOpt(QStringList() << "output",
-                              QStringLiteral("Output PNG path."),
+    QCommandLineOption shotOpt(
+        QStringList() << "screenshot",
+        QStringLiteral("Capture a component page (e.g. ButtonPage.qml) to PNG and exit."),
+        QStringLiteral("page"));
+    QCommandLineOption outOpt(QStringList() << "output", QStringLiteral("Output PNG path."),
                               QStringLiteral("path"));
-    QCommandLineOption cropOpt(QStringList() << "crop",
-                               QStringLiteral("Crop rect 'x,y,width,height' (optional; full window if omitted)."),
-                               QStringLiteral("rect"));
+    QCommandLineOption cropOpt(
+        QStringList() << "crop",
+        QStringLiteral("Crop rect 'x,y,width,height' (optional; full window if omitted)."),
+        QStringLiteral("rect"));
     parser.addOption(shotOpt);
     parser.addOption(outOpt);
     parser.addOption(cropOpt);
@@ -57,9 +58,8 @@ int main(int argc, char *argv[])
 
         // 切到目标页面（Main.qml 的 findPageIndex：文件名 → 菜单 index）
         QVariant idx;
-        const bool ok = QMetaObject::invokeMethod(root, "findPageIndex",
-                                                  Q_RETURN_ARG(QVariant, idx),
-                                                  Q_ARG(QVariant, page));
+        const bool ok = QMetaObject::invokeMethod(
+            root, "findPageIndex", Q_RETURN_ARG(QVariant, idx), Q_ARG(QVariant, page));
         if (!ok) {
             qWarning() << "findPageIndex not invokable";
             return 1;

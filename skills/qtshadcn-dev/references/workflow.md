@@ -68,6 +68,7 @@ T.SomeControl {   // 或直接 QQC 基类
 3. `OverviewPage.qml` 点亮 `available: true`
 4. docs `content/2.components/<name>.md` 用法文档 + 效果图
 5. 本 skills 的 `SKILL.md` 表格 + 对应 reference 更新
+6. 新增、重命名或删除 QML 文件时更新 `python/QtShadcn/qmldir`；涉及 C++ 能力的组件须确认 Python 适配限制，见 [build](build.md#python-开发与代码检查)
 
 ## 生成组件效果图（截图）
 

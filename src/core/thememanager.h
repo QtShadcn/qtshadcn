@@ -52,6 +52,6 @@ private:
     void rebuildTokens();
 
     QString m_mode = QStringLiteral("light");
-    QString m_primary;   // 主色覆盖（空 = 内置默认色）
+    QString m_primary; // 主色覆盖（空 = 内置默认色）
     QVariantMap m_tokens;
 };

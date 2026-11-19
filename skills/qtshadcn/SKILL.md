@@ -18,6 +18,10 @@ description: Use when building a Qt 6 / QML app that consumes the QtShadcn compo
 
 ## 接入铁律
 
+以下 CMake / C++ 规则适用于 C++ 工程。PyQt6 工程使用 `pip install pyqtshadcn`，
+在加载 QML 前调用 `setup(engine)`，无需 CMake 或 C++ 插件；用法与限制见
+[README 的 Python 绑定章节](../../README.zh.md#python-绑定)。
+
 按 [build](references/consumer/build.md)「消费方脚手架」落地：
 
 1. 根目录无 `Makefile` → 新增 `build` / `run` / `clean` / `fresh` / `info`；已有则**只补缺、不覆盖**

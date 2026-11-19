@@ -24,11 +24,55 @@ concurrency:
 # CI 用 Qt 6.8.3（aqtinstall 暂无法装 6.11；本地 6.11.1 与 6.8.3 floor 兼容：本仓库
 # find_package(Qt6) 未设最低版本，且未使用 6.9+ 专属 API）。
 jobs:
+  lint:
+    runs-on: ubuntu-slim
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.13'
+
+      - &install-lint-tools
+        name: Install lint tools
+        run: |
+          uv sync --locked --extra dev --no-install-project \
+            --no-install-package PyQt6 \
+            --no-install-package PyQt6-Qt6 \
+            --no-install-package PyQt6-sip
+
+      - name: Check C++ formatting
+        run: |
+          find src examples tests -type f \( -name '*.cpp' -o -name '*.h' \) \
+            -exec .venv/bin/clang-format --dry-run --Werror {} +
+
   test:
+    needs: lint
     runs-on: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.13'
+
+      - *install-lint-tools
+
+      - name: Configure clang-tidy
+        run: |
+          SDKROOT=$(xcrun --show-sdk-path)
+          CXX_HEADERS="$SDKROOT/usr/include/c++/v1"
+          if [ ! -d "$CXX_HEADERS" ]; then
+            CXX_HEADERS="$(dirname "$(xcrun --find clang++)")/../include/c++/v1"
+          fi
+          # Header filters still report diagnostics in generated translation units.
+          LINE_FILTER=$(git ls-files '*.cpp' '*.h' | jq -Rnc '[inputs | {name: .}]')
+          echo "SDKROOT=$SDKROOT" >> "$GITHUB_ENV"
+          echo "CXX_CLANG_TIDY=$PWD/.venv/bin/clang-tidy;--extra-arg=-isystem;--extra-arg=$CXX_HEADERS;--header-filter=$PWD/(src|examples|tests)/;--line-filter=$LINE_FILTER;--warnings-as-errors=*" >> "$GITHUB_ENV"
 
       - name: Install Qt 6.8.3
         uses: jurplel/install-qt-action@v4
@@ -42,7 +86,12 @@ jobs:
       - name: Configure (tests + examples on)
         # examples 必须一起构建：lint 步骤要检查它们的 QML（构建目录里的模块副本），
         # 且 showcase 是「组件是否真能渲染」的唯一验证入口。
-        run: cmake -S . -B build -DQTSHADCN_BUILD_TESTS=ON -DQTSHADCN_BUILD_EXAMPLES=ON
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_CXX_CLANG_TIDY="$CXX_CLANG_TIDY" \
+            -DCMAKE_OSX_SYSROOT="$SDKROOT" \
+            -DQTSHADCN_BUILD_EXAMPLES=ON \
+            -DQTSHADCN_BUILD_TESTS=ON
 
       - name: Build
         # 必须给 -j 一个具体数字：裸 `-j` 是无限并行，make 会在几秒内把上百个编译
@@ -99,6 +148,8 @@ jobs:
           PREFIX="$PWD/_install"
           cmake --install build --prefix "$PREFIX"
           cmake -S tests/consumer -B _consumer \
+            -DCMAKE_CXX_CLANG_TIDY="$CXX_CLANG_TIDY" \
+            -DCMAKE_OSX_SYSROOT="$SDKROOT" \
             -DCMAKE_PREFIX_PATH="$PREFIX;$QT_ROOT_DIR"
           cmake --build _consumer --parallel "$(sysctl -n hw.ncpu)"
           QT_QPA_PLATFORM=offscreen QTSHADCN_SCREENSHOT=1 \

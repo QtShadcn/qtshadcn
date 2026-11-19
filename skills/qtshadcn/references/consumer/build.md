@@ -5,6 +5,9 @@ description: 消费方接入 QtShadcn：vendor 到 third_party、最小 CMake / 
 
 # 消费方脚手架（给用户写项目时必做）
 
+本页为 C++ 消费方模板。PyQt6 接入无需此脚手架，见
+[README 的 Python 绑定章节](../../../../README.zh.md#python-绑定)。
+
 目标项目约定布局（通用，别人也能照抄）：
 
 ```text
