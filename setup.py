@@ -12,7 +12,11 @@ ROOT = Path(__file__).parent
 class build_py(_build_py):
     def run(self):
         super().run()
-        package_dir = ROOT / "python" if self.editable_mode else Path(self.build_lib) / "pyqtshadcn"
+        package_dir = (
+            ROOT / "python" / "common"
+            if self.editable_mode
+            else Path(self.build_lib) / "qtshadcn_common"
+        )
         self.resource_outputs = []
         for source, target in (
             (ROOT / "src" / "qml", package_dir / "QtShadcn" / "qml"),

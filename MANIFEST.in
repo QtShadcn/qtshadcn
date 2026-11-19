@@ -1,5 +1,6 @@
 include LICENSE THIRD-PARTY-NOTICES.md README.md README.en.md README.zh.md
 recursive-include python *.py qmldir
+include python/common/test/smoke_test.qml
 recursive-include src/qml *.qml
 recursive-include src/assets/icons *.svg
 prune .github

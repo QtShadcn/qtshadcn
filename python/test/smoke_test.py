@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+from pathlib import Path
 
 from PyQt6.QtCore import QUrl
 from PyQt6.QtGui import QGuiApplication
@@ -14,6 +15,7 @@ def main() -> None:
     setup(engine)
     errors = []
     engine.warnings.connect(lambda warnings: errors.extend(warnings))
+    fixture = Path(__file__).resolve().parents[1] / "common" / "test" / "smoke_test.qml"
     original_screenshot_mode = os.environ.get("QTSHADCN_SCREENSHOT")
     try:
         for screenshot_mode in (False, True):
@@ -23,25 +25,7 @@ def main() -> None:
                 os.environ.pop("QTSHADCN_SCREENSHOT", None)
 
             component = QQmlComponent(engine)
-            component.setData(
-                b"""
-                import QtQuick
-                import QtShadcn
-                Item {
-                    property bool screenshotMode: ThemeManager.screenshotMode()
-                    QtShadcnTheme { id: theme }
-                    ShadcnButton { text: "Smoke test" }
-                    ShadcnAlert { variant: ShadcnAlert.Warning }
-                    ShadcnAlert { variant: ShadcnAlert.Success }
-                    ShadcnCard {}
-                    ShadcnSelect { model: ["First", "Second"] }
-                    ShadcnPopoverContent {}
-                    ShadcnDropdownMenuContent {}
-                    Component.onCompleted: theme.mode = "dark"
-                }
-                """,
-                QUrl(),
-            )
+            component.setData(fixture.read_bytes(), QUrl.fromLocalFile(str(fixture)))
             root = component.create()
             app.processEvents()
             if root is None or component.errors() or errors:

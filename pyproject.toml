@@ -28,11 +28,11 @@ Homepage = "https://github.com/QtShadcn/qtshadcn"
 Repository = "https://github.com/QtShadcn/qtshadcn"
 
 [tool.setuptools]
-packages = ["pyqtshadcn"]
-package-dir = { pyqtshadcn = "python" }
+packages = ["pyqtshadcn", "qtshadcn_common"]
+package-dir = { pyqtshadcn = "python", qtshadcn_common = "python/common" }
 
 [tool.setuptools.package-data]
-pyqtshadcn = [
+qtshadcn_common = [
     "QtShadcn/qmldir",
 ]
 
@@ -44,8 +44,8 @@ extend-exclude = [
     "build*",
     "dist",
     "docs",
-    "python/icons",
-    "python/QtShadcn",
+    "python/common/icons",
+    "python/common/QtShadcn",
     "vendor",
 ]
 
