@@ -95,6 +95,7 @@ class ThemeManager(QObject):
     def token(self, name: str) -> QVariant:
         return QVariant(self._tokens.get(name))
 
+    @pyqtSlot(result=bool)
     def screenshotMode(self) -> bool:
         return os.environ.get("QTSHADCN_SCREENSHOT") == "1"
 
