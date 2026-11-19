@@ -197,6 +197,7 @@ QT_QPA_PLATFORM=offscreen python examples/prototype/main.py
 
 ### 已知限制
 
+- `ShadcnCommand*` 系列未纳入 Python 包，因为其依赖的 C++ 评分器尚未移植。
 - `ShadcnTableModel` 尚未从 C++ 移植到 Python，因此目前无法使用 `ShadcnTable`。
 - `IconRegistry` 仅支持随包附带的 SVG 图标，目前尚不支持 C++ 版的远程 CDN 下载和磁盘缓存。
 

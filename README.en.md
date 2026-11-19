@@ -224,6 +224,7 @@ The example enters the Qt event loop; use Ctrl+C after verification. Builds pack
 
 ### Known limitations
 
+- The `ShadcnCommand*` family is excluded because its C++ scorer is unavailable.
 - `ShadcnTableModel` has not been ported from C++ to Python, so `ShadcnTable` is currently unavailable.
 - `IconRegistry` supports only the bundled SVG icons. It currently lacks remote CDN downloads or the disk cache
   present in the C++ implementation.

@@ -18,16 +18,6 @@ ShadcnCheckbox 0.0 qml/Components/ShadcnCheckbox.qml
 ShadcnCollapsible 0.0 qml/Components/ShadcnCollapsible.qml
 ShadcnCollapsibleContent 0.0 qml/Components/ShadcnCollapsibleContent.qml
 ShadcnCollapsibleTrigger 0.0 qml/Components/ShadcnCollapsibleTrigger.qml
-ShadcnCommand 0.0 qml/Components/ShadcnCommand.qml
-ShadcnCommandColumn 0.0 qml/Components/ShadcnCommandColumn.qml
-ShadcnCommandDialog 0.0 qml/Components/ShadcnCommandDialog.qml
-ShadcnCommandEmpty 0.0 qml/Components/ShadcnCommandEmpty.qml
-ShadcnCommandGroup 0.0 qml/Components/ShadcnCommandGroup.qml
-ShadcnCommandInput 0.0 qml/Components/ShadcnCommandInput.qml
-ShadcnCommandItem 0.0 qml/Components/ShadcnCommandItem.qml
-ShadcnCommandList 0.0 qml/Components/ShadcnCommandList.qml
-ShadcnCommandSeparator 0.0 qml/Components/ShadcnCommandSeparator.qml
-ShadcnCommandShortcut 0.0 qml/Components/ShadcnCommandShortcut.qml
 ShadcnDialog 0.0 qml/Components/ShadcnDialog.qml
 ShadcnDialogContent 0.0 qml/Components/ShadcnDialogContent.qml
 ShadcnDialogDescription 0.0 qml/Components/ShadcnDialogDescription.qml
