@@ -1,5 +1,6 @@
 include LICENSE THIRD-PARTY-NOTICES.md README.md README.en.md README.zh.md
-recursive-include python *.py qmldir
+recursive-include python/pyqt6 *.py
+recursive-include python/common *.py qmldir
 include python/common/test/smoke_test.qml
 recursive-include src/qml *.qml
 recursive-include src/assets/icons *.svg
@@ -12,6 +13,8 @@ prune scripts
 prune skills
 prune tests
 prune vendor
-prune python/QtShadcn/qml
-prune python/icons
+prune python/pyside6
+prune python/common/QtShadcn/qml
+prune python/common/icons
+exclude python/build_pyside6.py
 exclude CMakeLists.txt Makefile .gitignore .qmllint.ini

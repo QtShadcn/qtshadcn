@@ -23,9 +23,10 @@ from PyQt6.QtCore import (
 )
 from PyQt6.QtGui import QColor
 from PyQt6.QtQml import qmlRegisterSingletonType
-from qtshadcn_common import RESOURCE_DIR
-from qtshadcn_common.icons import icon_data_url, load_icons
-from qtshadcn_common.theme import build_theme_tokens
+
+from .common import RESOURCE_DIR
+from .common.icons import icon_data_url, load_icons
+from .common.theme import build_theme_tokens
 
 _RESOURCE_DIR = RESOURCE_DIR
 _ICON_DIR = _RESOURCE_DIR / "icons"

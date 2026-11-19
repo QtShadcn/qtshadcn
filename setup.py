@@ -15,7 +15,7 @@ class build_py(_build_py):
         package_dir = (
             ROOT / "python" / "common"
             if self.editable_mode
-            else Path(self.build_lib) / "qtshadcn_common"
+            else Path(self.build_lib) / "pyqtshadcn" / "common"
         )
         self.resource_outputs = []
         for source, target in (

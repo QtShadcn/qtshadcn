@@ -28,11 +28,11 @@ Homepage = "https://github.com/QtShadcn/qtshadcn"
 Repository = "https://github.com/QtShadcn/qtshadcn"
 
 [tool.setuptools]
-packages = ["pyqtshadcn", "qtshadcn_common"]
-package-dir = { pyqtshadcn = "python/pyqt6", qtshadcn_common = "python/common" }
+packages = ["pyqtshadcn", "pyqtshadcn.common"]
+package-dir = { pyqtshadcn = "python/pyqt6", "pyqtshadcn.common" = "python/common" }
 
 [tool.setuptools.package-data]
-qtshadcn_common = [
+"pyqtshadcn.common" = [
     "QtShadcn/qmldir",
 ]
 

@@ -15,7 +15,8 @@ A modern, composable UI component library for Qt 6 / QML, inspired by [shadcn/ui
 with its layered composition of Design Tokens → Components → Compositions → Themes.
 
 > [!TIP]
-> QtShadcn offers PyQt6 bindings, installable from PyPI with `pip install pyqtshadcn`. For more information, see
+> QtShadcn offers PyQt6 and PySide6 bindings, installable with `pip install pyqtshadcn` or
+> `pip install pysideshadcn`. For more information, see
 > [Python bindings](#python-bindings).
 
 ## ✨ Features
@@ -173,6 +174,9 @@ Window {
 `pyqtshadcn` implements the `ThemeManager` and `IconRegistry` QML singletons in pure Python. No C++ plugin build is
 needed, avoiding ABI mismatches with Qt bundled by PyQt6. Requires Python ≥ 3.10 and PyQt6 ≥ 6.10
 (installed automatically by pip).
+
+The `pysideshadcn` distribution provides the same adapter for PySide6 and depends only on PySide6. Install the
+distribution matching the Qt binding used by your application.
 
 <details>
 
