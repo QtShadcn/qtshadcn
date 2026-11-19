@@ -15,7 +15,7 @@ def main() -> None:
     setup(engine)
     errors = []
     engine.warnings.connect(lambda warnings: errors.extend(warnings))
-    fixture = Path(__file__).resolve().parents[1] / "common" / "test" / "smoke_test.qml"
+    fixture = Path(__file__).resolve().parents[2] / "common" / "test" / "smoke_test.qml"
     original_screenshot_mode = os.environ.get("QTSHADCN_SCREENSHOT")
     try:
         for screenshot_mode in (False, True):

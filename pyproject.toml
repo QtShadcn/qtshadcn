@@ -29,7 +29,7 @@ Repository = "https://github.com/QtShadcn/qtshadcn"
 
 [tool.setuptools]
 packages = ["pyqtshadcn", "qtshadcn_common"]
-package-dir = { pyqtshadcn = "python", qtshadcn_common = "python/common" }
+package-dir = { pyqtshadcn = "python/pyqt6", qtshadcn_common = "python/common" }
 
 [tool.setuptools.package-data]
 qtshadcn_common = [

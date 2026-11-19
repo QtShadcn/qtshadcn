@@ -109,4 +109,4 @@ jobs:
       - name: Check QML bindings
         env:
           QT_QPA_PLATFORM: offscreen
-        run: python python/test/smoke_test.py
+        run: python python/pyqt6/test/smoke_test.py
