@@ -12,7 +12,7 @@ Qt 6 / QML 可组合 UI 组件库，对齐 shadcn/ui 的设计哲学：**Design 
 
 > ⚠️ **开发状态**：本项目仍在活跃开发中，API 可能随迭代调整。已可用组件与里程碑进度见 [文档站里程碑](docs/content/1.getting-started/5.milestones.md) 与 [Skills](skills/qtshadcn/SKILL.md)，欢迎 [Issue](https://github.com/QtShadcn/qtshadcn/issues) 与 PR。
 
-> 🐍 **PyQt6 纯 Python 适配**：可通过 PyPI 安装：`pip install pyqtshadcn`。更多信息见 [Python 绑定](#python-绑定)。
+> 🐍 **PyQt6 / PySide6 纯 Python 适配**：可通过 PyPI 安装：`pip install pyqtshadcn` 或 `pip install pysideshadcn`。更多信息见 [Python 绑定](#python-绑定)。
 
 ## ✨ 特性
 
@@ -147,6 +147,8 @@ Window {
 
 `pyqtshadcn` 用纯 Python 实现 `ThemeManager` 和 `IconRegistry` 两个 QML 单例，无需编译 C++ 插件，
 避免与 PyQt6 自带 Qt 的 ABI 不匹配。需要 Python ≥ 3.10 与 PyQt6 ≥ 6.10（pip 会自动安装 PyQt6）。
+
+`pysideshadcn` 提供面向 PySide6 的同一适配，只依赖 PySide6。请按应用所使用的 Qt 绑定选择对应的发行包。
 
 <details>
 
