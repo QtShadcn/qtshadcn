@@ -54,6 +54,18 @@ bash scripts/screenshot.sh button select      # 组件效果图 → docs/public/
 
 更多（TableView 归属、qmlcache AOT、`QVariant::compare`、截图裁剪参数、showcase 三处同步）见 [build](references/build.md)。
 
+## Python 绑定（pyqtshadcn / pysideshadcn）
+
+双发行包结构：`python/common/`（共享 token 字典、图标工具、qmldir）+ `python/pyqt6/`（→ `pyqtshadcn`）+
+`python/pyside6/`（→ `pysideshadcn`，独立包、只依赖 PySide6，与 PyQt6 包不混装）。QML 与图标资源不入库，
+构建时从 `src/qml`、`src/assets/icons` 打包进包。
+
+**被 QML 调用的每个方法必须加 `@pyqtSlot`（PyQt6）/ `@Slot`（PySide6）**——未修饰的普通 Python 方法
+不在 metaobject 里，QML 调用直接报 `TypeError`（见开发坑表）。
+
+结构与构建验证命令、QML 暴露面核对清单、已知限制、文档同步规则见
+[python-bindings](references/python-bindings.md)。
+
 ## 开发坑（务必先读）
 
 | 坑 | 说明 |
@@ -86,6 +98,7 @@ bash scripts/screenshot.sh button select      # 组件效果图 → docs/public/
 | QQC.Popup.CloseOnEscape 在组件嵌套下不可靠 | 实测即使 focus:true 也收不到 Esc（弹层不在焦点链里）。改用 `Shortcut { sequence: "Escape" }`，变异验证证明 Shortcut 路线是承重的 |
 | Basic style 按钮只认 Space 不认 Enter | `keyClick(Return)` 不触发 clicked（6.11 实测）。需要 Enter 时自己 `Keys.onReturnPressed` / `onEnterPressed` 接管并 accepted，跨版本一致且不双触发 |
 | Button.text 在 Qt 6.8 起是 FINAL | 子类不能 `property string text`，直接编译失败。用基类属性即可 |
+| Python 适配方法未加 @pyqtSlot/@Slot 不被 QML 可见 | PyQt6/PySide6 只把 `@pyqtSlot`/`@Slot` 修饰的方法暴露给 QML，普通 Python 方法不在 metaobject 里，QML 调用直接 `TypeError: Property 'xxx' is not a function`。C++ 的 `Q_INVOKABLE` 没有 Python 等价物——被 QML 调用的每个方法都必须加修饰符；改 Python 适配时先 grep `src/qml` 实际调用的成员逐个核对 |
 | default property alias 要声明在根项上 | 写在 ColumnLayout 内部时那是布局自己的 default，用户子项会掉进外层 Rectangle（实测 Header 宽塌 0） |
 
 ## 新增组件后必做
@@ -97,7 +110,7 @@ bash scripts/screenshot.sh button select      # 组件效果图 → docs/public/
 5. 本项目 skills 同步：`qtshadcn` 的组件索引表 + `references/consumer/component-*.md`；有新坑补本 skill「开发坑」
 6. 修 bug / 加组件走 issue 驱动（先 `gh issue create` → 实现 → 验证 → commit + push → `gh issue close` 附验证摘要）
 
-新增、重命名或删除 QML 文件时，同步检查 `python/QtShadcn/qmldir`；Python 包直接使用
+新增、重命名或删除 QML 文件时，同步检查 `python/common/QtShadcn/qmldir`；Python 包直接使用
 `src/qml` 和 `src/assets/icons`，无需维护资源副本。构建与刷新方式见 [build](references/build.md#python-开发与代码检查)。
 
 ## References
@@ -106,6 +119,7 @@ bash scripts/screenshot.sh button select      # 组件效果图 → docs/public/
 |------|------|
 | 组件开发全流程（抓规范 → 对照表 → 实现 → showcase → 截图） | [workflow](references/workflow.md) |
 | 本仓库构建 / offscreen 验证 / qmlcache / 截图 / showcase 结构 | [build](references/build.md) |
+| Python 绑定双包结构、构建验证、QML 暴露面铁律、已知限制 | [python-bindings](references/python-bindings.md) |
 | M6 七个组件的 shadcn/ui 对齐修复记录与坑（DropdownMenu / Alert / Kbd） | [m6-compliance-fix](references/m6-compliance-fix.md) |
 | 主题与 token 契约（跨 skill，在 `qtshadcn`） | `skill_view(name='qtshadcn', file_path='references/common/core-theme.md')` |
 | 通用「shadcn/ui → QML」移植方法论（抓规范技巧、QQC 定制、验证手法、长期坑） | `qml-component-library-dev` skill |
