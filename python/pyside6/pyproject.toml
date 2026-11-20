@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pysideshadcn"
-version = "0.1.0"
+version = "0.2.1"
 description = "PySide6 pure-Python adapter for the QtShadcn QML component library."
 readme = "README.md"
 requires-python = ">=3.10"

@@ -2,8 +2,10 @@ name: Release
 
 # 推送 v* 标签时构建两个 Python 包、离屏冒烟验证后发布到 PyPI。
 # 发布使用 PyPI Trusted Publishing（OIDC），仓库内不保存 PyPI 凭证。
-# 发布前需在 PyPI 对两个项目配置可信发布方：Owner=QtShadcn、
-# Repository=qtshadcn、Workflow=Release（与本 workflow 的 name 一致）。
+# 包版本直接同步仓库 release 版本（tag 去掉 v 前缀，两个包一致），
+# 两个包各自独立发布（任一失败不影响另一个）。发布前需在 PyPI 对
+# 两个项目配置可信发布方：Owner=QtShadcn、Repository=qtshadcn、
+# Workflow=release.yml（文件名）、Environment=release。
 
 on:
   push:
@@ -15,13 +17,11 @@ concurrency:
   cancel-in-progress: false # 发布过程不打断
 
 jobs:
-  release:
-    name: 构建、验证并发布
+  build:
+    name: 构建并验证
     runs-on: ubuntu-latest
-    environment: release
     permissions:
       contents: read
-      id-token: write # PyPI 可信发布（OIDC）必需
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,11 +34,23 @@ jobs:
       - name: Install build tooling
         run: python -m pip install build
 
+      - name: Sync package versions with release tag
+        run: |
+          python - <<'PY'
+          import os, pathlib, re
+          version = os.environ["GITHUB_REF_NAME"].removeprefix("v")
+          for path in ["pyproject.toml", "python/pyside6/pyproject.toml"]:
+              p = pathlib.Path(path)
+              text = p.read_text()
+              text = re.sub(r'^version = .*$', f'version = "{version}"', text, count=1, flags=re.M)
+              p.write_text(text)
+          PY
+
       - name: Build pyqtshadcn
-        run: python -m build --outdir dist
+        run: python -m build --outdir dist/pyqtshadcn
 
       - name: Build pysideshadcn
-        run: python python/build_pyside6.py --out-dir dist
+        run: python python/build_pyside6.py --out-dir dist/pysideshadcn
 
       - name: Install Qt runtime libraries
         run: |
@@ -49,11 +61,42 @@ jobs:
         env:
           QT_QPA_PLATFORM: offscreen
         run: |
-          python -m pip install dist/*.whl
+          python -m pip install dist/pyqtshadcn/*.whl dist/pysideshadcn/*.whl
           python python/pyqt6/test/smoke_test.py
           python python/pyside6/test/smoke_test.py
+
+      - name: Upload pyqtshadcn artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pyqtshadcn
+          path: dist/pyqtshadcn
+
+      - name: Upload pysideshadcn artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pysideshadcn
+          path: dist/pysideshadcn
+
+  publish:
+    name: 发布 ${{ matrix.package }}
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false # 一个包发布失败不影响另一个
+      matrix:
+        package: [pyqtshadcn, pysideshadcn]
+    environment: release
+    permissions:
+      contents: read
+      id-token: write # PyPI 可信发布（OIDC）必需
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.package }}
+          path: dist/${{ matrix.package }}
 
       - name: Publish to PyPI（trusted publishing）
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          dist-path: dist
+          dist-path: dist/${{ matrix.package }}
