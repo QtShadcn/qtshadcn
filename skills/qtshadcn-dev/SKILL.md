@@ -75,7 +75,12 @@ bash scripts/screenshot.sh button select      # 组件效果图 → docs/public/
 # 2. 提交推送 main
 # 3. tag 必须与 VERSION 一致（version-check.yml 会校验）
 git tag vx.y.z && git push origin vx.y.z
+# 4. 建 GitHub Release —— tag ≠ Release！推 tag 不会出现在 Releases 页
+gh release create vx.y.z --title "vx.y.z — <一句话主题>" --notes-file <备注>
 ```
+
+**tag 与 Release 是两层对象**：推 tag 只产生 tag（CI 触发），Releases 页要靠 `gh release create`
+（或网页 Draft a new release）单独创建，否则 Releases 页一直停在上一个版本。
 
 tag 推送后自动：`version-check.yml` 校验 tag == project(VERSION) → `release.yml` 构建两个包
 （构建前从 tag 把版本写入两个 pyproject.toml，**版本随 tag 自动同步，不用手改版本号**）→
