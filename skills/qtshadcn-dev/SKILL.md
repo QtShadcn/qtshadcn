@@ -79,6 +79,9 @@ git tag vx.y.z && git push origin vx.y.z
 gh release create vx.y.z --title "vx.y.z — <一句话主题>" --notes-file <备注>
 ```
 
+Release 备注**手写**：一句话主题标题 + 变更要点 + `compare/v<上个版本>...v<本版本>` 链接，
+不用 `--generate-notes` 自动提交列表（可读性差）。
+
 **tag 与 Release 是两层对象**：推 tag 只产生 tag（CI 触发），Releases 页要靠 `gh release create`
 （或网页 Draft a new release）单独创建，否则 Releases 页一直停在上一个版本。
 
