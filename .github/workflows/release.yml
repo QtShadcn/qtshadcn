@@ -99,4 +99,4 @@ jobs:
       - name: Publish to PyPI（trusted publishing）
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          dist-path: dist/${{ matrix.package }}
+          packages-dir: dist/${{ matrix.package }}
