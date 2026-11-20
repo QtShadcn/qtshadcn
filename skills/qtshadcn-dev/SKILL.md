@@ -66,6 +66,38 @@ bash scripts/screenshot.sh button select      # 组件效果图 → docs/public/
 结构与构建验证命令、QML 暴露面核对清单、已知限制、文档同步规则见
 [python-bindings](references/python-bindings.md)。
 
+## 发布（PyPI）
+
+**唯一版本来源 = `CMakeLists.txt` 的 `project(QtShadcn VERSION)`**。发版三步：
+
+```bash
+# 1. 改 project(QtShadcn VERSION x.y.z)
+# 2. 提交推送 main
+# 3. tag 必须与 VERSION 一致（version-check.yml 会校验）
+git tag vx.y.z && git push origin vx.y.z
+```
+
+tag 推送后自动：`version-check.yml` 校验 tag == project(VERSION) → `release.yml` 构建两个包
+（构建前从 tag 把版本写入两个 pyproject.toml，**版本随 tag 自动同步，不用手改版本号**）→
+离屏冒烟 → 矩阵发布 `pyqtshadcn` / `pysideshadcn`（PyPI Trusted Publishing，仓库无 token）。
+
+**PyPI 一次性配置**：新项目用 pending 发布方（`https://pypi.org/manage/account/publishing/`，
+此页比项目设置页多一个 Project name 字段；PyPI 没有「创建项目」按钮，pending 发布方在首次成功
+发布时创建项目且**不预留名字**）；已有项目在项目设置的 Publishing 页配。字段：Owner=`QtShadcn`、
+Repository=`qtshadcn`、Workflow=**`release.yml`**（填文件名，不是 workflow 的 `name:`）、
+Environment=`release`。
+
+**发布坑：**
+
+| 坑 | 说明 |
+|---|---|
+| action 输入名 | `pypa/gh-action-pypi-publish` 用 `packages-dir`；`dist-path` 不存在，写错整个 workflow 校验失败（`actionlint` 可查） |
+| 版本提升后 uv.lock 未同步 | CI 的 `uv sync --locked` 直接失败 → 改 pyproject 版本后必须 `uv lock` 并一起提交；本地 uv 过旧会把 lockfile revision 降级（`revision 5→3`），先 `uv self update` 再 lock |
+| pending 发布方项目名必须与包名完全一致 | 写成 `pyside-shadcn` 会 400 `Non-user identities cannot create new projects...`，按 pyproject 的 `name` 原样填 |
+| 首次发布后项目页短暂 404 | CDN 缓存滞后，以 `/pypi/<pkg>/<ver>/json` 或 `/simple/<pkg>/` 返回 200 为准，安装不受影响 |
+| 单包失败想重发 | 修好 PyPI 侧配置后 `gh run rerun <run-id> --failed` 只重跑失败 job，复用已构建产物 |
+| VS Code 扩展误报 | `environment: release` 报 `Value 'release' is not valid` 是 vscode-github-actions #402 的 bug，GitHub 本身接受，无需处理 |
+
 ## 开发坑（务必先读）
 
 | 坑 | 说明 |
