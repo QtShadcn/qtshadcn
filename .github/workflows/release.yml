@@ -10,10 +10,6 @@ on:
     tags:
       - 'v*'
 
-permissions:
-  contents: read
-  id-token: write # PyPI 可信发布（OIDC）必需
-
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false # 发布过程不打断
@@ -22,6 +18,10 @@ jobs:
   release:
     name: 构建、验证并发布
     runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write # PyPI 可信发布（OIDC）必需
     steps:
       - name: Checkout
         uses: actions/checkout@v4
