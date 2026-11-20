@@ -51,5 +51,6 @@ cmake-build-*/
 .venv/
 *.egg-info/
 __pycache__/
-python/QtShadcn/qml/
+python/common/QtShadcn/qml/
+python/common/icons/
 python/icons/

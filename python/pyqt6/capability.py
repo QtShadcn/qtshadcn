@@ -12,10 +12,7 @@ PyQt6 自带 Qt（本包依赖 PyQt6>=6.10），因此本模块与 PyQt6 自带 
 
 from __future__ import annotations
 
-import base64
 import os
-import re
-from pathlib import Path
 
 from PyQt6.QtCore import (
     QObject,
@@ -27,17 +24,17 @@ from PyQt6.QtCore import (
 from PyQt6.QtGui import QColor
 from PyQt6.QtQml import qmlRegisterSingletonType
 
-# 包内资源目录（随 wheel/sdist 安装，绝对可靠）
-_PACKAGE_DIR = Path(__file__).resolve().parent
-_ICON_DIR = _PACKAGE_DIR / "icons"
-# QML 引擎 addImportPath 应指向「包含 QtShadcn/ 模块目录的父目录」，
-# 引擎据此解析 `import QtShadcn` -> <父目录>/QtShadcn/qmldir
-_QTSHADCN_DIR = _PACKAGE_DIR / "QtShadcn"  # 含 qmldir，qml/ 为其子目录
+from .common import RESOURCE_DIR
+from .common.icons import icon_data_url, load_icons
+from .common.theme import build_theme_tokens
+
+_RESOURCE_DIR = RESOURCE_DIR
+_ICON_DIR = _RESOURCE_DIR / "icons"
 
 
 def qtshadcn_import_path() -> str:
     """返回 QML 引擎应 addImportPath 的目录（QtShadcn 模块的父目录）。"""
-    return str(_PACKAGE_DIR)
+    return str(_RESOURCE_DIR)
 
 
 # ──────────────────────────────────────────────────────────────────────
@@ -105,80 +102,13 @@ class ThemeManager(QObject):
         pc = QColor(primary_color)
         lum = 0.299 * pc.redF() + 0.587 * pc.greenF() + 0.114 * pc.blueF()
         primary_fg = "#18181b" if lum > 0.5 else "#fafafa"
-
-        if self._mode == "dark":
-            self._tokens = {
-                "background": "#09090b",
-                "foreground": "#fafafa",
-                "primary": primary_color,
-                "primaryForeground": primary_fg,
-                "secondary": "#27272a",
-                "secondaryForeground": "#fafafa",
-                "muted": "#27272a",
-                "mutedForeground": "#a1a1aa",
-                "accent": "#27272a",
-                "accentForeground": "#fafafa",
-                "destructive": "#7f1d1d",
-                "destructiveForeground": "#fafafa",
-                "border": "#27272a",
-                "ring": "#fafafa",
-                "card": "#09090b",
-                "cardForeground": "#fafafa",
-                "input": "#27272a",
-                "popover": "#09090b",
-                "popoverForeground": "#fafafa",
-                "warning": "#92400e",
-                "warningForeground": "#fef3c7",
-                "success": "#166534",
-                "successForeground": "#f0fdf4",
-                "radius": 8,
-                "spacingXs": 4,
-                "spacingSm": 8,
-                "spacingMd": 12,
-                "spacingLg": 16,
-                "spacingXl": 24,
-            }
-        else:
-            self._tokens = {
-                "background": "#ffffff",
-                "foreground": "#09090b",
-                "primary": primary_color,
-                "primaryForeground": primary_fg,
-                "secondary": "#f5f5f5",
-                "secondaryForeground": "#18181b",
-                "muted": "#f5f5f5",
-                "mutedForeground": "#71717a",
-                "accent": "#f5f5f5",
-                "accentForeground": "#3f3f46",
-                "destructive": "#ef4444",
-                "destructiveForeground": "#fafafa",
-                "border": "#e4e4e7",
-                "ring": "#18181b",
-                "card": "#ffffff",
-                "cardForeground": "#09090b",
-                "input": "#e4e4e7",
-                "popover": "#ffffff",
-                "popoverForeground": "#09090b",
-                "warning": "#b45309",
-                "warningForeground": "#fffbeb",
-                "success": "#15803d",
-                "successForeground": "#f0fdf4",
-                "radius": 8,
-                "spacingXs": 4,
-                "spacingSm": 8,
-                "spacingMd": 12,
-                "spacingLg": 16,
-                "spacingXl": 24,
-            }
+        self._tokens = build_theme_tokens(self._mode, primary_color, primary_fg)
         self.tokensChanged.emit()
 
 
 # ──────────────────────────────────────────────────────────────────────
 # IconRegistry（本地内置 svg；远程 CDN 兜底未实现，见 README 限制）
 # ──────────────────────────────────────────────────────────────────────
-_COMMENT_RE = re.compile(r"<!--[\s\S]*?-->")
-
-
 class IconRegistry(QObject):
     iconsChanged = pyqtSignal()
     remoteEnabledChanged = pyqtSignal()
@@ -191,13 +121,7 @@ class IconRegistry(QObject):
         self._load_local()
 
     def _load_local(self) -> None:
-        if not _ICON_DIR.is_dir():
-            return
-        for fn in sorted(_ICON_DIR.iterdir()):
-            if fn.suffix != ".svg":
-                continue
-            svg = _COMMENT_RE.sub("", fn.read_text(encoding="utf-8")).strip()
-            self._icons[fn.stem] = svg
+        self._icons = load_icons(_ICON_DIR)
 
     def _get_is_remote_enabled(self) -> bool:
         return self._remote_enabled
@@ -231,9 +155,7 @@ class IconRegistry(QObject):
             return ""
         col = QColor(color) if color else QColor("#000000")
         hex_color = col.name(QColor.NameFormat.HexRgb) if col.isValid() else "#000000"
-        svg = svg.replace("currentColor", hex_color)
-        b64 = base64.b64encode(svg.encode("utf-8")).decode("ascii")
-        return f"data:image/svg+xml;base64,{b64}"
+        return icon_data_url(svg, hex_color)
 
 
 # ──────────────────────────────────────────────────────────────────────

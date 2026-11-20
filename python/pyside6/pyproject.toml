@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pysideshadcn"
+version = "0.1.0"
+description = "PySide6 pure-Python adapter for the QtShadcn QML component library."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE", "THIRD-PARTY-NOTICES.md"]
+authors = [{ name = "QtShadcn" }]
+keywords = ["qt", "qml", "pyside6", "shadcn", "ui", "components"]
+dependencies = ["PySide6>=6.10"]
+
+[project.urls]
+Homepage = "https://github.com/QtShadcn/qtshadcn"
+Repository = "https://github.com/QtShadcn/qtshadcn"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["pysideshadcn", "pysideshadcn.*"]
+namespaces = false
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.package-data]
+"pysideshadcn.common" = ["QtShadcn/qmldir", "QtShadcn/qml/**/*.qml", "icons/*.svg"]

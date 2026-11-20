@@ -46,7 +46,9 @@ jobs:
     needs: lint
     runs-on: ubuntu-slim
     strategy:
+      fail-fast: true
       matrix:
+        package: [pyqtshadcn, pysideshadcn]
         python-version:
           - '3.10'
           - '3.11'
@@ -66,25 +68,34 @@ jobs:
       - name: Install build tools
         run: python -m pip install build
 
-      - name: Build sdist and wheel
+      - name: Build PyQt6 sdist and wheel
+        if: matrix.package == 'pyqtshadcn'
         run: python -m build
+
+      - name: Build PySide6 sdist and wheel
+        if: matrix.package == 'pysideshadcn'
+        run: python python/build_pyside6.py --out-dir dist
 
       - name: Install and compile wheel
         run: |
           python -m pip install --no-deps --target "$RUNNER_TEMP/package" dist/*.whl
-          python -m compileall -q "$RUNNER_TEMP/package/pyqtshadcn"
+          python -m compileall -q "$RUNNER_TEMP/package/${{ matrix.package }}"
 
       - name: Upload runtime wheel
         if: matrix.python-version == '3.13'
         uses: actions/upload-artifact@v4
         with:
-          name: runtime-wheel
+          name: wheels-${{ matrix.package }}
           path: dist/*.whl
           if-no-files-found: error
           retention-days: 1
 
-  runtime:
+  test-wheels:
     needs: build
+    strategy:
+      fail-fast: true
+      matrix:
+        package: [pyqtshadcn, pysideshadcn]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -95,7 +106,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: runtime-wheel
+          name: wheels-${{ matrix.package }}
           path: dist
 
       - name: Install Qt runtime libraries
@@ -106,7 +117,14 @@ jobs:
       - name: Install wheel
         run: python -m pip install dist/*.whl
 
-      - name: Check QML bindings
+      - name: Check PyQt6 QML bindings
+        if: matrix.package == 'pyqtshadcn'
         env:
           QT_QPA_PLATFORM: offscreen
-        run: python python/test/smoke_test.py
+        run: python python/pyqt6/test/smoke_test.py
+
+      - name: Check PySide6 QML bindings
+        if: matrix.package == 'pysideshadcn'
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: python python/pyside6/test/smoke_test.py

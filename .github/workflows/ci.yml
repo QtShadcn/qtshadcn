@@ -114,9 +114,10 @@ jobs:
         # -I build/src 指向构建产物，qmllint 才能解析 QtShadcn 模块。
         run: |
           echo "qmllint: $(qmllint --version)"
-          COUNT=$(find src/qml tests/qml -name '*.qml' | wc -l | tr -d ' ')
+          COUNT=$(find src/qml tests/qml python/common/test -name '*.qml' | wc -l | tr -d ' ')
           echo "linting $COUNT QML files (lib + tests)"
-          find src/qml tests/qml -name '*.qml' -print0 | xargs -0 qmllint -I build/src
+          find src/qml tests/qml python/common/test -name '*.qml' -print0 \
+            | xargs -0 qmllint -I build/src
 
           # examples 要 lint 构建目录里的模块副本，不能直接 lint 源文件：
           # Main.qml 引用同模块 pages/ 子目录里的类型，对源文件 qmllint 会报
